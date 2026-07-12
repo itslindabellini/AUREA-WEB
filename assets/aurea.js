@@ -103,8 +103,20 @@
       '</div>';
     }).join('');
 
+    // scoped reset so inherited margins/line-height on the live site can't
+    // distort the drawer spacing — it renders exactly like the design.
+    if (!document.getElementById('aurea-mm-style')) {
+      var st = document.createElement('style'); st.id = 'aurea-mm-style';
+      st.textContent =
+        '.aurea-mm,.aurea-mm *{box-sizing:border-box;margin:0;}' +
+        '.aurea-mm a,.aurea-mm button,.aurea-mm span{line-height:1.2;text-decoration:none;}' +
+        '.aurea-mm a:hover,.aurea-mm .aurea-mm-cat:hover>span:first-child{color:#111;}';
+      document.head.appendChild(st);
+    }
+
     var overlay = el('div', 'position:fixed;inset:0;background:rgba(20,18,16,.4);z-index:5000;opacity:0;visibility:hidden;transition:opacity .3s ease;');
     var drawer = el('div', "position:fixed;top:0;left:0;height:100%;width:min(86%,360px);background:#fff;z-index:5001;box-shadow:18px 0 50px rgba(0,0,0,.22);transform:translateX(-100%);transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;");
+    drawer.className = 'aurea-mm';
     drawer.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px;border-bottom:1px solid #EFEAE2;">' +
         '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">Menu</span>' +
