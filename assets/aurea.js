@@ -145,7 +145,7 @@
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeM(); });
   }
 
-  /* ---------- 3. FAQ accordion ---------- */
+  /* ---------- 3. FAQ accordion (answer inside the card, +/- sign) ---------- */
   function buildFAQ() {
     var buttons = Array.prototype.slice.call(document.querySelectorAll('button'));
     FAQ.forEach(function (item) {
@@ -155,21 +155,24 @@
         btn.setAttribute('data-aurea-faq', '1');
         btn.style.cursor = 'pointer';
 
-        var ans = el('div', 'max-height:0;overflow:hidden;transition:max-height .3s ease;');
-        var inner = el('div', 'padding:0 26px 24px;font-family:Manrope,sans-serif;font-weight:500;font-size:14.5px;line-height:1.75;color:#6E675E;white-space:pre-line;');
+        // answer expands INSIDE the card, right after the button
+        var ans = el('div', 'max-height:0;overflow:hidden;transition:max-height .34s ease;');
+        var inner = el('div', "padding:0 26px 26px;font-family:'Manrope',sans-serif;font-weight:500;font-size:14.5px;line-height:1.75;color:#6E675E;white-space:pre-line;");
         inner.textContent = item.a;
         ans.appendChild(inner);
-        // insert answer right after the button (or its wrapping row)
-        var anchor = btn;
-        if (btn.parentElement && btn.parentElement.children.length === 1) anchor = btn.parentElement;
-        anchor.parentNode.insertBefore(ans, anchor.nextSibling);
+        btn.parentNode.insertBefore(ans, btn.nextSibling);
 
-        var icon = btn.querySelector('svg, span:last-child');
+        // the sign is a span reading "+"; toggle it to "–"
+        var sign = null, spans = btn.querySelectorAll('span');
+        for (var i = 0; i < spans.length; i++) {
+          if (/^[+–−\-]$/.test(spans[i].textContent.trim())) { sign = spans[i]; break; }
+        }
+        if (!sign) sign = btn.lastElementChild;
+
         btn.addEventListener('click', function () {
           var openNow = ans.style.maxHeight === '0px' || !ans.style.maxHeight;
-          ans.style.maxHeight = openNow ? (inner.offsetHeight + 8) + 'px' : '0px';
-          if (icon) icon.style.transform = openNow ? 'rotate(45deg)' : '';
-          if (icon) icon.style.transition = 'transform .2s ease';
+          ans.style.maxHeight = openNow ? (inner.offsetHeight + 4) + 'px' : '0px';
+          if (sign) sign.textContent = openNow ? '–' : '+';
         });
       });
     });
