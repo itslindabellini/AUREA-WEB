@@ -314,9 +314,11 @@
       if (m.variant) {
         atcs.forEach(function (atc) {
           atc.setAttribute('data-variant', m.variant.id);
-          // Key purely off the built-in availability flag (true when inventory tracking is off).
-          if (m.variant.available) { atc.disabled = false; atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
-          else { atc.disabled = true; atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
+          // Do NOT gate the button on the availability flag — on this store Shopify
+          // reports untracked (dropship) variants as available:false, which is wrong.
+          // Keep the button active; the actual /cart/add call is the source of truth
+          // (untracked variants add fine; a genuine rejection surfaces inline below).
+          atc.disabled = false; atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer';
         });
       }
     }
