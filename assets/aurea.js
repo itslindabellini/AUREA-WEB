@@ -735,6 +735,14 @@
       var top = Math.ceil(window.innerHeight - h) + 1;
       if (top > 24) top = 24; /* short gallery: pin near top instead */
       el.style.top = top + 'px';
+      /* cap the thumbnail rail to the main image height: thumbnails keep a fixed
+         portrait size, the rail grows with them but never past the image bottom
+         (it scrolls instead) — so products with few/many images look consistent. */
+      var rail = el.querySelector('.pdp-thumbrail');
+      var mainImg = el.querySelector('.pdp-main-img');
+      if (rail && mainImg && mainImg.parentElement) {
+        rail.style.maxHeight = Math.round(mainImg.parentElement.getBoundingClientRect().height) + 'px';
+      }
     }
     update();
     window.addEventListener('resize', update, { passive: true });
