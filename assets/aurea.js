@@ -169,7 +169,7 @@
 
         // answer expands INSIDE the card, right after the button
         var ans = el('div', 'max-height:0;overflow:hidden;transition:max-height .34s ease;');
-        var inner = el('div', "padding:0 26px 26px;font-family:'Manrope',sans-serif;font-weight:500;font-size:14.5px;line-height:1.75;color:#6E675E;white-space:pre-line;");
+        var inner = el('div', "padding:0 26px 26px;max-width:700px;font-family:'Manrope',sans-serif;font-weight:500;font-size:14.5px;line-height:1.75;color:#6E675E;white-space:pre-line;");
         inner.textContent = item.a;
         ans.appendChild(inner);
         btn.parentNode.insertBefore(ans, btn.nextSibling);
