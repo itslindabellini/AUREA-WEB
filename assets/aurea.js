@@ -710,7 +710,11 @@
     var el = document.querySelector('.pdp-gallery-sticky');
     if (!el) return;
     function update() {
-      var top = window.innerHeight - el.offsetHeight;
+      /* use fractional height and bias 1px so the image bottom lands flush or a
+         hair below the viewport bottom — never above it (which would show a
+         white sliver from sub-pixel rounding). */
+      var h = el.getBoundingClientRect().height;
+      var top = Math.ceil(window.innerHeight - h) + 1;
       if (top > 24) top = 24; /* short gallery: pin near top instead */
       el.style.top = top + 'px';
     }
