@@ -667,6 +667,16 @@
       btn.style.cursor = 'pointer';
       btn.addEventListener('click', function () {
         var open = body.style.maxHeight && body.style.maxHeight !== '0px';
+        if (!open) {
+          /* accordion behaviour: only one open at a time within this scope */
+          var scope = (body.closest && body.closest('.aurea-desktop, .aurea-mobile')) || document;
+          scope.querySelectorAll('.pdp-acc-body').forEach(function (other) {
+            if (other === body) return;
+            other.style.maxHeight = '0px';
+            var obtn = other.previousElementSibling, ospans = obtn ? obtn.querySelectorAll('span') : [];
+            for (var j = 0; j < ospans.length; j++) { if (/^[+−-]$/.test(ospans[j].textContent.trim())) { ospans[j].textContent = '+'; break; } }
+          });
+        }
         body.style.maxHeight = open ? '0px' : (inner.scrollHeight + 24) + 'px';
         if (sign) sign.textContent = open ? '+' : '−';
       });
