@@ -314,8 +314,9 @@
       if (m.variant) {
         atcs.forEach(function (atc) {
           atc.setAttribute('data-variant', m.variant.id);
-          if (m.variant.available) { atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
-          else { atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
+          // Key purely off the built-in availability flag (true when inventory tracking is off).
+          if (m.variant.available) { atc.disabled = false; atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
+          else { atc.disabled = true; atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
         });
       }
     }
