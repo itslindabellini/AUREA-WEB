@@ -673,6 +673,22 @@
     });
   }
 
+  /* ---------- 9. Product gallery: thumbnail click swaps the main image ---------- */
+  function productGallery() {
+    document.querySelectorAll('.pdp-thumb').forEach(function (thumb) {
+      if (thumb.getAttribute('data-aurea-gal')) return;
+      thumb.setAttribute('data-aurea-gal', '1');
+      thumb.addEventListener('click', function () {
+        var scope = (thumb.closest && thumb.closest('.aurea-desktop, .aurea-mobile')) || document;
+        var main = scope.querySelector('.pdp-main-img');
+        var src = thumb.getAttribute('data-img');
+        if (main && src) { main.src = src; if (main.parentElement) main.parentElement.scrollTop = 0; }
+        scope.querySelectorAll('.pdp-thumb').forEach(function (t) { t.style.borderColor = 'rgb(234, 226, 214)'; });
+        thumb.style.borderColor = 'rgb(17, 17, 17)';
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -682,6 +698,7 @@
     try { quickAdd(); } catch (e) {}
     try { productPage(); } catch (e) {}
     try { productAccordion(); } catch (e) {}
+    try { productGallery(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
