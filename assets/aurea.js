@@ -354,14 +354,30 @@
       });
     });
 
-    // Reveal the sticky add-to-cart bar once the main button scrolls out of view.
-    var mainAtc = scope.querySelector('.pdp-atc');
+    // Reveal the sticky add-to-cart bar only once the shopper scrolls down to the
+    // reviews section — keep it hidden through the whole product / buy-box / accordion area.
     var stickyBar = scope.querySelector('.pdp-sticky-bar');
-    if (mainAtc && stickyBar && 'IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        var vis = entries[0].isIntersecting;
-        stickyBar.style.transform = vis ? 'translateY(120%)' : 'translateY(0)';
-      }, { threshold: 0 }).observe(mainAtc);
+    var reviews = scope.querySelector('#reviews');
+    if (stickyBar && reviews) {
+      var ticking = false;
+      var syncSticky = function () {
+        ticking = false;
+        var show = reviews.getBoundingClientRect().top <= 0;
+        stickyBar.style.transform = show ? 'translateY(0)' : 'translateY(120%)';
+      };
+      window.addEventListener('scroll', function () {
+        if (!ticking) { ticking = true; window.requestAnimationFrame(syncSticky); }
+      }, { passive: true });
+      window.addEventListener('resize', syncSticky, { passive: true });
+      syncSticky();
+    } else if (stickyBar && 'IntersectionObserver' in window) {
+      // fallback (no reviews section): reveal once the main button leaves view
+      var mainAtc = scope.querySelector('.pdp-atc');
+      if (mainAtc) {
+        new IntersectionObserver(function (entries) {
+          stickyBar.style.transform = entries[0].isIntersecting ? 'translateY(120%)' : 'translateY(0)';
+        }, { threshold: 0 }).observe(mainAtc);
+      }
     }
   }
 
