@@ -654,6 +654,25 @@
     getCart().then(function (cart) { updateBadges(cart.item_count); }).catch(function () {});
   }
 
+  /* ---------- 8. Product page accordions (Description etc.) — closed by default ---------- */
+  function productAccordion() {
+    document.querySelectorAll('.pdp-acc-body').forEach(function (body) {
+      if (body.getAttribute('data-aurea-pacc')) return;
+      body.setAttribute('data-aurea-pacc', '1');
+      var btn = body.previousElementSibling;
+      if (!btn || btn.tagName !== 'BUTTON') return;
+      var sign = null, spans = btn.querySelectorAll('span');
+      for (var i = 0; i < spans.length; i++) { if (/^[+−-]$/.test(spans[i].textContent.trim())) { sign = spans[i]; break; } }
+      var inner = body.firstElementChild || body;
+      btn.style.cursor = 'pointer';
+      btn.addEventListener('click', function () {
+        var open = body.style.maxHeight && body.style.maxHeight !== '0px';
+        body.style.maxHeight = open ? '0px' : (inner.scrollHeight + 24) + 'px';
+        if (sign) sign.textContent = open ? '+' : '−';
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -662,6 +681,7 @@
     try { restoreHovers(); } catch (e) {}
     try { quickAdd(); } catch (e) {}
     try { productPage(); } catch (e) {}
+    try { productAccordion(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
