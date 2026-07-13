@@ -238,12 +238,34 @@
     document.head.appendChild(s);
   }
 
+  /* ---------- 5. Quick Add to cart (collection cards) ---------- */
+  function quickAdd() {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-aurea-add]') : null;
+      if (!btn) return;
+      e.preventDefault(); e.stopPropagation();
+      var id = btn.getAttribute('data-aurea-add');
+      if (!id) { window.location.href = '/cart'; return; }
+      var orig = btn.textContent;
+      btn.textContent = 'Adding…';
+      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
+        .then(function (r) { if (!r.ok) throw new Error('add failed'); return r.json(); })
+        .then(function () {
+          btn.textContent = 'Added ✓';
+          document.dispatchEvent(new CustomEvent('aurea:cart-updated'));
+          setTimeout(function () { btn.textContent = orig; }, 1600);
+        })
+        .catch(function () { window.location.href = '/cart'; });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
     try { buildMobileMenu(); } catch (e) {}
     try { buildFAQ(); } catch (e) {}
     try { restoreHovers(); } catch (e) {}
+    try { quickAdd(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

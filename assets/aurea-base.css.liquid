@@ -113,3 +113,8 @@ x-dc{display:none!important}
 /* AUREA responsive desktop/mobile toggle (look-first port) */
 .aurea-mobile{display:none;}
 @media (max-width:768px){ .aurea-desktop{display:none!important;} .aurea-mobile{display:block!important;} }
+
+/* Phase 2 — product card hover: reveal 2nd image + Quick Add button */
+.aurea-page a .aurea-alt-img{transition:opacity .5s ease;}
+.aurea-page a:hover .aurea-alt-img{opacity:1 !important;}
+.aurea-page a:hover .scp5{opacity:1 !important;transform:translateY(0) !important;}
