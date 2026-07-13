@@ -730,6 +730,51 @@
     }
   }
 
+  /* ---------- 9c. Reviews carousel: arrows + mouse drag-to-scroll ---------- */
+  function reviewsCarousel() {
+    document.querySelectorAll('[aria-label="Previous"]').forEach(function (prev) {
+      var wrap = prev.parentElement;
+      if (!wrap || wrap.getAttribute('data-rev-init')) return;
+      var next = wrap.querySelector('[aria-label="Next"]');
+      var container = wrap.previousElementSibling;
+      if (!container) return;
+      var track = (container.matches && container.matches('[style*="overflow-x"]'))
+        ? container : container.querySelector('[style*="overflow-x"]');
+      if (!track) return;
+      wrap.setAttribute('data-rev-init', '1');
+
+      function page(dir) {
+        var first = track.firstElementChild;
+        var cardW = first ? first.getBoundingClientRect().width + 24 : 0;
+        var amount = Math.max(cardW, track.clientWidth * 0.8);
+        track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+      }
+      if (next) next.addEventListener('click', function () { page(1); });
+      prev.addEventListener('click', function () { page(-1); });
+
+      /* mouse drag-to-scroll (touch keeps native scrolling) */
+      var down = false, startX = 0, startLeft = 0, moved = false;
+      track.style.cursor = 'grab';
+      track.addEventListener('pointerdown', function (e) {
+        if (e.pointerType !== 'mouse') return;
+        down = true; moved = false; startX = e.clientX; startLeft = track.scrollLeft;
+        track.style.cursor = 'grabbing';
+        try { track.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      track.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        var dx = e.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        track.scrollLeft = startLeft - dx;
+      });
+      function end() { down = false; track.style.cursor = 'grab'; }
+      track.addEventListener('pointerup', end);
+      track.addEventListener('pointercancel', end);
+      /* swallow the click that ends a drag so it doesn't trigger a card link */
+      track.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -741,6 +786,7 @@
     try { productAccordion(); } catch (e) {}
     try { productGallery(); } catch (e) {}
     try { pdpStickyPin(); } catch (e) {}
+    try { reviewsCarousel(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
