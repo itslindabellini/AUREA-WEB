@@ -377,40 +377,95 @@
         '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;">Continue Shopping</button>' +
       '</div>';
     }
+    // Reservation urgency bar (15-min looping countdown, persisted like the design).
+    var RWIN = 15 * 60 * 1000;
+    function reserveEnd() {
+      var e = 0; try { e = parseInt(localStorage.getItem('aurea-reserve-end-15') || '0', 10); } catch (x) {}
+      var now = Date.now();
+      if (!e || e <= now || e - now > RWIN) { e = now + RWIN; try { localStorage.setItem('aurea-reserve-end-15', String(e)); } catch (x) {} }
+      return e;
+    }
+    function reserveDisplay() {
+      var left = Math.round((reserveEnd() - Date.now()) / 1000);
+      if (left < 0) left = 0;
+      var m = Math.floor(left / 60), s = left % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    function reserveHtml() {
+      return '<div style="display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l2.5 2"></path></svg>' +
+        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Your items are reserved for <strong class="aurea-reserve" style="font-weight:700;font-variant-numeric:tabular-nums;">' + reserveDisplay() + '</strong></span>' +
+      '</div>';
+    }
+
+    // Bundle-progress roadmap (2 / 3 / 4 items -> 15 / 20 / 25% off).
+    function roadmapHtml(count, msg) {
+      var gold = '#C7A867', dark = '#111', line = '#EAE2D6', nBg = '#F5F0EB', nFg = '#9A948C';
+      var r1 = count >= 2, r2 = count >= 3, r3 = count >= 4;
+      function dot(num, bg, fg) { return '<div style="width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:700;font-size:11px;background:' + bg + ';color:' + fg + ';">' + num + '</div>'; }
+      return '<div style="margin-bottom:22px;">' +
+        '<div style="font-family:Manrope;font-weight:700;font-size:13px;color:#111;text-align:center;margin-bottom:16px;">' + msg + '</div>' +
+        '<div style="display:flex;align-items:center;">' +
+          dot(2, r1 ? dark : nBg, r1 ? '#fff' : nFg) +
+          '<div style="flex:1;height:2px;background:' + (r1 ? dark : line) + ';"></div>' +
+          dot(3, r2 ? dark : nBg, r2 ? '#fff' : nFg) +
+          '<div style="flex:1;height:2px;background:' + (r2 ? dark : line) + ';"></div>' +
+          dot(4, r3 ? gold : nBg, r3 ? '#1A160F' : nFg) +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;margin-top:8px;font-family:Manrope;font-weight:600;font-size:10.5px;letter-spacing:.04em;color:#9A948C;">' +
+          '<span style="width:30px;text-align:center;">15%</span>' +
+          '<span style="width:30px;text-align:center;margin-left:auto;margin-right:auto;">20%</span>' +
+          '<span style="width:30px;text-align:center;">25%</span>' +
+        '</div>' +
+      '</div>';
+    }
+    function bannerHtml(pct) {
+      return '<div style="margin-bottom:20px;background:#F5F0EB;padding:16px 18px;display:flex;align-items:center;gap:12px;">' +
+        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
+        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;color:#4A4A4A;line-height:1.4;">Bundle discount applied automatically</span>' +
+      '</div>';
+    }
     function lineHtml(it, line) {
       var variant = (it.variant_title && it.variant_title !== 'Default Title') ? it.variant_title : '';
-      var priceCol = '<span style="color:#111;font-weight:600;">' + money(it.final_line_price) + '</span>';
-      if (it.original_line_price > it.final_line_price) {
-        priceCol = '<span style="color:#B0A99E;text-decoration:line-through;">' + money(it.original_line_price) + '</span> <span style="color:#B23A2E;font-weight:600;">' + money(it.final_line_price) + '</span>';
+      var priceCol = '<span style="color:#111;font-weight:600;">' + money(it.final_price) + '</span>';
+      if (it._cmp && it._cmp > it.final_price) {
+        priceCol = '<span style="color:#B0A99E;text-decoration:line-through;">' + money(it._cmp) + '</span> <span style="color:#B23A2E;font-weight:600;">' + money(it.final_price) + '</span>';
       }
-      return '<div style="display:flex;gap:16px;padding:20px 0;border-bottom:1px solid #F5F0EB;">' +
-        '<a href="' + esc(it.url) + '" style="width:74px;height:96px;flex:0 0 auto;background:#F5F0EB;overflow:hidden;display:block;">' +
+      return '<div style="display:flex;gap:16px;padding:18px 0;border-bottom:1px solid #F2EDE5;">' +
+        '<a href="' + esc(it.url) + '" style="width:78px;height:96px;flex:0 0 auto;background:#F5F0EB;overflow:hidden;display:block;">' +
           (it.image ? '<img src="' + esc(img(it.image, 200)) + '" alt="' + esc(it.product_title) + '" style="width:100%;height:100%;object-fit:cover;">' : '') +
         '</a>' +
-        '<div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;">' +
-          '<a href="' + esc(it.url) + '" style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:16px;color:#111;text-decoration:none;line-height:1.25;">' + esc(it.product_title) + '</a>' +
-          (variant ? '<div style="font-family:Manrope;font-size:12px;letter-spacing:.02em;color:#9A948C;margin-top:4px;">' + esc(variant) + '</div>' : '') +
-          '<div style="font-family:Manrope;font-size:13px;margin-top:6px;">' + priceCol + '</div>' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px;gap:12px;">' +
-            '<div style="display:inline-flex;align-items:center;border:1px solid #E4DBCE;">' +
-              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity - 1) + '" aria-label="Decrease" style="width:32px;height:32px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:16px;color:#4A4A4A;line-height:1;">–</button>' +
-              '<span style="min-width:26px;text-align:center;font-family:Manrope;font-weight:600;font-size:13px;color:#111;">' + it.quantity + '</span>' +
-              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity + 1) + '" aria-label="Increase" style="width:32px;height:32px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:16px;color:#4A4A4A;line-height:1;">+</button>' +
+        '<div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:space-between;">' +
+          '<div>' +
+            '<a href="' + esc(it.url) + '" style="font-family:Manrope;font-weight:600;font-size:14.5px;color:#111;text-decoration:none;line-height:1.3;">' + esc(it.product_title) + '</a>' +
+            (variant ? '<div style="font-family:Manrope;font-size:12px;letter-spacing:.02em;color:#9A948C;margin-top:4px;">' + esc(variant) + '</div>' : '') +
+            '<div style="display:flex;align-items:center;gap:8px;margin-top:4px;font-family:Manrope;font-size:13px;">' + priceCol + '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:12px;">' +
+            '<div style="display:inline-flex;align-items:center;border:1px solid #EAE2D6;">' +
+              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity - 1) + '" aria-label="Decrease" style="width:30px;height:30px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:15px;color:#4A4A4A;line-height:1;">–</button>' +
+              '<span style="min-width:26px;text-align:center;font-family:Manrope;font-weight:600;font-size:12.5px;color:#111;">' + it.quantity + '</span>' +
+              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity + 1) + '" aria-label="Increase" style="width:30px;height:30px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:15px;color:#4A4A4A;line-height:1;">+</button>' +
             '</div>' +
-            '<button class="aurea-qty" data-line="' + line + '" data-qty="0" style="background:none;border:none;cursor:pointer;font-family:Manrope;font-size:11.5px;letter-spacing:.04em;color:#9A948C;text-decoration:underline;text-underline-offset:3px;">Remove</button>' +
+            '<button class="aurea-qty" data-line="' + line + '" data-qty="0" style="background:none;border:none;cursor:pointer;font-family:Manrope;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9A948C;padding:0;">Remove</button>' +
           '</div>' +
         '</div>' +
       '</div>';
     }
-    function footerHtml(cart) {
-      return '<div style="flex:0 0 auto;border-top:1px solid #EFEAE2;padding:22px 30px 26px;">' +
-        '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">' +
-          '<span style="font-family:Manrope;font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;">Subtotal</span>' +
-          '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">' + money(cart.items_subtotal_price) + '</span>' +
+    function totalsHtml(cart, saleSavings) {
+      var subtotal = cart.items_subtotal_price;
+      var bundle = cart.total_discount || 0;
+      var pct = bundle > 0 && subtotal > 0 ? Math.round(bundle / (subtotal + 0) * 100) : 0;
+      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Subtotal</span><span>' + money(subtotal) + '</span></div>';
+      if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Sale savings</span><span>&minus;' + money(saleSavings) + '</span></div>';
+      if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Bundle savings (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
+      rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Total</span><span>' + money(cart.total_price) + '</span></div>';
+      return '<div style="flex:0 0 auto;padding:26px 30px 30px;border-top:1px solid #EFEAE2;">' + rows +
+        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Checkout &rarr;</button>' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
+          'Secure checkout &middot; Free shipping across Greece' +
         '</div>' +
-        '<div style="font-family:Manrope;font-weight:500;font-size:12px;color:#9A948C;margin-bottom:18px;">Shipping &amp; taxes calculated at checkout.</div>' +
-        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:18px;font-family:Manrope;font-weight:700;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:opacity .2s ease;">Checkout</button>' +
-        '<a href="/cart" style="display:block;text-align:center;margin-top:14px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-decoration:none;">View Cart</a>' +
       '</div>';
     }
 
@@ -435,14 +490,30 @@
       setTimeout(function () { inst.overlay.style.visibility = 'hidden'; }, 300);
     }
 
+    function nextTierMsg(count, pct) {
+      if (count === 1) return 'Add 1 more item to unlock 15% off';
+      if (count === 2) return 'Add 1 more item to unlock 20% off';
+      if (count === 3) return 'Add 1 more item to unlock 25% off';
+      if (count >= 4) return "You're saving " + (pct || 25) + '% on this order!';
+      return '';
+    }
     function render(inst, cart) {
       var d = inst.drawer;
       var body;
       if (!cart.item_count) {
         body = emptyHtml();
       } else {
+        var saleSavings = cart.items.reduce(function (a, it) {
+          return a + ((it._cmp && it._cmp > it.final_price) ? (it._cmp - it.final_price) * it.quantity : 0);
+        }, 0);
+        var bundlePct = (cart.total_discount > 0 && cart.items_subtotal_price > 0)
+          ? Math.round(cart.total_discount / cart.items_subtotal_price * 100) : 0;
         var items = cart.items.map(function (it, i) { return lineHtml(it, i + 1); }).join('');
-        body = '<div style="flex:1 1 0%;overflow-y:auto;padding:6px 30px 10px;">' + items + '</div>' + footerHtml(cart);
+        var scroll = '<div style="flex:1 1 0%;overflow-y:auto;padding:22px 30px;">' +
+          roadmapHtml(cart.item_count, nextTierMsg(cart.item_count, bundlePct)) +
+          (cart.total_discount > 0 ? bannerHtml(bundlePct) : '') +
+          items + '</div>';
+        body = reserveHtml() + scroll + totalsHtml(cart, saleSavings);
       }
       d.innerHTML = headerHtml(cart.item_count) + body;
 
@@ -465,11 +536,33 @@
       if (btn) btn.style.pointerEvents = 'none';
       fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ line: line, quantity: qty }) })
         .then(function (r) { return r.json(); })
+        .then(function (cart) { return enrich(cart); })
         .then(function (cart) { renderAll(cart); })
         .catch(function () { window.location.href = '/cart'; });
     }
 
-    function getCart() { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }).then(function (r) { return r.json(); }); }
+    // compare_at prices aren't in cart.js — fetch each product once and cache the map.
+    var CMP = {};
+    function enrich(cart) {
+      if (!cart.items || !cart.items.length) return Promise.resolve(cart);
+      var handles = {};
+      cart.items.forEach(function (it) { if (it.handle && !(it.handle in CMP)) handles[it.handle] = 1; });
+      var hs = Object.keys(handles);
+      return Promise.all(hs.map(function (h) {
+        return fetch('/products/' + h + '.js', { headers: { 'Accept': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (p) { CMP[h] = {}; (p.variants || []).forEach(function (v) { CMP[h][v.id] = v.compare_at_price; }); })
+          .catch(function () { CMP[h] = {}; });
+      })).then(function () {
+        cart.items.forEach(function (it) { it._cmp = (CMP[it.handle] || {})[it.id] || (CMP[it.handle] || {})[it.variant_id] || 0; });
+        return cart;
+      });
+    }
+    function getCart() {
+      return fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) { return enrich(cart); });
+    }
 
     // Count badges on the header cart triggers.
     var badges = [];
@@ -509,6 +602,12 @@
         if (vis) open(vis);
       });
     });
+
+    // Live reservation countdown — updates every open drawer's timer once a second.
+    setInterval(function () {
+      var disp = reserveDisplay();
+      document.querySelectorAll('.aurea-reserve').forEach(function (s) { s.textContent = disp; });
+    }, 1000);
 
     // Seed badge counts on load without opening anything.
     getCart().then(function (cart) { updateBadges(cart.item_count); }).catch(function () {});
