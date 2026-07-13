@@ -253,17 +253,18 @@
       if (!btn) return;
       e.preventDefault(); e.stopPropagation();
       var id = btn.getAttribute('data-aurea-add');
-      if (!id) { window.location.href = '/cart'; return; }
       var orig = btn.textContent;
+      if (!id) { btn.textContent = 'Unavailable'; setTimeout(function () { btn.textContent = orig; }, 1600); return; }
       btn.textContent = 'Adding…';
-      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
-        .then(function (r) { if (!r.ok) throw new Error('add failed'); return r.json(); })
-        .then(function () {
+      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+        .then(function (res) {
+          if (!res.ok) { btn.textContent = 'Sold Out'; setTimeout(function () { btn.textContent = orig; }, 1800); return; }
           btn.textContent = 'Added ✓';
           document.dispatchEvent(new CustomEvent('aurea:cart-updated'));
           setTimeout(function () { btn.textContent = orig; }, 1600);
         })
-        .catch(function () { window.location.href = '/cart'; });
+        .catch(function () { btn.textContent = 'Try again'; setTimeout(function () { btn.textContent = orig; }, 1800); });
     });
   }
 
@@ -336,12 +337,15 @@
         e.preventDefault();
         var m = matchVariant();
         if (!m.complete) { atc.textContent = 'Select your options'; setTimeout(paint, 1400); return; }
-        if (!m.variant || !m.variant.available) return;
-        var label = atc.textContent; atc.textContent = 'Adding…';
+        if (!m.variant) return;
+        atc.textContent = 'Adding…';
         fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
-          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-          .then(function () { atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700); })
-          .catch(function () { window.location.href = '/cart'; });
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+          .then(function (res) {
+            if (!res.ok) { atc.textContent = 'Sold Out'; setTimeout(paint, 1800); return; }
+            atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700);
+          })
+          .catch(function () { atc.textContent = 'Try again'; setTimeout(paint, 1800); });
       });
     });
 
@@ -572,7 +576,7 @@
         .then(function (r) { return r.json(); })
         .then(function (cart) { return enrich(cart); })
         .then(function (cart) { renderAll(cart); })
-        .catch(function () { window.location.href = '/cart'; });
+        .catch(function () { if (btn) btn.style.pointerEvents = ''; });
     }
 
     // compare_at prices aren't in cart.js — fetch each product once and cache the map.
