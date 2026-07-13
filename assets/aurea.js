@@ -55,6 +55,8 @@
         MENUS[label].forEach(function (item) {
           var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", item);
           link.href = itemUrl(item);
+          // own hover here; flag so the generic hover-restore pass skips it (avoids double-binding that made items stick)
+          link.setAttribute('data-aurea-hv', '1');
           link.addEventListener('mouseenter', function () { link.style.background = '#F5F0EB'; link.style.color = '#111'; });
           link.addEventListener('mouseleave', function () { link.style.background = ''; link.style.color = '#4A4A4A'; });
           card.appendChild(link);
