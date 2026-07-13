@@ -50,10 +50,10 @@
         if (host.getAttribute('data-aurea-dd')) return;
         host.setAttribute('data-aurea-dd', '1');
 
-        var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:14px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
-        var card = el('div', 'background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.12);border:1px solid #EFEAE2;border-radius:4px;padding:10px 0;min-width:190px;');
+        var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
+        var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
         MENUS[label].forEach(function (item) {
-          var link = el('a', 'display:block;padding:9px 22px;font-family:Manrope,sans-serif;font-size:13px;font-weight:500;color:#4A4A4A;white-space:nowrap;transition:background .15s,color .15s;', item);
+          var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", item);
           link.href = itemUrl(item);
           link.addEventListener('mouseenter', function () { link.style.background = '#F5F0EB'; link.style.color = '#111'; });
           link.addEventListener('mouseleave', function () { link.style.background = ''; link.style.color = '#4A4A4A'; });
