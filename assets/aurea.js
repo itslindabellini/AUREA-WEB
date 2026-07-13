@@ -290,8 +290,10 @@
     var mainImg = scope.querySelector('.pdp-main-img');
     var imgByColor = {};
     buttons.forEach(function (b) {
+      // any option button carrying a data-img is a colour swatch (language-agnostic);
+      // clicking it swaps the big product image so the choice is shown immediately.
       var src = b.getAttribute('data-img');
-      if (src && b.getAttribute('data-opt') && /color/i.test(b.getAttribute('data-opt'))) imgByColor[b.getAttribute('data-val')] = src;
+      if (src) imgByColor[b.getAttribute('data-val')] = src;
     });
 
     function matchVariant() {
