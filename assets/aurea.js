@@ -267,16 +267,31 @@
     });
   }
 
-  /* ---------- 6. Product page: variant selection + Add to Cart ---------- */
+  /* ---------- 6. Product page: variant selection + Add to Cart ----------
+   * Scope-based: the page renders both the desktop and mobile product blocks,
+   * so we wire each wrapper independently (class hooks, not shared ids). Both
+   * the main and sticky-bar Add-to-Cart feed the same side cart. */
   function productPage() {
-    var dataEl = document.getElementById('pdp-data');
-    var atc = document.getElementById('pdp-atc');
-    if (!dataEl || !atc) return;
-    var data; try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+    var dataEls = document.querySelectorAll('.pdp-data');
+    if (!dataEls.length) return;
+    Array.prototype.forEach.call(dataEls, function (dataEl) {
+      var scope = (dataEl.closest && dataEl.closest('.aurea-desktop, .aurea-mobile')) || document;
+      var data; try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+      wireScope(scope, data);
+    });
+  }
+  function wireScope(scope, data) {
     var opts = data.options || [];
     var variants = data.variants || [];
     var selected = {};
-    var buttons = Array.prototype.slice.call(document.querySelectorAll('.pdp-opt'));
+    var buttons = Array.prototype.slice.call(scope.querySelectorAll('.pdp-opt'));
+    var atcs = Array.prototype.slice.call(scope.querySelectorAll('.pdp-atc, .pdp-sticky'));
+    var mainImg = scope.querySelector('.pdp-main-img');
+    var imgByColor = {};
+    buttons.forEach(function (b) {
+      var src = b.getAttribute('data-img');
+      if (src && b.getAttribute('data-opt') && /color/i.test(b.getAttribute('data-opt'))) imgByColor[b.getAttribute('data-val')] = src;
+    });
 
     function matchVariant() {
       var complete = opts.every(function (n) { return selected[n] !== undefined; });
@@ -296,30 +311,49 @@
       });
       var m = matchVariant();
       if (m.variant) {
-        atc.setAttribute('data-variant', m.variant.id);
-        if (m.variant.available) { atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
-        else { atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
+        atcs.forEach(function (atc) {
+          atc.setAttribute('data-variant', m.variant.id);
+          if (m.variant.available) { atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
+          else { atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
+        });
       }
     }
     buttons.forEach(function (b) {
-      b.addEventListener('click', function () { selected[b.getAttribute('data-opt')] = b.getAttribute('data-val'); paint(); });
+      b.addEventListener('click', function () {
+        selected[b.getAttribute('data-opt')] = b.getAttribute('data-val');
+        var img = imgByColor[b.getAttribute('data-val')];
+        if (img && mainImg) mainImg.src = img;
+        paint();
+      });
     });
     // preselect the first available variant
     var first = variants.find(function (v) { return v.available; }) || variants[0];
     if (first) opts.forEach(function (n, i) { selected[n] = first.options[i]; });
     paint();
 
-    atc.addEventListener('click', function (e) {
-      e.preventDefault();
-      var m = matchVariant();
-      if (!m.complete) { atc.textContent = 'Select your options'; setTimeout(paint, 1400); return; }
-      if (!m.variant || !m.variant.available) return;
-      atc.textContent = 'Adding…';
-      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
-        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-        .then(function () { atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700); })
-        .catch(function () { window.location.href = '/cart'; });
+    atcs.forEach(function (atc) {
+      atc.addEventListener('click', function (e) {
+        e.preventDefault();
+        var m = matchVariant();
+        if (!m.complete) { atc.textContent = 'Select your options'; setTimeout(paint, 1400); return; }
+        if (!m.variant || !m.variant.available) return;
+        var label = atc.textContent; atc.textContent = 'Adding…';
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+          .then(function () { atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700); })
+          .catch(function () { window.location.href = '/cart'; });
+      });
     });
+
+    // Reveal the sticky add-to-cart bar once the main button scrolls out of view.
+    var mainAtc = scope.querySelector('.pdp-atc');
+    var stickyBar = scope.querySelector('.pdp-sticky-bar');
+    if (mainAtc && stickyBar && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        var vis = entries[0].isIntersecting;
+        stickyBar.style.transform = vis ? 'translateY(120%)' : 'translateY(0)';
+      }, { threshold: 0 }).observe(mainAtc);
+    }
   }
 
   /* ---------- 7. Cart drawer (functional, desktop + mobile) ---------- */
