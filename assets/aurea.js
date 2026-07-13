@@ -259,6 +259,61 @@
     });
   }
 
+  /* ---------- 6. Product page: variant selection + Add to Cart ---------- */
+  function productPage() {
+    var dataEl = document.getElementById('pdp-data');
+    var atc = document.getElementById('pdp-atc');
+    if (!dataEl || !atc) return;
+    var data; try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+    var opts = data.options || [];
+    var variants = data.variants || [];
+    var selected = {};
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.pdp-opt'));
+
+    function matchVariant() {
+      var complete = opts.every(function (n) { return selected[n] !== undefined; });
+      var v = variants.find(function (v) { return opts.every(function (n, i) { return v.options[i] === selected[n]; }); });
+      return { variant: v, complete: complete };
+    }
+    function paint() {
+      buttons.forEach(function (b) {
+        var isSel = selected[b.getAttribute('data-opt')] === b.getAttribute('data-val');
+        var sw = b.querySelector('.pdp-sw');
+        if (sw) { sw.style.borderColor = isSel ? '#111' : 'transparent'; }
+        else {
+          b.style.background = isSel ? 'rgb(110,103,94)' : 'rgb(255,255,255)';
+          b.style.color = isSel ? '#fff' : 'rgb(74,74,74)';
+          b.style.borderColor = isSel ? 'rgb(110,103,94)' : 'rgb(220,211,198)';
+        }
+      });
+      var m = matchVariant();
+      if (m.variant) {
+        atc.setAttribute('data-variant', m.variant.id);
+        if (m.variant.available) { atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer'; }
+        else { atc.textContent = 'Sold Out'; atc.style.opacity = '.5'; atc.style.cursor = 'not-allowed'; }
+      }
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () { selected[b.getAttribute('data-opt')] = b.getAttribute('data-val'); paint(); });
+    });
+    // preselect the first available variant
+    var first = variants.find(function (v) { return v.available; }) || variants[0];
+    if (first) opts.forEach(function (n, i) { selected[n] = first.options[i]; });
+    paint();
+
+    atc.addEventListener('click', function (e) {
+      e.preventDefault();
+      var m = matchVariant();
+      if (!m.complete) { atc.textContent = 'Select your options'; setTimeout(paint, 1400); return; }
+      if (!m.variant || !m.variant.available) return;
+      atc.textContent = 'Adding…';
+      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+        .then(function () { atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700); })
+        .catch(function () { window.location.href = '/cart'; });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -266,6 +321,7 @@
     try { buildFAQ(); } catch (e) {}
     try { restoreHovers(); } catch (e) {}
     try { quickAdd(); } catch (e) {}
+    try { productPage(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
