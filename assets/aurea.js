@@ -17,7 +17,7 @@
   ];
   var FAQ = [
     { q: 'Are the clothes true to size?',
-      a: 'Yes, our clothes are designed to fit true to size.\n\nTo ensure the best possible fit, we recommend checking our Size Guide on each product page before placing your order. As every style and body shape is unique, comparing your measurements with our size chart is the best way to find your perfect fit.' },
+      a: 'Yes, our clothes are designed to fit true to size.\n\nTo ensure the best possible fit, we recommend checking our Size Guide on each product page before placing your order. As every style and body is unique, comparing your measurements with our size chart is the best way to find your perfect fit.' },
     { q: 'How should I care for my clothing?',
       a: 'To keep your pieces looking their best, we recommend following the care instructions on the label.\n\nIn general, we suggest washing on a gentle cycle with cold water or hand washing when appropriate. Avoid using bleach, tumble drying on high heat, and prolonged exposure to direct sunlight, as these may affect the fabric and color over time.\n\nWith the right care, your AUREA Mykonos pieces will stay beautiful and remain a part of your wardrobe for years to come.' },
     { q: 'How long does shipping take?',
