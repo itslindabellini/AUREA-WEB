@@ -17,6 +17,7 @@
   <main id="MainContent" role="main">
     {{ content_for_layout }}
   </main>
+  <script>window.AUREA = { moneyFormat: {{ shop.money_format | json }} };</script>
   <script src="{{ 'aurea.js' | asset_url }}" defer></script>
 </body>
 </html>

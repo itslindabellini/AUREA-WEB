@@ -322,6 +322,198 @@
     });
   }
 
+  /* ---------- 7. Cart drawer (functional, desktop + mobile) ---------- */
+  function cartDrawer() {
+    var MF = (window.AUREA && window.AUREA.moneyFormat) || '€{{amount_with_comma_separator}}';
+
+    // Shopify's canonical money formatter, so prices match the storefront exactly.
+    function money(cents) {
+      if (typeof cents === 'string') cents = cents.replace('.', '');
+      var re = /\{\{\s*(\w+)\s*\}\}/;
+      function fmt(number, precision, thousands, decimal) {
+        precision = precision == null ? 2 : precision;
+        thousands = thousands || ','; decimal = decimal || '.';
+        if (isNaN(number) || number == null) return '0';
+        number = (number / 100).toFixed(precision);
+        var parts = number.split('.');
+        var whole = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands);
+        return whole + (parts[1] ? decimal + parts[1] : '');
+      }
+      var val = '', m = MF.match(re);
+      switch (m ? m[1] : 'amount') {
+        case 'amount': val = fmt(cents, 2); break;
+        case 'amount_no_decimals': val = fmt(cents, 0); break;
+        case 'amount_with_comma_separator': val = fmt(cents, 2, '.', ','); break;
+        case 'amount_no_decimals_with_comma_separator': val = fmt(cents, 0, '.', ','); break;
+        case 'amount_with_space_separator': val = fmt(cents, 2, ' ', ','); break;
+        case 'amount_with_apostrophe_separator': val = fmt(cents, 2, "'", '.'); break;
+        default: val = fmt(cents, 2);
+      }
+      return MF.replace(re, val);
+    }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function img(url, w) { if (!url) return ''; return url.replace(/(\.(?:jpg|jpeg|png|webp|gif))(\?|$)/i, '_' + w + 'x$1$2'); }
+
+    // Locate every baked "Your Bag" drawer (one per visible wrapper).
+    var drawers = Array.prototype.filter.call(
+      document.querySelectorAll('div[style*="translateX(100%)"]'),
+      function (d) { return /Your Bag/.test(d.textContent); }
+    );
+    if (!drawers.length) return;
+
+    var CLOSE_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>';
+
+    function headerHtml(count) {
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px 30px;border-bottom:1px solid #EFEAE2;flex:0 0 auto;">' +
+        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:22px;color:#111;">Your Bag <span style="font-family:Manrope;font-weight:500;font-size:14px;color:#9A948C;">(' + count + ')</span></div>' +
+        '<button class="aurea-cart-close" aria-label="Close" style="width:36px;height:36px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;">' + CLOSE_SVG + '</button>' +
+      '</div>';
+    }
+    function emptyHtml() {
+      return '<div style="flex:1 1 0%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;">' +
+        '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#C9BFB1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:22px;"><path d="M2 3h2.3l1.4 12.1a1 1 0 0 0 1 .9h9.1a1 1 0 0 0 1-.8l1.5-7.4H5.2"></path><circle cx="9" cy="20.2" r="1.35"></circle><circle cx="16.6" cy="20.2" r="1.35"></circle></svg>' +
+        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:20px;color:#111;margin-bottom:10px;">Your bag is empty</div>' +
+        '<div style="font-family:Manrope;font-weight:500;font-size:13.5px;color:#9A948C;margin-bottom:28px;">Looks like you haven\'t added anything yet.</div>' +
+        '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;">Continue Shopping</button>' +
+      '</div>';
+    }
+    function lineHtml(it, line) {
+      var variant = (it.variant_title && it.variant_title !== 'Default Title') ? it.variant_title : '';
+      var priceCol = '<span style="color:#111;font-weight:600;">' + money(it.final_line_price) + '</span>';
+      if (it.original_line_price > it.final_line_price) {
+        priceCol = '<span style="color:#B0A99E;text-decoration:line-through;">' + money(it.original_line_price) + '</span> <span style="color:#B23A2E;font-weight:600;">' + money(it.final_line_price) + '</span>';
+      }
+      return '<div style="display:flex;gap:16px;padding:20px 0;border-bottom:1px solid #F5F0EB;">' +
+        '<a href="' + esc(it.url) + '" style="width:74px;height:96px;flex:0 0 auto;background:#F5F0EB;overflow:hidden;display:block;">' +
+          (it.image ? '<img src="' + esc(img(it.image, 200)) + '" alt="' + esc(it.product_title) + '" style="width:100%;height:100%;object-fit:cover;">' : '') +
+        '</a>' +
+        '<div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;">' +
+          '<a href="' + esc(it.url) + '" style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:16px;color:#111;text-decoration:none;line-height:1.25;">' + esc(it.product_title) + '</a>' +
+          (variant ? '<div style="font-family:Manrope;font-size:12px;letter-spacing:.02em;color:#9A948C;margin-top:4px;">' + esc(variant) + '</div>' : '') +
+          '<div style="font-family:Manrope;font-size:13px;margin-top:6px;">' + priceCol + '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px;gap:12px;">' +
+            '<div style="display:inline-flex;align-items:center;border:1px solid #E4DBCE;">' +
+              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity - 1) + '" aria-label="Decrease" style="width:32px;height:32px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:16px;color:#4A4A4A;line-height:1;">–</button>' +
+              '<span style="min-width:26px;text-align:center;font-family:Manrope;font-weight:600;font-size:13px;color:#111;">' + it.quantity + '</span>' +
+              '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity + 1) + '" aria-label="Increase" style="width:32px;height:32px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:16px;color:#4A4A4A;line-height:1;">+</button>' +
+            '</div>' +
+            '<button class="aurea-qty" data-line="' + line + '" data-qty="0" style="background:none;border:none;cursor:pointer;font-family:Manrope;font-size:11.5px;letter-spacing:.04em;color:#9A948C;text-decoration:underline;text-underline-offset:3px;">Remove</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+    function footerHtml(cart) {
+      return '<div style="flex:0 0 auto;border-top:1px solid #EFEAE2;padding:22px 30px 26px;">' +
+        '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">' +
+          '<span style="font-family:Manrope;font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;">Subtotal</span>' +
+          '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">' + money(cart.items_subtotal_price) + '</span>' +
+        '</div>' +
+        '<div style="font-family:Manrope;font-weight:500;font-size:12px;color:#9A948C;margin-bottom:18px;">Shipping &amp; taxes calculated at checkout.</div>' +
+        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:18px;font-family:Manrope;font-weight:700;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:opacity .2s ease;">Checkout</button>' +
+        '<a href="/cart" style="display:block;text-align:center;margin-top:14px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-decoration:none;">View Cart</a>' +
+      '</div>';
+    }
+
+    var instances = drawers.map(function (drawer) {
+      var wrapper = (drawer.closest && drawer.closest('.aurea-desktop, .aurea-mobile')) || document.body;
+      var overlay = el('div', 'position:fixed;inset:0;background:rgba(20,18,16,.4);z-index:1000;opacity:0;visibility:hidden;transition:opacity .3s ease;');
+      document.body.appendChild(overlay);
+      var inst = { drawer: drawer, overlay: overlay, wrapper: wrapper };
+      overlay.addEventListener('click', function () { close(inst); });
+      return inst;
+    });
+
+    function open(inst) {
+      inst.overlay.style.visibility = 'visible'; inst.overlay.style.opacity = '1';
+      inst.drawer.style.transform = 'translateX(0)';
+      document.body.style.overflow = 'hidden';
+    }
+    function close(inst) {
+      inst.drawer.style.transform = 'translateX(100%)';
+      inst.overlay.style.opacity = '0';
+      document.body.style.overflow = '';
+      setTimeout(function () { inst.overlay.style.visibility = 'hidden'; }, 300);
+    }
+
+    function render(inst, cart) {
+      var d = inst.drawer;
+      var body;
+      if (!cart.item_count) {
+        body = emptyHtml();
+      } else {
+        var items = cart.items.map(function (it, i) { return lineHtml(it, i + 1); }).join('');
+        body = '<div style="flex:1 1 0%;overflow-y:auto;padding:6px 30px 10px;">' + items + '</div>' + footerHtml(cart);
+      }
+      d.innerHTML = headerHtml(cart.item_count) + body;
+
+      var closeBtn = d.querySelector('.aurea-cart-close');
+      if (closeBtn) closeBtn.addEventListener('click', function () { close(inst); });
+      var cont = d.querySelector('.aurea-cart-continue');
+      if (cont) cont.addEventListener('click', function () { close(inst); });
+      var co = d.querySelector('.aurea-cart-checkout');
+      if (co) co.addEventListener('click', function () { window.location.href = '/checkout'; });
+      d.querySelectorAll('.aurea-qty').forEach(function (b) {
+        b.addEventListener('click', function () {
+          changeLine(parseInt(b.getAttribute('data-line'), 10), parseInt(b.getAttribute('data-qty'), 10), b);
+        });
+      });
+    }
+
+    function renderAll(cart) { instances.forEach(function (inst) { render(inst, cart); }); updateBadges(cart.item_count); }
+
+    function changeLine(line, qty, btn) {
+      if (btn) btn.style.pointerEvents = 'none';
+      fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ line: line, quantity: qty }) })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) { renderAll(cart); })
+        .catch(function () { window.location.href = '/cart'; });
+    }
+
+    function getCart() { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }).then(function (r) { return r.json(); }); }
+
+    // Count badges on the header cart triggers.
+    var badges = [];
+    function findTrigger(inst) {
+      var w = inst.wrapper;
+      var t = w.querySelector('[aria-label="Cart"]');
+      if (t) return t;
+      var svgs = w.querySelectorAll('svg');
+      for (var i = 0; i < svgs.length; i++) {
+        var p = svgs[i].querySelector('path');
+        if (p && /^M2 3h2\.3/.test(p.getAttribute('d') || '') && !inst.drawer.contains(svgs[i])) {
+          var c = svgs[i].closest('span,button,a');
+          if (c && !inst.drawer.contains(c)) return c;
+        }
+      }
+      return null;
+    }
+    instances.forEach(function (inst) {
+      var trig = findTrigger(inst);
+      if (!trig) return;
+      trig.style.cursor = 'pointer';
+      if (getComputedStyle(trig).position === 'static') trig.style.position = 'relative';
+      trig.addEventListener('click', function (e) { e.preventDefault(); getCart().then(function (c) { render(inst, c); updateBadges(c.item_count); open(inst); }); });
+      var badge = el('span', 'position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;background:#B23A2E;color:#fff;border-radius:9px;font-family:Manrope;font-weight:700;font-size:10px;line-height:17px;text-align:center;display:none;');
+      trig.appendChild(badge);
+      badges.push(badge);
+    });
+    function updateBadges(count) {
+      badges.forEach(function (b) { b.textContent = count; b.style.display = count > 0 ? 'block' : 'none'; });
+    }
+
+    // When something is added, refresh, update counts, and reveal the visible drawer.
+    document.addEventListener('aurea:cart-updated', function () {
+      getCart().then(function (cart) {
+        renderAll(cart);
+        var vis = instances.filter(function (inst) { return inst.wrapper === document.body || inst.wrapper.offsetParent !== null; })[0] || instances[0];
+        if (vis) open(vis);
+      });
+    });
+
+    // Seed badge counts on load without opening anything.
+    getCart().then(function (cart) { updateBadges(cart.item_count); }).catch(function () {});
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -330,6 +522,7 @@
     try { restoreHovers(); } catch (e) {}
     try { quickAdd(); } catch (e) {}
     try { productPage(); } catch (e) {}
+    try { cartDrawer(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
