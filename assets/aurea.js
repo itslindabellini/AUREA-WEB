@@ -28,7 +28,14 @@
 
   // For now every category/sub-item points at the full catalog; phase two maps
   // these to real collection handles once collections exist.
-  function itemUrl() { return '/collections/all'; }
+  // Shopify-style handle: lowercase, non-alphanumerics -> hyphens
+  function handleize(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+  // "Shop All" -> the parent category collection; other items -> their own collection
+  function itemUrl(category, item) {
+    if (item === 'Shop All') return '/collections/' + handleize(category);
+    return '/collections/' + handleize(item);
+  }
+  function catUrl(category) { return '/collections/' + handleize(category); }
 
   function el(tag, css, text) {
     var e = document.createElement(tag);
@@ -49,12 +56,13 @@
         if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
         if (host.getAttribute('data-aurea-dd')) return;
         host.setAttribute('data-aurea-dd', '1');
+        a.href = catUrl(label); // the category label links to its collection
 
         var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
         var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
         MENUS[label].forEach(function (item) {
           var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", item);
-          link.href = itemUrl(item);
+          link.href = itemUrl(label, item);
           // own hover here; flag so the generic hover-restore pass skips it (avoids double-binding that made items stick)
           link.setAttribute('data-aurea-hv', '1');
           link.addEventListener('mouseenter', function () { link.style.background = '#F5F0EB'; link.style.color = '#111'; });
@@ -94,7 +102,7 @@
 
     var catHtml = ORDER.map(function (cat) {
       var subs = MENUS[cat].map(function (item) {
-        return '<a href="' + itemUrl(item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + item + '</a>';
+        return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + item + '</a>';
       }).join('');
       return '<div style="border-bottom:1px solid #F5F0EB;">' +
         '<button class="aurea-mm-cat" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;padding:15px 4px;font-family:\'Manrope\',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-align:left;">' +
