@@ -190,17 +190,49 @@
     });
   }
 
-  /* ---------- 4. Site-wide hover polish ---------- */
+  /* ---------- 4. Restore hover animations ----------
+   * The design's hover end-states (style-hover) were dropped in the static
+   * port, but the CSS transitions survived. Re-attach each hover by matching
+   * the element's transition to its original hover — Shop-by-Collection cards,
+   * CTA lifts/fills, product/category cards, etc. */
+  function restoreHovers() {
+    // key = transitionProperty | transitionDuration  (reliable across browsers)
+    var MAP = {
+      'transform,filter|.55s,.55s': 'transform:scale(1.012);filter:brightness(.93)',
+      'transform|.45s': 'transform:translateY(-4px)',
+      'transform,box-shadow|.45s,.45s': 'transform:scale(1.03);box-shadow:0 22px 46px rgba(20,18,16,.14)',
+      'transform,box-shadow|.25s,.25s': 'transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.28)',
+      'transform,box-shadow|.2s,.2s': 'transform:translateY(-4px);box-shadow:0 12px 26px rgba(0,0,0,.14)',
+      'background,color|.15s,.15s': 'background:#F5F0EB;color:#111',
+      'background|.25s': 'background:rgba(255,255,255,.06)',
+      'opacity|.4s': 'opacity:1'
+    };
+    var norm = function (t) { return (t || '').toLowerCase().replace(/\s+/g, '').replace(/(^|[^0-9])0\./g, '$1.'); };
+    var isLight = function (c) { var m = (c || '').match(/\d+/g); if (!m) return false; return (0.2126 * +m[0] + 0.7152 * +m[1] + 0.0722 * +m[2]) > 140; };
+
+    document.querySelectorAll('.aurea-page [style*="transition"]').forEach(function (el) {
+      if (el.getAttribute('data-aurea-hv')) return;
+      var t = norm(el.style.transitionProperty) + '|' + norm(el.style.transitionDuration);
+      var hov = MAP[t];
+      if (!hov && t === 'color|.2s') hov = isLight(getComputedStyle(el).color) ? 'color:#fff' : 'color:#111';
+      if (!hov) return;
+      el.setAttribute('data-aurea-hv', '1');
+      var decls = hov.split(';').filter(Boolean).map(function (d) { var i = d.indexOf(':'); return [d.slice(0, i).trim(), d.slice(i + 1).trim()]; });
+      var saved = null;
+      el.addEventListener('mouseenter', function () {
+        saved = decls.map(function (d) { return el.style.getPropertyValue(d[0]); });
+        decls.forEach(function (d) { el.style.setProperty(d[0], d[1]); });
+      });
+      el.addEventListener('mouseleave', function () {
+        if (!saved) return;
+        decls.forEach(function (d, i) { if (saved[i]) el.style.setProperty(d[0], saved[i]); else el.style.removeProperty(d[0]); });
+      });
+    });
+  }
+
   function hoverPolish() {
     var s = document.createElement('style');
-    s.textContent =
-      '.aurea-page a{transition:color .2s ease,opacity .2s ease;}' +
-      '.aurea-page button{transition:opacity .2s ease,background .2s ease,color .2s ease;}' +
-      '.aurea-page button:hover{opacity:.82;}' +
-      '.aurea-desktop [data-aurea-dd]>a:hover{color:#111 !important;}' +
-      /* gentle image zoom on product/collection/category cards */
-      '.aurea-page a img{transition:transform .5s ease;}' +
-      '.aurea-page a:hover>img,.aurea-page a:hover img{transform:scale(1.04);}';
+    s.textContent = '.aurea-desktop [data-aurea-dd]>a:hover{color:#111 !important;}';
     document.head.appendChild(s);
   }
 
@@ -209,6 +241,7 @@
     try { buildDropdowns(); } catch (e) {}
     try { buildMobileMenu(); } catch (e) {}
     try { buildFAQ(); } catch (e) {}
+    try { restoreHovers(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
