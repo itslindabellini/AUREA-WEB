@@ -689,6 +689,33 @@
     });
   }
 
+  /* ---------- 9b. Product gallery bottom-pin (desktop) ----------
+     The left image is intentionally taller than the viewport. CSS sticky
+     with a `bottom` inset never pins a taller-than-viewport element, so we
+     use sticky-top with a negative offset: top = viewportHeight - galleryHeight.
+     That makes the image scroll normally until its bottom reaches the viewport
+     bottom, pin there while the description scrolls past, then release when the
+     column (track) bottom is reached — no white space beneath the image. */
+  function pdpStickyPin() {
+    var el = document.querySelector('.pdp-gallery-sticky');
+    if (!el) return;
+    function update() {
+      var top = window.innerHeight - el.offsetHeight;
+      if (top > 24) top = 24; /* short gallery: pin near top instead */
+      el.style.top = top + 'px';
+    }
+    update();
+    window.addEventListener('resize', update, { passive: true });
+    var img = el.querySelector('.pdp-main-img');
+    if (img) {
+      if (img.complete) update();
+      img.addEventListener('load', update);
+    }
+    if (window.ResizeObserver) {
+      try { new ResizeObserver(update).observe(el); } catch (e) {}
+    }
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -699,6 +726,7 @@
     try { productPage(); } catch (e) {}
     try { productAccordion(); } catch (e) {}
     try { productGallery(); } catch (e) {}
+    try { pdpStickyPin(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
