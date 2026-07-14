@@ -7,8 +7,9 @@
   var MENUS = {
     'Summer Clothes': ['Shop All', 'Dresses', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
     'Footwear':       ['Shop All', 'Sneakers', 'Heels', 'Flats', 'Boots', 'Sandals'],
-    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', 'Sunglasses'],
+    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
+    'Accessories':    ['Shop All', 'Sunglasses'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans']
   };
   var TOP_LINKS = [
@@ -97,7 +98,7 @@
     btn.setAttribute('data-aurea-mm', '1');
 
     // mobile category order differs from desktop: summer, winter, footwear, jewelry, bags
-    var ORDER = ['Summer Clothes', 'Winter Clothes', 'Footwear', 'Jewelry', 'Bags'];
+    var ORDER = ['Summer Clothes', 'Winter Clothes', 'Footwear', 'Jewelry', 'Bags', 'Accessories'];
     var LINK = "padding:15px 4px;font-family:'Manrope',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-decoration:none;display:block;";
 
     var catHtml = ORDER.map(function (cat) {
