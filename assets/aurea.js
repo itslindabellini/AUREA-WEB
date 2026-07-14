@@ -898,6 +898,24 @@
     });
   }
 
+  /* ---------- 9f. Product recommendations: shuffle + limit (different each visit) ---------- */
+  function productReco() {
+    document.querySelectorAll('.pdp-reco').forEach(function (grid) {
+      if (grid.getAttribute('data-reco-init')) return;
+      grid.setAttribute('data-reco-init', '1');
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.pdp-reco-card'));
+      for (var i = cards.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+      }
+      var SHOW = 4;
+      cards.forEach(function (c, idx) {
+        if (idx < SHOW) { c.style.display = ''; grid.appendChild(c); }
+        else { c.style.display = 'none'; }
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -912,6 +930,7 @@
     try { reviewsCarousel(); } catch (e) {}
     try { collectionFilters(); } catch (e) {}
     try { sizeChart(); } catch (e) {}
+    try { productReco(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
