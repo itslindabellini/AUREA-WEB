@@ -849,6 +849,24 @@
     });
   }
 
+  /* ---------- 9d. Collection filter dropdown (Color) ---------- */
+  function collectionFilters() {
+    document.querySelectorAll('.aurea-filter-btn').forEach(function (btn) {
+      if (btn.getAttribute('data-af-init')) return;
+      btn.setAttribute('data-af-init', '1');
+      var wrap = btn.closest('.aurea-filter') || btn.parentElement;
+      var menu = wrap ? wrap.querySelector('.aurea-filter-menu') : null;
+      if (!menu) return;
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+      });
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) menu.style.display = 'none';
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -861,6 +879,7 @@
     try { productGallery(); } catch (e) {}
     try { pdpStickyPin(); } catch (e) {}
     try { reviewsCarousel(); } catch (e) {}
+    try { collectionFilters(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
