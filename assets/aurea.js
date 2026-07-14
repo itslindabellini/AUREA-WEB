@@ -868,6 +868,33 @@
     });
   }
 
+  /* ---------- 9e. Size chart modal (product page) ---------- */
+  function sizeChart() {
+    document.querySelectorAll('.pdp-sizechart').forEach(function (btn) {
+      if (btn.getAttribute('data-sc-init')) return;
+      btn.setAttribute('data-sc-init', '1');
+      var scope = (btn.closest && btn.closest('.aurea-desktop, .aurea-mobile')) || document;
+      var modal = scope.querySelector('.pdp-sizechart-modal');
+      if (!modal) return;
+      function open() { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+      function close() { modal.style.display = 'none'; document.body.style.overflow = ''; }
+      btn.addEventListener('click', open);
+      modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+      var x = modal.querySelector('.pdp-sizechart-close');
+      if (x) x.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.style.display === 'flex') close(); });
+      modal.querySelectorAll('.pdp-sc-unit').forEach(function (u) {
+        u.addEventListener('click', function () {
+          var unit = u.getAttribute('data-unit');
+          modal.querySelectorAll('.pdp-sc-unit').forEach(function (o) { o.style.color = (o === u) ? '#111' : '#C9BFB0'; });
+          modal.querySelectorAll('[data-cm]').forEach(function (cell) {
+            cell.textContent = (unit === 'in') ? cell.getAttribute('data-in') : cell.getAttribute('data-cm');
+          });
+        });
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -881,6 +908,7 @@
     try { pdpStickyPin(); } catch (e) {}
     try { reviewsCarousel(); } catch (e) {}
     try { collectionFilters(); } catch (e) {}
+    try { sizeChart(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
