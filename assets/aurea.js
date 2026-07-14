@@ -5,7 +5,7 @@
   'use strict';
 
   var MENUS = {
-    'Summer Clothes': ['Shop All', 'Dresses', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
+    'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
     'Footwear':       ['Shop All', 'Sneakers', 'Heels', 'Flats', 'Boots', 'Sandals'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
