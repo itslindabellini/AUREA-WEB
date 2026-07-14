@@ -10,7 +10,7 @@
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
     'Accessories':    ['Shop All', 'Sunglasses'],
-    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans']
+    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants']
   };
   var TOP_LINKS = [
     ['Home', '/'], ['About Us', '/pages/about-us'],
@@ -33,6 +33,9 @@
   function handleize(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   // "Shop All" -> the parent category collection; other items -> their own collection
   function itemUrl(category, item) {
+    // "Pants" appears under both Summer Clothes (/collections/pants) and Winter
+    // Clothes; the winter one points at its own collection instead.
+    if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
     if (item === 'Shop All') return '/collections/' + handleize(category);
     return '/collections/' + handleize(item);
   }
