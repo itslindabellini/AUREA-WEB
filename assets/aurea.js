@@ -932,6 +932,34 @@
     });
   }
 
+  /* ---------- 9h. Collection "Load More": progressive reveal of the shuffled grid ---------- */
+  function collectionLoadMore() {
+    document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
+      if (grid.getAttribute('data-lm')) return;
+      grid.setAttribute('data-lm', '1');
+      // the Load More button (.scp6) lives in a sibling wrapper after the grid
+      var btn = null, sib = grid.nextElementSibling;
+      while (sib && !btn) {
+        btn = (sib.matches && sib.matches('.scp6')) ? sib : (sib.querySelector ? sib.querySelector('.scp6') : null);
+        sib = sib.nextElementSibling;
+      }
+      var cards = Array.prototype.slice.call(grid.children).filter(function (c) { return c.tagName === 'A'; });
+      var wrap = btn ? btn.parentElement : null;
+      var INITIAL = 16, STEP = 12, shown = 0;
+      function apply() {
+        cards.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
+        if (wrap) wrap.style.display = (shown >= cards.length) ? 'none' : '';
+      }
+      shown = Math.min(INITIAL, cards.length);
+      apply();
+      if (btn) btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        shown = Math.min(shown + STEP, cards.length);
+        apply();
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -948,6 +976,7 @@
     try { sizeChart(); } catch (e) {}
     try { productReco(); } catch (e) {}
     try { collectionShuffle(); } catch (e) {}
+    try { collectionLoadMore(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
