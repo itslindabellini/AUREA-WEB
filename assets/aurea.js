@@ -10,7 +10,7 @@
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
     'Accessories':    ['Shop All', 'Sunglasses'],
-    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants']
+    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
   var TOP_LINKS = [
     ['Home', '/'], ['About Us', '/pages/about-us'],
@@ -36,6 +36,7 @@
     // "Pants" appears under both Summer Clothes (/collections/pants) and Winter
     // Clothes; the winter one points at its own collection instead.
     if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
+    if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
     if (item === 'Shop All') return '/collections/' + handleize(category);
     return '/collections/' + handleize(item);
   }
