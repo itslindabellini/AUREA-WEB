@@ -917,27 +917,14 @@
     });
   }
 
-  /* ---------- 9g. Collection grid: random order (mix of everything, different each visit) ---------- */
-  function collectionShuffle() {
-    document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
-      if (grid.getAttribute('data-shuf')) return;
-      grid.setAttribute('data-shuf', '1');
-      var items = Array.prototype.slice.call(grid.children);
-      if (items.length < 2) return;
-      for (var i = items.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var t = items[i]; items[i] = items[j]; items[j] = t;
-      }
-      items.forEach(function (c) { grid.appendChild(c); });
-    });
-  }
-
-  /* ---------- 9h. Collection "Load More": reveal loaded cards, then AJAX-fetch the next page ----------
-     The collection is paginated server-side (48 per page). We reveal 6 rows initially and 4 rows per
-     click; when the click would run past the cards already in the DOM and Shopify says there is another
-     page (data-next on the button), we fetch that page, shuffle its cards, append them hidden, and keep
-     revealing. This lets a 400-product collection load ALL of its products, page by page. */
-  function collectionLoadMore() {
+  /* ---------- 9g. Collection grid: full random mix of EVERYTHING, different each visit ----------
+     The collection is paginated server-side (48/page) so the first paint stays light. To show a true
+     mix of every category (dresses, sets, skirts, swimwear, …) rather than upload order, the visible
+     grid then background-loads ALL remaining pages, appends them, and does a single global Fisher-Yates
+     shuffle across the whole set — so within ~1s the first screen upgrades from a within-page mix to a
+     mix of the entire collection. Load More then reveals 4 rows at a time from that global mix.
+     A hidden grid (the inactive desktop/mobile variant) falls back to on-demand per-click fetching. */
+  function collectionGrid() {
     document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
       if (grid.getAttribute('data-lm')) return;
       grid.setAttribute('data-lm', '1');
@@ -955,17 +942,9 @@
       if (m) { var rep = m[1].match(/repeat\(\s*(\d+)/); cols = rep ? parseInt(rep[1], 10) : m[1].trim().split(/\s+/).length; }
       if (!cols || cols < 1) cols = 4;
       var INITIAL = 6 * cols, STEP = 4 * cols, shown = 0, loading = false;
-      // which page container to read from a fetched document (desktop vs mobile grid)
       var scope = grid.closest('.aurea-mobile') ? '.aurea-mobile' : '.aurea-desktop';
-
-      function nextUrl() { return (btn.getAttribute('data-next') || '').trim(); }
-
-      function apply() {
-        var cs = cards();
-        cs.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
-        // keep the button while any card is still hidden OR another page remains to fetch
-        wrap.style.display = (shown >= cs.length && !nextUrl()) ? 'none' : '';
-      }
+      var pages = parseInt(btn.getAttribute('data-pages') || '1', 10) || 1;
+      var firstNext = (btn.getAttribute('data-next') || '').trim();
 
       function shuffle(nodes) {
         for (var i = nodes.length - 1; i > 0; i--) {
@@ -974,52 +953,95 @@
         }
         return nodes;
       }
-
-      function fetchNext(done) {
-        var url = nextUrl();
-        if (!url || loading) { done(false); return; }
-        loading = true;
-        var label = btn.textContent;
-        btn.textContent = 'Loading…'; btn.style.opacity = '0.6';
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-          .then(function (r) { return r.text(); })
-          .then(function (html) {
-            var doc = new DOMParser().parseFromString(html, 'text/html');
-            var srcGrid = doc.querySelector(scope + ' .aurea-shuffle');
-            var count = 0;
-            if (srcGrid) {
-              var incoming = Array.prototype.slice.call(srcGrid.children).filter(function (c) { return c.tagName === 'A'; });
-              shuffle(incoming).forEach(function (c) {
-                var node = document.importNode(c, true);
-                node.style.display = 'none';
-                grid.appendChild(node);
-                count++;
-              });
-            }
-            // advance (or clear) the next-page pointer for subsequent clicks
-            var srcBtn = doc.querySelector(scope + ' .scp6');
-            btn.setAttribute('data-next', srcBtn ? (srcBtn.getAttribute('data-next') || '') : '');
-            btn.textContent = label; btn.style.opacity = '';
-            loading = false;
-            done(count > 0);
-          })
-          .catch(function () { btn.textContent = label; btn.style.opacity = ''; loading = false; done(false); });
+      function nextUrl() { return (btn.getAttribute('data-next') || '').trim(); }
+      function apply() {
+        var cs = cards();
+        cs.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
+        wrap.style.display = (shown >= cs.length && !nextUrl()) ? 'none' : '';
       }
+      function relayout(nodes) { nodes.forEach(function (c) { grid.appendChild(c); }); }
 
+      // instant: shuffle the first page so the initial screen is already mixed, then reveal
+      shuffle(cards());  // reorders the DOM children in place via the appendChild below
+      relayout(cards());
       shown = Math.min(INITIAL, cards().length);
       apply();
 
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        if (loading) return;
-        var target = shown + STEP;
-        if (target > cards().length && nextUrl()) {
-          fetchNext(function () { shown = Math.min(target, cards().length); apply(); });
-        } else {
-          shown = Math.min(target, cards().length);
-          apply();
+      // build the URL for page N from the "next" URL, preserving any active filter params
+      function pageUrl(n) {
+        var u = firstNext;
+        if (/[?&]page=\d+/.test(u)) return u.replace(/([?&])page=\d+/, '$1page=' + n);
+        return u + (u.indexOf('?') > -1 ? '&' : '?') + 'page=' + n;
+      }
+      function extractCards(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var g = doc.querySelector(scope + ' .aurea-shuffle');
+        if (!g) return [];
+        return Array.prototype.slice.call(g.children)
+          .filter(function (c) { return c.tagName === 'A'; })
+          .map(function (c) { var n = document.importNode(c, true); n.style.display = 'none'; return n; });
+      }
+
+      var visible = grid.offsetParent !== null;
+      if (visible && pages > 1 && firstNext) {
+        // ---- primary path: load every remaining page, then GLOBAL shuffle across all of them ----
+        var reqs = [];
+        for (var n = 2; n <= pages; n++) {
+          reqs.push(fetch(pageUrl(n), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.text(); }).then(extractCards).catch(function () { return []; }));
         }
-      });
+        Promise.all(reqs).then(function (lists) {
+          var added = 0;
+          lists.forEach(function (list) { list.forEach(function (c) { grid.appendChild(c); added++; }); });
+          if (!added) return;
+          btn.setAttribute('data-next', '');  // everything is now in the DOM
+          // fade, globally shuffle the whole grid, re-reveal the same number of rows from the full mix
+          grid.style.transition = 'opacity .22s ease';
+          grid.style.opacity = '0';
+          setTimeout(function () {
+            relayout(shuffle(cards()));
+            apply();
+            grid.style.opacity = '1';
+          }, 180);
+        });
+        // Load More is now a pure reveal (all cards are local)
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          shown = Math.min(shown + STEP, cards().length);
+          apply();
+        });
+      } else {
+        // ---- fallback path (hidden grid or single page): reveal, fetching the next page on demand ----
+        function fetchNext(done) {
+          var url = nextUrl();
+          if (!url || loading) { done(false); return; }
+          loading = true;
+          var label = btn.textContent;
+          btn.textContent = 'Loading…'; btn.style.opacity = '0.6';
+          fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.text(); })
+            .then(function (html) {
+              extractCards(html).forEach(function (c) { grid.appendChild(c); });
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              var srcBtn = doc.querySelector(scope + ' .scp6');
+              btn.setAttribute('data-next', srcBtn ? (srcBtn.getAttribute('data-next') || '') : '');
+              btn.textContent = label; btn.style.opacity = '';
+              loading = false; done(true);
+            })
+            .catch(function () { btn.textContent = label; btn.style.opacity = ''; loading = false; done(false); });
+        }
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (loading) return;
+          var target = shown + STEP;
+          if (target > cards().length && nextUrl()) {
+            fetchNext(function () { shown = Math.min(target, cards().length); apply(); });
+          } else {
+            shown = Math.min(target, cards().length);
+            apply();
+          }
+        });
+      }
     });
   }
 
@@ -1038,8 +1060,7 @@
     try { collectionFilters(); } catch (e) {}
     try { sizeChart(); } catch (e) {}
     try { productReco(); } catch (e) {}
-    try { collectionShuffle(); } catch (e) {}
-    try { collectionLoadMore(); } catch (e) {}
+    try { collectionGrid(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
