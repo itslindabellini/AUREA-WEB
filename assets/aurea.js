@@ -917,6 +917,21 @@
     });
   }
 
+  /* ---------- 9g. Collection grid: random order (mix of everything, different each visit) ---------- */
+  function collectionShuffle() {
+    document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
+      if (grid.getAttribute('data-shuf')) return;
+      grid.setAttribute('data-shuf', '1');
+      var items = Array.prototype.slice.call(grid.children);
+      if (items.length < 2) return;
+      for (var i = items.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = items[i]; items[i] = items[j]; items[j] = t;
+      }
+      items.forEach(function (c) { grid.appendChild(c); });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
@@ -932,6 +947,7 @@
     try { collectionFilters(); } catch (e) {}
     try { sizeChart(); } catch (e) {}
     try { productReco(); } catch (e) {}
+    try { collectionShuffle(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
   }
 
