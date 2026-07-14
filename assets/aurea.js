@@ -945,7 +945,11 @@
       }
       var cards = Array.prototype.slice.call(grid.children).filter(function (c) { return c.tagName === 'A'; });
       var wrap = btn ? btn.parentElement : null;
-      var INITIAL = 16, STEP = 12, shown = 0;
+      // rows -> products, based on this grid's column count (desktop 4, mobile 2)
+      var cols = 4, st = grid.getAttribute('style') || '', m = st.match(/grid-template-columns:\s*([^;]+)/);
+      if (m) { var rep = m[1].match(/repeat\(\s*(\d+)/); cols = rep ? parseInt(rep[1], 10) : m[1].trim().split(/\s+/).length; }
+      if (!cols || cols < 1) cols = 4;
+      var INITIAL = 6 * cols, STEP = 4 * cols, shown = 0;
       function apply() {
         cards.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
         if (wrap) wrap.style.display = (shown >= cards.length) ? 'none' : '';
