@@ -932,7 +932,11 @@
     });
   }
 
-  /* ---------- 9h. Collection "Load More": progressive reveal of the shuffled grid ---------- */
+  /* ---------- 9h. Collection "Load More": reveal loaded cards, then AJAX-fetch the next page ----------
+     The collection is paginated server-side (48 per page). We reveal 6 rows initially and 4 rows per
+     click; when the click would run past the cards already in the DOM and Shopify says there is another
+     page (data-next on the button), we fetch that page, shuffle its cards, append them hidden, and keep
+     revealing. This lets a 400-product collection load ALL of its products, page by page. */
   function collectionLoadMore() {
     document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
       if (grid.getAttribute('data-lm')) return;
@@ -943,23 +947,78 @@
         btn = (sib.matches && sib.matches('.scp6')) ? sib : (sib.querySelector ? sib.querySelector('.scp6') : null);
         sib = sib.nextElementSibling;
       }
-      var cards = Array.prototype.slice.call(grid.children).filter(function (c) { return c.tagName === 'A'; });
-      var wrap = btn ? btn.parentElement : null;
+      if (!btn) return;
+      var wrap = btn.parentElement;
+      function cards() { return Array.prototype.slice.call(grid.children).filter(function (c) { return c.tagName === 'A'; }); }
       // rows -> products, based on this grid's column count (desktop 4, mobile 2)
       var cols = 4, st = grid.getAttribute('style') || '', m = st.match(/grid-template-columns:\s*([^;]+)/);
       if (m) { var rep = m[1].match(/repeat\(\s*(\d+)/); cols = rep ? parseInt(rep[1], 10) : m[1].trim().split(/\s+/).length; }
       if (!cols || cols < 1) cols = 4;
-      var INITIAL = 6 * cols, STEP = 4 * cols, shown = 0;
+      var INITIAL = 6 * cols, STEP = 4 * cols, shown = 0, loading = false;
+      // which page container to read from a fetched document (desktop vs mobile grid)
+      var scope = grid.closest('.aurea-mobile') ? '.aurea-mobile' : '.aurea-desktop';
+
+      function nextUrl() { return (btn.getAttribute('data-next') || '').trim(); }
+
       function apply() {
-        cards.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
-        if (wrap) wrap.style.display = (shown >= cards.length) ? 'none' : '';
+        var cs = cards();
+        cs.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
+        // keep the button while any card is still hidden OR another page remains to fetch
+        wrap.style.display = (shown >= cs.length && !nextUrl()) ? 'none' : '';
       }
-      shown = Math.min(INITIAL, cards.length);
+
+      function shuffle(nodes) {
+        for (var i = nodes.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+        }
+        return nodes;
+      }
+
+      function fetchNext(done) {
+        var url = nextUrl();
+        if (!url || loading) { done(false); return; }
+        loading = true;
+        var label = btn.textContent;
+        btn.textContent = 'Loading…'; btn.style.opacity = '0.6';
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(function (r) { return r.text(); })
+          .then(function (html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var srcGrid = doc.querySelector(scope + ' .aurea-shuffle');
+            var count = 0;
+            if (srcGrid) {
+              var incoming = Array.prototype.slice.call(srcGrid.children).filter(function (c) { return c.tagName === 'A'; });
+              shuffle(incoming).forEach(function (c) {
+                var node = document.importNode(c, true);
+                node.style.display = 'none';
+                grid.appendChild(node);
+                count++;
+              });
+            }
+            // advance (or clear) the next-page pointer for subsequent clicks
+            var srcBtn = doc.querySelector(scope + ' .scp6');
+            btn.setAttribute('data-next', srcBtn ? (srcBtn.getAttribute('data-next') || '') : '');
+            btn.textContent = label; btn.style.opacity = '';
+            loading = false;
+            done(count > 0);
+          })
+          .catch(function () { btn.textContent = label; btn.style.opacity = ''; loading = false; done(false); });
+      }
+
+      shown = Math.min(INITIAL, cards().length);
       apply();
-      if (btn) btn.addEventListener('click', function (e) {
+
+      btn.addEventListener('click', function (e) {
         e.preventDefault();
-        shown = Math.min(shown + STEP, cards.length);
-        apply();
+        if (loading) return;
+        var target = shown + STEP;
+        if (target > cards().length && nextUrl()) {
+          fetchNext(function () { shown = Math.min(target, cards().length); apply(); });
+        } else {
+          shown = Math.min(target, cards().length);
+          apply();
+        }
       });
     });
   }

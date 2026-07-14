@@ -1,6 +1,8 @@
 {%- comment -%} AUREA collection — generated from Claude design, look-first port {%- endcomment -%}
-<div class="aurea-page aurea-desktop">{% render 'aurea-collection-desktop' %}</div>
-<div class="aurea-page aurea-mobile">{% render 'aurea-collection-mobile' %}</div>
+{%- paginate collection.products by 48 -%}
+<div class="aurea-page aurea-desktop">{% render 'aurea-collection-desktop', products: collection.products, paginate: paginate %}</div>
+<div class="aurea-page aurea-mobile">{% render 'aurea-collection-mobile', products: collection.products, paginate: paginate %}</div>
+{%- endpaginate -%}
 {% schema %}
 {
   "name": "AUREA collection",
