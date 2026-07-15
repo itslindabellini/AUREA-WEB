@@ -12,6 +12,8 @@
     'Accessories':    ['Shop All', 'Glasses'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
+  // Categories shown as a plain link (no roll-down submenu) — few products for now.
+  var FLAT = { 'Bags': true };
   var TOP_LINKS = [
     ['Home', '/'], ['About Us', '/pages/about-us'],
     ['Contact', '/pages/contact'], ['Tracking', '/pages/tracking']
@@ -63,6 +65,13 @@
         host.setAttribute('data-aurea-dd', '1');
         a.href = catUrl(label); // the category label links to its collection
 
+        // flat categories: just a link to the collection, no roll-down menu or chevron
+        if (FLAT[label]) {
+          var flatSvg = a.querySelector('svg');
+          if (flatSvg) flatSvg.remove();
+          return;
+        }
+
         var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
         var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
         MENUS[label].forEach(function (item) {
@@ -106,6 +115,10 @@
     var LINK = "padding:15px 4px;font-family:'Manrope',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-decoration:none;display:block;";
 
     var catHtml = ORDER.map(function (cat) {
+      // flat categories: a single link row, no expand +/- and no submenu
+      if (FLAT[cat]) {
+        return '<a href="' + catUrl(cat) + '" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">' + cat + '</a>';
+      }
       var subs = MENUS[cat].map(function (item) {
         return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + item + '</a>';
       }).join('');
