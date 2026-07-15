@@ -37,8 +37,6 @@
     // Clothes; the winter one points at its own collection instead.
     if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
     if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
-    // "Glasses" is the renamed sunglasses item; it keeps pointing at the existing eyewear collection.
-    if (category === 'Accessories' && item === 'Glasses') return '/collections/sunglasses';
     if (item === 'Shop All') return '/collections/' + handleize(category);
     return '/collections/' + handleize(item);
   }
