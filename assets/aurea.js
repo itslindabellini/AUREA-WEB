@@ -14,19 +14,33 @@
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
   var FLAT = { 'Bags': true };
+  // Greek display labels for the nav. URLs stay keyed by the English names above (so the
+  // collection handles are unchanged); we only translate what the shopper sees.
+  var NAV_TR = {
+    'Shop All': 'Δείτε όλα',
+    'Summer Clothes': 'Καλοκαιρινά Ρούχα', 'Winter Clothes': 'Χειμερινά Ρούχα', 'Footwear': 'Παπούτσια',
+    'Jewelry': 'Κοσμήματα', 'Bags': 'Τσάντες', 'Accessories': 'Αξεσουάρ',
+    'Dresses': 'Φορέματα', 'Tops': 'Τοπ', 'Skirts': 'Φούστες', 'Pants': 'Παντελόνια', 'Sets': 'Σετ', 'Tunics': 'Τουνίκ', 'Bikini': 'Μπικίνι',
+    'Sneakers': 'Sneakers', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
+    'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
+    'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
+    'Glasses': 'Γυαλιά', 'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
+  };
+  var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
+  function trLabel(en) { return NAV_TR[en] || en; }
   var TOP_LINKS = [
     ['Home', '/'], ['About Us', '/pages/about-us'],
     ['Contact', '/pages/contact'], ['Tracking', '/pages/tracking']
   ];
   var FAQ = [
-    { q: 'Are the clothes true to size?',
-      a: 'Yes, our clothes are designed to fit true to size.\n\nTo ensure the best possible fit, we recommend checking our Size Guide on each product page before placing your order. As every style and body is unique, comparing your measurements with our size chart is the best way to find your perfect fit.' },
-    { q: 'How should I care for my clothing?',
-      a: 'To keep your pieces looking their best, we recommend following the care instructions on the label.\n\nIn general, we suggest washing on a gentle cycle with cold water or hand washing when appropriate. Avoid using bleach, tumble drying on high heat, and prolonged exposure to direct sunlight, as these may affect the fabric and color over time.\n\nWith the right care, your AUREA Mykonos pieces will stay beautiful and remain a part of your wardrobe for years to come.' },
-    { q: 'How long does shipping take?',
-      a: 'We aim to process and ship all orders as quickly as possible. Once your order has been dispatched, delivery typically takes 6–12 business days, depending on your location.\n\nOnce your order ships, you’ll receive a confirmation email with tracking information so you can follow its journey every step of the way.' },
-    { q: 'Can I return my order?',
-      a: 'Yes. If you’re not completely satisfied with your order, you may return your item(s) within 30 days of delivery, provided they are unworn, unwashed, and in their original condition with all tags attached.\n\nIf you have any questions, our customer support team is always happy to assist you.' }
+    { q: 'Είναι τα ρούχα στα κανονικά μεγέθη;',
+      a: 'Ναι, τα ρούχα μας είναι σχεδιασμένα να εφαρμόζουν στα κανονικά μεγέθη.\n\nΓια την καλύτερη δυνατή εφαρμογή, σας προτείνουμε να δείτε τον Οδηγό Μεγεθών σε κάθε σελίδα προϊόντος πριν την παραγγελία σας. Καθώς κάθε στιλ και κάθε σώμα είναι μοναδικό, η σύγκριση των διαστάσεών σας με τον πίνακα μεγεθών είναι ο καλύτερος τρόπος να βρείτε το τέλειο μέγεθος.' },
+    { q: 'Πώς να φροντίσω τα ρούχα μου;',
+      a: 'Για να διατηρήσετε τα κομμάτια σας στην καλύτερη κατάστασή τους, σας προτείνουμε να ακολουθείτε τις οδηγίες φροντίδας στην ετικέτα.\n\nΓενικά, προτείνουμε πλύσιμο σε απαλό πρόγραμμα με κρύο νερό ή στο χέρι όπου χρειάζεται. Αποφύγετε τη χλωρίνη, το στέγνωμα σε υψηλή θερμοκρασία και την παρατεταμένη έκθεση στον ήλιο, καθώς μπορεί να επηρεάσουν το ύφασμα και το χρώμα με τον καιρό.\n\nΜε τη σωστή φροντίδα, τα κομμάτια AUREA Mykonos θα παραμείνουν όμορφα και θα σας συνοδεύουν για χρόνια.' },
+    { q: 'Πόσο διαρκεί η αποστολή;',
+      a: 'Φροντίζουμε να επεξεργαζόμαστε και να αποστέλλουμε όλες τις παραγγελίες όσο πιο γρήγορα γίνεται. Μόλις αποσταλεί η παραγγελία σας, η παράδοση διαρκεί συνήθως 6–12 εργάσιμες ημέρες, ανάλογα με την περιοχή σας.\n\nΜόλις αποσταλεί η παραγγελία σας, θα λάβετε email επιβεβαίωσης με στοιχεία παρακολούθησης, ώστε να ακολουθείτε το ταξίδι της σε κάθε βήμα.' },
+    { q: 'Μπορώ να επιστρέψω την παραγγελία μου;',
+      a: 'Ναι. Αν δεν είστε απόλυτα ικανοποιημένοι με την παραγγελία σας, μπορείτε να επιστρέψετε τα προϊόντα εντός 30 ημερών από την παράδοση, εφόσον είναι αφόρετα, άπλυτα και στην αρχική τους κατάσταση με όλες τις ετικέτες.\n\nΑν έχετε οποιαδήποτε απορία, η ομάδα υποστήριξής μας είναι πάντα στη διάθεσή σας.' }
   ];
 
   // For now every category/sub-item points at the full catalog; phase two maps
@@ -60,7 +74,8 @@
     var scopes = document.querySelectorAll('.aurea-desktop');
     (scopes.length ? scopes : [document]).forEach(function (scope) {
       scope.querySelectorAll('a').forEach(function (a) {
-        var label = a.textContent.trim();
+        var raw = a.textContent.trim();
+        var label = NAV_EN[raw] || raw; // the label shows Greek; map back to the English key for URLs
         if (!MENUS[label] || !a.querySelector('svg')) return;
         var host = a.parentElement;
         if (!host) return;
@@ -79,7 +94,7 @@
         var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
         var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
         MENUS[label].forEach(function (item) {
-          var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", item);
+          var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", trLabel(item));
           link.href = itemUrl(label, item);
           // own hover here; flag so the generic hover-restore pass skips it (avoids double-binding that made items stick)
           link.setAttribute('data-aurea-hv', '1');
@@ -121,14 +136,14 @@
     var catHtml = ORDER.map(function (cat) {
       // flat categories: a single link row, no expand +/- and no submenu
       if (FLAT[cat]) {
-        return '<a href="' + catUrl(cat) + '" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">' + cat + '</a>';
+        return '<a href="' + catUrl(cat) + '" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">' + trLabel(cat) + '</a>';
       }
       var subs = MENUS[cat].map(function (item) {
-        return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + item + '</a>';
+        return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + trLabel(item) + '</a>';
       }).join('');
       return '<div style="border-bottom:1px solid #F5F0EB;">' +
         '<button class="aurea-mm-cat" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;padding:15px 4px;font-family:\'Manrope\',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-align:left;">' +
-          '<span>' + cat + '</span>' +
+          '<span>' + trLabel(cat) + '</span>' +
           '<span class="aurea-mm-sign" style="font-family:\'Manrope\',sans-serif;font-weight:400;font-size:18px;color:#8A7F70;line-height:1;flex:0 0 auto;">+</span>' +
         '</button>' +
         '<div class="aurea-mm-sub" style="display:none;padding:2px 4px 14px;flex-direction:column;gap:2px;">' + subs + '</div>' +
@@ -151,23 +166,23 @@
     drawer.className = 'aurea-mm';
     drawer.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px;border-bottom:1px solid #EFEAE2;">' +
-        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">Menu</span>' +
+        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">Μενού</span>' +
         '<button class="aurea-mm-close" aria-label="Close" style="width:38px;height:38px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>' +
       '</div>' +
       '<div style="flex:1 1 auto;overflow-y:auto;padding:14px 26px 6px;display:flex;flex-direction:column;">' +
-        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Home</a>' +
+        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Αρχική</a>' +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
         catHtml +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
-        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">About Us</a>' +
-        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Tracking</a>' +
-        '<a href="/pages/contact" style="' + LINK + '">Contact</a>' +
+        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Σχετικά με εμάς</a>' +
+        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Παρακολούθηση</a>' +
+        '<a href="/pages/contact" style="' + LINK + '">Επικοινωνία</a>' +
       '</div>' +
       '<div style="margin-top:auto;padding:22px 20px;border-top:1px solid #EFEAE2;">' +
-        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Shop Now</a>' +
+        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Αγοράστε Τώρα</a>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Secure checkout · Free shipping to Greece' +
+          'Ασφαλής πληρωμή · Δωρεάν αποστολή σε όλη την Ελλάδα' +
         '</div>' +
       '</div>';
     overlay.appendChild(drawer);
@@ -276,17 +291,17 @@
       e.preventDefault(); e.stopPropagation();
       var id = btn.getAttribute('data-aurea-add');
       var orig = btn.textContent;
-      if (!id) { btn.textContent = 'Unavailable'; setTimeout(function () { btn.textContent = orig; }, 1600); return; }
-      btn.textContent = 'Adding…';
+      if (!id) { btn.textContent = 'Μη διαθέσιμο'; setTimeout(function () { btn.textContent = orig; }, 1600); return; }
+      btn.textContent = 'Προσθήκη…';
       fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
         .then(function (res) {
-          if (!res.ok) { btn.textContent = 'Sold Out'; setTimeout(function () { btn.textContent = orig; }, 1800); return; }
-          btn.textContent = 'Added ✓';
+          if (!res.ok) { btn.textContent = 'Εξαντλήθηκε'; setTimeout(function () { btn.textContent = orig; }, 1800); return; }
+          btn.textContent = 'Προστέθηκε ✓';
           document.dispatchEvent(new CustomEvent('aurea:cart-updated'));
           setTimeout(function () { btn.textContent = orig; }, 1600);
         })
-        .catch(function () { btn.textContent = 'Try again'; setTimeout(function () { btn.textContent = orig; }, 1800); });
+        .catch(function () { btn.textContent = 'Δοκιμάστε ξανά'; setTimeout(function () { btn.textContent = orig; }, 1800); });
     });
   }
 
@@ -363,16 +378,16 @@
       atc.addEventListener('click', function (e) {
         e.preventDefault();
         var m = matchVariant();
-        if (!m.complete) { atc.textContent = 'Select your options'; setTimeout(paint, 1400); return; }
+        if (!m.complete) { atc.textContent = 'Επιλέξτε τις επιλογές σας'; setTimeout(paint, 1400); return; }
         if (!m.variant) return;
-        atc.textContent = 'Adding…';
+        atc.textContent = 'Προσθήκη…';
         fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
           .then(function (res) {
-            if (!res.ok) { atc.textContent = 'Sold Out'; setTimeout(paint, 1800); return; }
-            atc.textContent = 'Added ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700);
+            if (!res.ok) { atc.textContent = 'Εξαντλήθηκε'; setTimeout(paint, 1800); return; }
+            atc.textContent = 'Προστέθηκε ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700);
           })
-          .catch(function () { atc.textContent = 'Try again'; setTimeout(paint, 1800); });
+          .catch(function () { atc.textContent = 'Δοκιμάστε ξανά'; setTimeout(paint, 1800); });
       });
     });
 
@@ -438,7 +453,7 @@
     // Locate every baked "Your Bag" drawer (one per visible wrapper).
     var drawers = Array.prototype.filter.call(
       document.querySelectorAll('div[style*="translateX(100%)"]'),
-      function (d) { return /Your Bag/.test(d.textContent); }
+      function (d) { return /Το Καλάθι/.test(d.textContent); }
     );
     if (!drawers.length) return;
 
@@ -446,16 +461,16 @@
 
     function headerHtml(count) {
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px 30px;border-bottom:1px solid #EFEAE2;flex:0 0 auto;">' +
-        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:22px;color:#111;">Your Bag <span style="font-family:Manrope;font-weight:500;font-size:14px;color:#9A948C;">(' + count + ')</span></div>' +
+        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:22px;color:#111;">Το Καλάθι σας <span style="font-family:Manrope;font-weight:500;font-size:14px;color:#9A948C;">(' + count + ')</span></div>' +
         '<button class="aurea-cart-close" aria-label="Close" style="width:36px;height:36px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;">' + CLOSE_SVG + '</button>' +
       '</div>';
     }
     function emptyHtml() {
       return '<div style="flex:1 1 0%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;">' +
         '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#C9BFB1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:22px;"><path d="M2 3h2.3l1.4 12.1a1 1 0 0 0 1 .9h9.1a1 1 0 0 0 1-.8l1.5-7.4H5.2"></path><circle cx="9" cy="20.2" r="1.35"></circle><circle cx="16.6" cy="20.2" r="1.35"></circle></svg>' +
-        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:20px;color:#111;margin-bottom:10px;">Your bag is empty</div>' +
-        '<div style="font-family:Manrope;font-weight:500;font-size:13.5px;color:#9A948C;margin-bottom:28px;">Looks like you haven\'t added anything yet.</div>' +
-        '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;">Continue Shopping</button>' +
+        '<div style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:20px;color:#111;margin-bottom:10px;">Το καλάθι σας είναι άδειο</div>' +
+        '<div style="font-family:Manrope;font-weight:500;font-size:13.5px;color:#9A948C;margin-bottom:28px;">Φαίνεται πως δεν έχετε προσθέσει κάτι ακόμη.</div>' +
+        '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;">Συνέχεια Αγορών</button>' +
       '</div>';
     }
     // Reservation urgency bar (15-min looping countdown, persisted like the design).
@@ -475,7 +490,7 @@
     function reserveHtml() {
       return '<div style="display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' +
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l2.5 2"></path></svg>' +
-        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Your items are reserved for <strong class="aurea-reserve" style="font-weight:700;font-variant-numeric:tabular-nums;">' + reserveDisplay() + '</strong></span>' +
+        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα σας κρατούνται για <strong class="aurea-reserve" style="font-weight:700;font-variant-numeric:tabular-nums;">' + reserveDisplay() + '</strong></span>' +
       '</div>';
     }
 
@@ -503,7 +518,7 @@
     function bannerHtml(pct) {
       return '<div style="margin-bottom:20px;background:#F5F0EB;padding:16px 18px;display:flex;align-items:center;gap:12px;">' +
         '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
-        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;color:#4A4A4A;line-height:1.4;">Bundle discount applied automatically</span>' +
+        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;color:#4A4A4A;line-height:1.4;">Η έκπτωση πακέτου εφαρμόζεται αυτόματα</span>' +
       '</div>';
     }
     function lineHtml(it, line) {
@@ -528,7 +543,7 @@
               '<span style="min-width:26px;text-align:center;font-family:Manrope;font-weight:600;font-size:12.5px;color:#111;">' + it.quantity + '</span>' +
               '<button class="aurea-qty" data-line="' + line + '" data-qty="' + (it.quantity + 1) + '" aria-label="Increase" style="width:30px;height:30px;border:none;background:none;cursor:pointer;font-family:Manrope;font-size:15px;color:#4A4A4A;line-height:1;">+</button>' +
             '</div>' +
-            '<button class="aurea-qty" data-line="' + line + '" data-qty="0" style="background:none;border:none;cursor:pointer;font-family:Manrope;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9A948C;padding:0;">Remove</button>' +
+            '<button class="aurea-qty" data-line="' + line + '" data-qty="0" style="background:none;border:none;cursor:pointer;font-family:Manrope;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9A948C;padding:0;">Αφαίρεση</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -537,15 +552,15 @@
       var subtotal = cart.items_subtotal_price;
       var bundle = cart.total_discount || 0;
       var pct = bundle > 0 && subtotal > 0 ? Math.round(bundle / (subtotal + 0) * 100) : 0;
-      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Subtotal</span><span>' + money(subtotal) + '</span></div>';
-      if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Sale savings</span><span>&minus;' + money(saleSavings) + '</span></div>';
-      if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Bundle savings (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
-      rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Total</span><span>' + money(cart.total_price) + '</span></div>';
+      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Υποσύνολο</span><span>' + money(subtotal) + '</span></div>';
+      if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
+      if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση πακέτου (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
+      rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(cart.total_price) + '</span></div>';
       return '<div style="flex:0 0 auto;padding:26px 30px 30px;border-top:1px solid #EFEAE2;">' + rows +
-        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Checkout &rarr;</button>' +
+        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Secure checkout &middot; Free shipping across Greece' +
+          'Ασφαλής πληρωμή &middot; Δωρεάν αποστολή σε όλη την Ελλάδα' +
         '</div>' +
       '</div>';
     }
@@ -572,10 +587,10 @@
     }
 
     function nextTierMsg(count, pct) {
-      if (count === 1) return 'Add 1 more item to unlock 15% off';
-      if (count === 2) return 'Add 1 more item to unlock 20% off';
-      if (count === 3) return 'Add 1 more item to unlock 25% off';
-      if (count >= 4) return "You're saving " + (pct || 25) + '% on this order!';
+      if (count === 1) return 'Προσθέστε 1 ακόμη προϊόν για 15% έκπτωση';
+      if (count === 2) return 'Προσθέστε 1 ακόμη προϊόν για 20% έκπτωση';
+      if (count === 3) return 'Προσθέστε 1 ακόμη προϊόν για 25% έκπτωση';
+      if (count >= 4) return "Εξοικονομείτε " + (pct || 25) + '% σε αυτή την παραγγελία!';
       return '';
     }
     function render(inst, cart) {
@@ -1091,7 +1106,7 @@
           if (!url || loading) { done(false); return; }
           loading = true;
           var label = btn.textContent;
-          btn.textContent = 'Loading…'; btn.style.opacity = '0.6';
+          btn.textContent = 'Φόρτωση…'; btn.style.opacity = '0.6';
           fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.text(); })
             .then(function (html) {
