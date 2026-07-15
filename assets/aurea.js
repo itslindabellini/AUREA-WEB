@@ -934,12 +934,13 @@
     });
   }
 
-  /* ---------- 9g. Collection grid: full random mix of EVERYTHING, different each visit ----------
+  /* ---------- 9g. Collection grid: full mix of EVERYTHING, STABLE across visits ----------
      The collection is paginated server-side (48/page) so the first paint stays light. To show a true
      mix of every category (dresses, sets, skirts, swimwear, …) rather than upload order, the visible
-     grid then background-loads ALL remaining pages, appends them, and does a single global Fisher-Yates
-     shuffle across the whole set — so within ~1s the first screen upgrades from a within-page mix to a
-     mix of the entire collection. Load More then reveals 4 rows at a time from that global mix.
+     grid then background-loads ALL remaining pages, appends them, and does a single global shuffle
+     across the whole set. The shuffle is SEEDED from the collection (id + product count), so the order
+     is identical on every refresh/return — it only re-mixes once when the product count changes (new
+     products added). Load More then reveals 4 rows at a time from that stable mix.
      A hidden grid (the inactive desktop/mobile variant) falls back to on-demand per-click fetching. */
   function collectionGrid() {
     document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
@@ -963,9 +964,32 @@
       var pages = parseInt(btn.getAttribute('data-pages') || '1', 10) || 1;
       var firstNext = (btn.getAttribute('data-next') || '').trim();
 
+      // Seeded, STABLE shuffle: the mix is derived from the collection's seed
+      // (its id + product count) so it stays identical on every refresh/return,
+      // and only re-mixes when the product count changes (e.g. new products added).
+      function hashSeed(str) {
+        var h = 2166136261 >>> 0;
+        for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+        return h >>> 0;
+      }
+      function mulberry32(a) {
+        return function () {
+          a = a + 0x6D2B79F5 | 0;
+          var t = Math.imul(a ^ a >>> 15, 1 | a);
+          t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      }
+      var seedInt = hashSeed(grid.getAttribute('data-seed') || 'aurea');
       function shuffle(nodes) {
+        // sort by product id first so the input order is deterministic regardless of
+        // page-load timing, then apply a fresh seeded Fisher-Yates -> same result every time
+        nodes.sort(function (a, b) {
+          return (parseInt(a.getAttribute('data-pid') || '0', 10)) - (parseInt(b.getAttribute('data-pid') || '0', 10));
+        });
+        var rng = mulberry32(seedInt);
         for (var i = nodes.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
+          var j = Math.floor(rng() * (i + 1));
           var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
         }
         return nodes;
@@ -979,8 +1003,7 @@
       function relayout(nodes) { nodes.forEach(function (c) { grid.appendChild(c); }); }
 
       // instant: shuffle the first page so the initial screen is already mixed, then reveal
-      shuffle(cards());  // reorders the DOM children in place via the appendChild below
-      relayout(cards());
+      relayout(shuffle(cards()));
       shown = Math.min(INITIAL, cards().length);
       apply();
 
