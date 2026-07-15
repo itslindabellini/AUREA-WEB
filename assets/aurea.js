@@ -1002,10 +1002,38 @@
       }
       function relayout(nodes) { nodes.forEach(function (c) { grid.appendChild(c); }); }
 
+      // --- remember scroll position + how many rows were revealed, so the browser Back button
+      //     from a product returns the shopper exactly where they were (not the top of the page) ---
+      var cgVisible = grid.offsetParent !== null;
+      var storeKey = 'aurea-cg:' + location.pathname + location.search;
+      function saveState() {
+        if (!cgVisible) return;
+        try { sessionStorage.setItem(storeKey, JSON.stringify({ shown: shown, y: window.scrollY || window.pageYOffset || 0 })); } catch (e) {}
+      }
+      function restoreState() {
+        if (!cgVisible) return;
+        var st = null;
+        try { st = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); } catch (e) {}
+        if (!st) return;
+        if (typeof st.shown === 'number' && st.shown > shown) { shown = Math.min(st.shown, cards().length); apply(); }
+        if (typeof st.y === 'number' && st.y > 0) {
+          var go = function () { window.scrollTo(0, st.y); };
+          requestAnimationFrame(function () { go(); requestAnimationFrame(go); });
+          setTimeout(go, 130); setTimeout(go, 360);
+        }
+      }
+      if (cgVisible) {
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+        window.addEventListener('pagehide', saveState);
+        grid.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('a')) saveState(); });
+      }
+
       // instant: shuffle the first page so the initial screen is already mixed, then reveal
       relayout(shuffle(cards()));
       shown = Math.min(INITIAL, cards().length);
       apply();
+      // single-page grids are complete now; multi-page grids restore after the global shuffle settles
+      if (!(cgVisible && pages > 1 && firstNext)) restoreState();
 
       // build the URL for page N from the "next" URL, preserving any active filter params
       function pageUrl(n) {
@@ -1042,6 +1070,7 @@
             relayout(shuffle(cards()));
             apply();
             grid.style.opacity = '1';
+            restoreState();  // now the full stable mix is in place — return to where the shopper was
           }, 180);
         });
         // Load More is now a pure reveal (all cards are local)
