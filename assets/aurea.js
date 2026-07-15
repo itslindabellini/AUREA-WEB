@@ -39,10 +39,14 @@
     // Clothes; the winter one points at its own collection instead.
     if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
     if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
-    if (item === 'Shop All') return '/collections/' + handleize(category);
+    if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
-  function catUrl(category) { return '/collections/' + handleize(category); }
+  // The Accessories category holds only eyewear, so it points at the glasses collection.
+  function catUrl(category) {
+    if (category === 'Accessories') return '/collections/glasses';
+    return '/collections/' + handleize(category);
+  }
 
   function el(tag, css, text) {
     var e = document.createElement(tag);
