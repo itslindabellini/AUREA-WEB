@@ -982,16 +982,21 @@
       }
       var seedInt = hashSeed(grid.getAttribute('data-seed') || 'aurea');
       function shuffle(nodes) {
-        // sort by product id first so the input order is deterministic regardless of
-        // page-load timing, then apply a fresh seeded Fisher-Yates -> same result every time
+        // sort by product id first so the seeded keys are deterministic regardless of
+        // page-load timing -> same result every refresh
         nodes.sort(function (a, b) {
           return (parseInt(a.getAttribute('data-pid') || '0', 10)) - (parseInt(b.getAttribute('data-pid') || '0', 10));
         });
         var rng = mulberry32(seedInt);
-        for (var i = nodes.length - 1; i > 0; i--) {
-          var j = Math.floor(rng() * (i + 1));
-          var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
-        }
+        // Weighted mix (Efraimidis–Spirakis): key = r^(1/weight). Higher-weight products
+        // (dresses, esp. bestsellers) trend toward the top; lower-weight (swimwear) toward the
+        // back — but it stays interleaved, so it's still a mix of dresses, sets, etc.
+        nodes.forEach(function (c) {
+          var w = parseFloat(c.getAttribute('data-w')); if (!(w > 0)) w = 12;
+          var r = rng(); if (r <= 0) r = 1e-9;
+          c._k = Math.pow(r, 1 / w);
+        });
+        nodes.sort(function (a, b) { return b._k - a._k; });
         return nodes;
       }
       function nextUrl() { return (btn.getAttribute('data-next') || '').trim(); }
