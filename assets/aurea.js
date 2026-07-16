@@ -8,11 +8,11 @@
     'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
     'Footwear':       ['Shop All', 'Sneakers', 'Heels', 'Flats', 'Boots', 'Sandals'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
-    'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
+    'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
-  var FLAT = { 'Bags': true };
+  var FLAT = {};
   // Greek display labels for the nav. URLs stay keyed by the English names above (so the
   // collection handles are unchanged); we only translate what the shopper sees.
   var NAV_TR = {
@@ -23,6 +23,7 @@
     'Sneakers': 'Αθλητικά', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
     'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
     'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
+    'Leather Bags': 'Δερμάτινες Τσάντες', 'Luxury Bags': 'Πολυτελείς Τσάντες',
     'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
   };
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
@@ -55,6 +56,7 @@
     // No dedicated "sweaters" collection yet — fall back to the Winter Clothes
     // shop-all so the link is never blank. Point this at the real handle once it exists.
     if (category === 'Winter Clothes' && item === 'Sweaters') return catUrl('Winter Clothes');
+    if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
