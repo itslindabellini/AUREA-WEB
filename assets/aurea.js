@@ -1038,13 +1038,23 @@
           return u.host === location.host && /\/products\//.test(u.pathname);
         } catch (e) { return false; }
       }
+      // A return to this page = either the referrer is a product (breadcrumb/link back)
+      // OR the browser reports a back/forward navigation (Back button, fresh reload).
+      function isReturnNav() {
+        if (cameFromProduct()) return true;
+        try {
+          var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+          if (nav && nav.type === 'back_forward') return true;
+        } catch (e) {}
+        return false;
+      }
       function restoreState() {
         if (!cgVisible) return;
         var st = null;
         try { st = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); } catch (e) {}
         // Only restore the previous position when returning from a product page.
         // Arriving fresh from the navigation (or anywhere else) starts at the top.
-        if (!st || !cameFromProduct()) { try { sessionStorage.removeItem(storeKey); } catch (e) {} return; }
+        if (!st || !isReturnNav()) { try { sessionStorage.removeItem(storeKey); } catch (e) {} return; }
         try { sessionStorage.removeItem(storeKey); } catch (e) {} // one-shot
         if (typeof st.shown === 'number' && st.shown > shown) { shown = Math.min(st.shown, cards().length); apply(); }
         if (typeof st.y === 'number' && st.y > 0) {
@@ -1060,6 +1070,19 @@
         grid.addEventListener('click', function (e) {
           var a = e.target && e.target.closest && e.target.closest('a');
           if (a && /\/products\//.test(a.getAttribute('href') || '')) saveState();
+        });
+        // Back button often restores this page straight from the bfcache WITHOUT
+        // re-running the script, so restoreState() never fires and (because scroll
+        // restoration is manual) the shopper lands at the top. Put them back here.
+        window.addEventListener('pageshow', function (e) {
+          if (!e.persisted) return;
+          var s = null;
+          try { s = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); } catch (e2) {}
+          try { sessionStorage.removeItem(storeKey); } catch (e2) {}
+          if (s && typeof s.y === 'number' && s.y > 0) {
+            var go = function () { window.scrollTo(0, s.y); };
+            go(); requestAnimationFrame(go); setTimeout(go, 120);
+          }
         });
       }
 
