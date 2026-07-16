@@ -1152,7 +1152,11 @@
         var url = tpl.indexOf('{order}') >= 0
           ? tpl.replace('{order}', encodeURIComponent(val))
           : tpl + encodeURIComponent(val);
-        window.open(url, '_blank', 'noopener');
+        // Same-site tracking pages (e.g. the ParcelPanel app proxy) navigate in
+        // place; fully-qualified external trackers open in a new tab.
+        var external = /^https?:\/\//i.test(url) && url.indexOf(location.host) === -1;
+        if (external) window.open(url, '_blank', 'noopener');
+        else window.location.assign(url);
       });
     });
   }
