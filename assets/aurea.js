@@ -1033,11 +1033,22 @@
         if (!cgVisible) return;
         try { sessionStorage.setItem(storeKey, JSON.stringify({ shown: shown, y: window.scrollY || window.pageYOffset || 0 })); } catch (e) {}
       }
+      // Did we arrive on this collection by coming back from a product page (same store)?
+      function cameFromProduct() {
+        try {
+          if (!document.referrer) return false;
+          var u = new URL(document.referrer, location.href);
+          return u.host === location.host && /\/products\//.test(u.pathname);
+        } catch (e) { return false; }
+      }
       function restoreState() {
         if (!cgVisible) return;
         var st = null;
         try { st = JSON.parse(sessionStorage.getItem(storeKey) || 'null'); } catch (e) {}
-        if (!st) return;
+        // Only restore the previous position when returning from a product page.
+        // Arriving fresh from the navigation (or anywhere else) starts at the top.
+        if (!st || !cameFromProduct()) { try { sessionStorage.removeItem(storeKey); } catch (e) {} return; }
+        try { sessionStorage.removeItem(storeKey); } catch (e) {} // one-shot
         if (typeof st.shown === 'number' && st.shown > shown) { shown = Math.min(st.shown, cards().length); apply(); }
         if (typeof st.y === 'number' && st.y > 0) {
           var go = function () { window.scrollTo(0, st.y); };
@@ -1047,8 +1058,12 @@
       }
       if (cgVisible) {
         try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
-        window.addEventListener('pagehide', saveState);
-        grid.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('a')) saveState(); });
+        // Save the position only when opening a PRODUCT from this collection, so that
+        // returning from that product restores it — while arriving from the nav does not.
+        grid.addEventListener('click', function (e) {
+          var a = e.target && e.target.closest && e.target.closest('a');
+          if (a && /\/products\//.test(a.getAttribute('href') || '')) saveState();
+        });
       }
 
       // instant: shuffle the first page so the initial screen is already mixed, then reveal
