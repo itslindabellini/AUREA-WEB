@@ -1210,7 +1210,7 @@
     if (s.indexOf(',') > -1) s = s.replace(/\./g, '').replace(',', '.');
     return parseFloat(s);
   }
-  function fmtMoney(n) { return '€' + n.toFixed(2).replace('.', ','); }
+  function fmtMoney(n) { return '€' + (n % 1 === 0 ? String(Math.round(n)) : n.toFixed(2).replace('.', ',')); }
   function savingsTags(root) {
     (root || document).querySelectorAll('a[href*="/products/"]').forEach(function (card) {
       if (card.getAttribute('data-aurea-saved')) return;
