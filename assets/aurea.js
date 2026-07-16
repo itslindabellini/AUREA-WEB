@@ -1227,7 +1227,7 @@
       var wrap = card.querySelector('div[style*="position: relative"]') || card.querySelector('div[style*="position:relative"]');
       if (!wrap) { wrap = card; if (getComputedStyle(card).position === 'static') card.style.position = 'relative'; }
       var tag = el('div', 'position:absolute;top:12px;right:12px;z-index:4;background:#fff;color:#111;font-family:Manrope;font-weight:700;font-size:11px;letter-spacing:.02em;line-height:1;padding:7px 10px;border-radius:2px;box-shadow:0 2px 10px rgba(0,0,0,.14);white-space:nowrap;pointer-events:none;');
-      tag.textContent = 'Κερδίζετε ' + fmtMoney(saved);
+      tag.textContent = 'εκτός ' + fmtMoney(saved);
       wrap.appendChild(tag);
     });
   }
