@@ -1128,6 +1128,7 @@
             relayout(shuffle(cards()));
             apply();
             grid.style.opacity = '1';
+            try { savingsTags(grid); } catch (e) {}  // badge the newly fetched cards
             restoreState();  // now the full stable mix is in place — return to where the shopper was
           }, 180);
         });
@@ -1149,6 +1150,7 @@
             .then(function (r) { return r.text(); })
             .then(function (html) {
               extractCards(html).forEach(function (c) { grid.appendChild(c); });
+              try { savingsTags(grid); } catch (e) {}  // badge the newly fetched cards
               var doc = new DOMParser().parseFromString(html, 'text/html');
               var srcBtn = doc.querySelector(scope + ' .scp6');
               btn.setAttribute('data-next', srcBtn ? (srcBtn.getAttribute('data-next') || '') : '');
@@ -1199,6 +1201,37 @@
     });
   }
 
+  /* ---------- Savings tag: white "you saved €X" badge on every product card ---------- */
+  function parseMoney(t) {
+    if (!t) return NaN;
+    var s = ('' + t).replace(/[^\d.,]/g, '');
+    if (!s) return NaN;
+    // EU/Greek format: dot = thousands separator, comma = decimal.
+    if (s.indexOf(',') > -1) s = s.replace(/\./g, '').replace(',', '.');
+    return parseFloat(s);
+  }
+  function fmtMoney(n) { return '€' + n.toFixed(2).replace('.', ','); }
+  function savingsTags(root) {
+    (root || document).querySelectorAll('a[href*="/products/"]').forEach(function (card) {
+      if (card.getAttribute('data-aurea-saved')) return;
+      var strike = card.querySelector('[style*="line-through"]');
+      if (!strike) return;
+      var orig = parseMoney(strike.textContent);
+      var saleEl = strike.nextElementSibling;
+      var sale = saleEl ? parseMoney(saleEl.textContent) : NaN;
+      if (!(orig > 0) || !(sale >= 0) || !(orig > sale)) return;
+      var saved = orig - sale;
+      if (!(saved > 0)) return;
+      card.setAttribute('data-aurea-saved', '1');
+      // pin the tag inside the card's image wrapper (first positioned box); fall back to the card
+      var wrap = card.querySelector('div[style*="position: relative"]') || card.querySelector('div[style*="position:relative"]');
+      if (!wrap) { wrap = card; if (getComputedStyle(card).position === 'static') card.style.position = 'relative'; }
+      var tag = el('div', 'position:absolute;top:12px;right:12px;z-index:4;background:#fff;color:#111;font-family:Manrope;font-weight:700;font-size:11px;letter-spacing:.02em;line-height:1;padding:7px 10px;border-radius:2px;box-shadow:0 2px 10px rgba(0,0,0,.14);white-space:nowrap;pointer-events:none;');
+      tag.textContent = 'Κερδίζετε ' + fmtMoney(saved);
+      wrap.appendChild(tag);
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { trackForm(); } catch (e) {}
@@ -1217,6 +1250,7 @@
     try { productReco(); } catch (e) {}
     try { collectionGrid(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
+    try { savingsTags(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
