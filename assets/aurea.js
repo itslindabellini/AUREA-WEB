@@ -1134,8 +1134,32 @@
     });
   }
 
+  /* ---------- Order tracking form ---------- */
+  // The tracking form redirects to the URL in its data-aurea-track attribute,
+  // substituting {order} with the entered number. Change that attribute to your
+  // tracking app's page URL once the app is installed (keep the {order} token).
+  function trackForm() {
+    document.querySelectorAll('form[data-aurea-track]').forEach(function (form) {
+      if (form.getAttribute('data-aurea-bound')) return;
+      form.setAttribute('data-aurea-bound', '1');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var input = form.querySelector('input[type="text"], input:not([type])');
+        var val = input ? input.value.trim() : '';
+        if (!val) { if (input) input.focus(); return; }
+        var tpl = form.getAttribute('data-aurea-track') || '';
+        if (!tpl) return;
+        var url = tpl.indexOf('{order}') >= 0
+          ? tpl.replace('{order}', encodeURIComponent(val))
+          : tpl + encodeURIComponent(val);
+        window.open(url, '_blank', 'noopener');
+      });
+    });
+  }
+
   function init() {
     try { hoverPolish(); } catch (e) {}
+    try { trackForm(); } catch (e) {}
     try { buildDropdowns(); } catch (e) {}
     try { buildMobileMenu(); } catch (e) {}
     try { buildFAQ(); } catch (e) {}
