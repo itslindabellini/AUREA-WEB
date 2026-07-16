@@ -1199,82 +1199,6 @@
     });
   }
 
-  /* ---------- Search: icon next to the cart + slide-down search panel ---------- */
-  function searchUI() {
-    // Locate every header cart trigger (the clickable element around the cart-path
-    // SVG). The 46px empty-cart illustration in the drawer shares the path, so filter
-    // it out by size; put a matching search icon immediately to its LEFT.
-    var triggers = [];
-    document.querySelectorAll('svg').forEach(function (svg) {
-      var p = svg.querySelector('path');
-      if (!p || !/^M2 3h2\.3/.test(p.getAttribute('d') || '')) return;
-      if (parseInt(svg.getAttribute('width') || '0', 10) > 30) return;
-      var trig = svg.closest('span,button,a');
-      if (!trig || trig.getAttribute('data-aurea-has-search')) return;
-      triggers.push({ trig: trig, svg: svg });
-    });
-    if (!triggers.length) return;
-
-    // ---- one shared slide-down search panel ----
-    var overlay = el('div', 'position:fixed;inset:0;z-index:3000;display:none;');
-    var backdrop = el('div', 'position:absolute;inset:0;background:rgba(17,17,17,.42);opacity:0;transition:opacity .3s ease;');
-    var panel = el('div', 'position:absolute;top:0;left:0;right:0;background:#F5F0EB;box-shadow:0 24px 60px rgba(0,0,0,.16);transform:translateY(-100%);transition:transform .42s cubic-bezier(.22,1,.36,1);');
-    var inner = el('div', 'max-width:820px;margin:0 auto;padding:44px 24px 50px;position:relative;');
-    var closeBtn = el('button', 'position:absolute;top:22px;right:24px;border:none;background:transparent;color:#8A7F70;cursor:pointer;font-family:Manrope;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:6px;');
-    closeBtn.type = 'button';
-    closeBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A7F70" stroke-width="1.6" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>';
-    var label = el('div', 'font-family:Manrope;font-weight:700;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#8A7F70;margin-bottom:20px;text-align:center;', 'ΑΝΑΖΉΤΗΣΗ');
-    var form = document.createElement('form');
-    form.setAttribute('action', '/search'); form.setAttribute('method', 'get'); form.setAttribute('role', 'search');
-    form.style.cssText = 'display:flex;align-items:center;gap:14px;border-bottom:1px solid #C9BFB1;padding-bottom:14px;';
-    var typ = document.createElement('input'); typ.type = 'hidden'; typ.name = 'type'; typ.value = 'product';
-    var input = document.createElement('input');
-    input.type = 'search'; input.name = 'q'; input.placeholder = 'Τι ψάχνετε;';
-    input.setAttribute('autocomplete', 'off'); input.setAttribute('aria-label', 'Αναζήτηση προϊόντων');
-    input.style.cssText = "flex:1 1 0%;min-width:0;border:none;background:transparent;outline:none;font-family:'Milanesa Serif',serif;font-size:26px;line-height:1.2;color:#111;";
-    var go = document.createElement('button');
-    go.type = 'submit'; go.setAttribute('aria-label', 'Αναζήτηση');
-    go.style.cssText = 'flex:0 0 auto;border:none;background:transparent;color:#1F2620;cursor:pointer;display:flex;align-items:center;padding:4px;';
-    go.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1F2620" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
-    var hint = el('div', 'font-family:Manrope;font-size:12.5px;color:#8A7F70;margin-top:16px;text-align:center;letter-spacing:.02em;', 'Πατήστε Enter για αναζήτηση');
-    form.appendChild(typ); form.appendChild(input); form.appendChild(go);
-    inner.appendChild(closeBtn); inner.appendChild(label); inner.appendChild(form); inner.appendChild(hint);
-    panel.appendChild(inner);
-    overlay.appendChild(backdrop); overlay.appendChild(panel);
-    document.body.appendChild(overlay);
-
-    var isOpen = false;
-    function openSearch() {
-      overlay.style.display = 'block'; isOpen = true;
-      requestAnimationFrame(function () { backdrop.style.opacity = '1'; panel.style.transform = 'translateY(0)'; });
-      setTimeout(function () { try { input.focus(); } catch (e) {} }, 130);
-    }
-    function closeSearch() {
-      isOpen = false; backdrop.style.opacity = '0'; panel.style.transform = 'translateY(-100%)';
-      setTimeout(function () { if (!isOpen) overlay.style.display = 'none'; }, 420);
-    }
-    // guard the native submit: never navigate to /search with an empty query
-    form.addEventListener('submit', function (e) { if (!input.value.trim()) { e.preventDefault(); input.focus(); } });
-    backdrop.addEventListener('click', closeSearch);
-    closeBtn.addEventListener('click', closeSearch);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen) closeSearch(); });
-
-    var SEARCH_SVG = function (w, h, stroke, sw) {
-      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 24 24" fill="none" stroke="' + stroke + '" stroke-width="' + sw + '" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
-    };
-    triggers.forEach(function (o) {
-      o.trig.setAttribute('data-aurea-has-search', '1');
-      var icon = document.createElement(o.trig.tagName.toLowerCase());
-      icon.style.cssText = o.trig.style.cssText || 'cursor:pointer;display:flex;align-items:center;';
-      icon.style.cursor = 'pointer';
-      icon.setAttribute('aria-label', 'Search');
-      var w = o.svg.getAttribute('width') || '24', h = o.svg.getAttribute('height') || '24';
-      icon.innerHTML = SEARCH_SVG(w, h, o.svg.getAttribute('stroke') || '#1F2620', o.svg.getAttribute('stroke-width') || '1.4');
-      icon.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); openSearch(); });
-      o.trig.parentNode.insertBefore(icon, o.trig);
-    });
-  }
-
   function init() {
     try { hoverPolish(); } catch (e) {}
     try { trackForm(); } catch (e) {}
@@ -1293,7 +1217,6 @@
     try { productReco(); } catch (e) {}
     try { collectionGrid(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
-    try { searchUI(); } catch (e) {}
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
