@@ -9,7 +9,6 @@
     'Footwear':       ['Shop All', 'Sneakers', 'Heels', 'Flats', 'Boots', 'Sandals'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Crossbody Bags', 'Handbags', 'Tote Bags'],
-    'Accessories':    ['Shop All', 'Glasses'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
@@ -19,12 +18,12 @@
   var NAV_TR = {
     'Shop All': 'Δείτε όλα',
     'Summer Clothes': 'Καλοκαιρινά Ρούχα', 'Winter Clothes': 'Χειμερινά Ρούχα', 'Footwear': 'Παπούτσια',
-    'Jewelry': 'Κοσμήματα', 'Bags': 'Τσάντες', 'Accessories': 'Αξεσουάρ',
+    'Jewelry': 'Κοσμήματα', 'Bags': 'Τσάντες',
     'Dresses': 'Φορέματα', 'Tops': 'Τοπ', 'Skirts': 'Φούστες', 'Pants': 'Παντελόνια', 'Sets': 'Σετ', 'Tunics': 'Τουνίκ', 'Bikini': 'Μπικίνι',
     'Sneakers': 'Αθλητικά', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
     'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
     'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
-    'Glasses': 'Γυαλιά', 'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
+    'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
   };
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
   function trLabel(en) { return NAV_TR[en] || en; }
@@ -59,9 +58,7 @@
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
-  // The Accessories category holds only eyewear, so it points at the glasses collection.
   function catUrl(category) {
-    if (category === 'Accessories') return '/collections/glasses';
     return '/collections/' + handleize(category);
   }
 
@@ -133,7 +130,7 @@
     btn.setAttribute('data-aurea-mm', '1');
 
     // mobile category order differs from desktop: summer, winter, footwear, jewelry, bags
-    var ORDER = ['Summer Clothes', 'Winter Clothes', 'Footwear', 'Jewelry', 'Bags', 'Accessories'];
+    var ORDER = ['Summer Clothes', 'Winter Clothes', 'Footwear', 'Jewelry', 'Bags'];
     var LINK = "padding:15px 4px;font-family:'Manrope',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A4A;text-decoration:none;display:block;";
 
     var catHtml = ORDER.map(function (cat) {
