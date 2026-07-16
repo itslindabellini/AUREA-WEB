@@ -53,6 +53,9 @@
     // Clothes; the winter one points at its own collection instead.
     if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
     if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
+    // No dedicated "sweaters" collection yet — fall back to the Winter Clothes
+    // shop-all so the link is never blank. Point this at the real handle once it exists.
+    if (category === 'Winter Clothes' && item === 'Sweaters') return catUrl('Winter Clothes');
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
