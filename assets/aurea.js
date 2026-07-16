@@ -30,7 +30,7 @@
   function trLabel(en) { return NAV_TR[en] || en; }
   var TOP_LINKS = [
     ['Home', '/'], ['About Us', '/pages/about-us'],
-    ['Contact', '/pages/contact'], ['Tracking', '/pages/tracking']
+    ['Contact', '/pages/contact'], ['Tracking', '/apps/parcelpanel']
   ];
   var FAQ = [
     { q: 'Είναι τα ρούχα στα κανονικά μεγέθη;',
@@ -175,7 +175,7 @@
         catHtml +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
         '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Σχετικά με εμάς</a>' +
-        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Παρακολούθηση</a>' +
+        '<a href="/apps/parcelpanel" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Παρακολούθηση</a>' +
         '<a href="/pages/contact" style="' + LINK + '">Επικοινωνία</a>' +
       '</div>' +
       '<div style="margin-top:auto;padding:22px 20px;border-top:1px solid #EFEAE2;">' +
