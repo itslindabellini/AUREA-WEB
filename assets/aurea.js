@@ -1226,7 +1226,7 @@
       // pin the tag inside the card's image wrapper (first positioned box); fall back to the card
       var wrap = card.querySelector('div[style*="position: relative"]') || card.querySelector('div[style*="position:relative"]');
       if (!wrap) { wrap = card; if (getComputedStyle(card).position === 'static') card.style.position = 'relative'; }
-      var tag = el('div', 'position:absolute;top:12px;right:12px;z-index:4;background:#fff;color:#111;font-family:Manrope;font-weight:700;font-size:13.5px;letter-spacing:.02em;line-height:1;padding:10px 15px;border-radius:2px;white-space:nowrap;pointer-events:none;');
+      var tag = el('div', 'position:absolute;top:12px;right:12px;z-index:4;background:#111;color:#fff;font-family:Manrope;font-weight:700;font-size:12px;letter-spacing:.02em;line-height:1;padding:8px 12px;border-radius:2px;white-space:nowrap;pointer-events:none;');
       tag.textContent = 'εκτός ' + fmtMoney(saved);
       wrap.appendChild(tag);
     });
