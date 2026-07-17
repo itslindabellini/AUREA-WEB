@@ -7,7 +7,7 @@
   var MENUS = {
     'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
     'Footwear':       ['Shop All', 'Sandals', 'Flats', 'Heels', 'Boots', 'Sneakers'],
-    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
+    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry'],
     'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
@@ -22,6 +22,7 @@
     'Dresses': 'Φορέματα', 'Tops': 'Τοπ', 'Skirts': 'Φούστες', 'Pants': 'Παντελόνια', 'Sets': 'Σετ', 'Tunics': 'Τουνίκ', 'Bikini': 'Μπικίνι',
     'Sneakers': 'Αθλητικά', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
     'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
+    'Gold Jewelry': 'Χρυσά Κοσμήματα', 'Silver Jewelry': 'Ασημένια Κοσμήματα',
     'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
     'Leather Bags': 'Δερμάτινες Τσάντες', 'Luxury Bags': 'Πολυτελείς Τσάντες',
     'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
@@ -96,6 +97,7 @@
         var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
         var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
         MENUS[label].forEach(function (item) {
+          if (item === '---') { card.appendChild(el('div', 'height:1px;margin:8px 20px;background:#EFEAE2;')); return; }
           var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", trLabel(item));
           link.href = itemUrl(label, item);
           // own hover here; flag so the generic hover-restore pass skips it (avoids double-binding that made items stick)
@@ -141,6 +143,7 @@
         return '<a href="' + catUrl(cat) + '" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">' + trLabel(cat) + '</a>';
       }
       var subs = MENUS[cat].map(function (item) {
+        if (item === '---') return '<div style="height:1px;margin:9px 22px;background:#F0EAE0;"></div>';
         return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + trLabel(item) + '</a>';
       }).join('');
       return '<div style="border-bottom:1px solid #F5F0EB;">' +
