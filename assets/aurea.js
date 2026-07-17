@@ -59,7 +59,7 @@
     if (category === 'Winter Clothes' && item === 'Sweaters') return catUrl('Winter Clothes');
     if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
     if (category === 'Jewelry' && item === 'Ankle Jewelry') return '/collections/ankle-jewlery';
-    if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewelry-sets';
+    if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewlery-sets';
     if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/gold-jewlery';
     if (category === 'Jewelry' && item === 'Silver Jewelry') return '/collections/silver-jewlery';
     if (item === 'Shop All') return catUrl(category);
