@@ -7,7 +7,7 @@
   var MENUS = {
     'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
     'Footwear':       ['Shop All', 'Sandals', 'Flats', 'Heels', 'Boots', 'Sneakers'],
-    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry'],
+    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
   };
@@ -22,7 +22,7 @@
     'Dresses': 'Φορέματα', 'Tops': 'Τοπ', 'Skirts': 'Φούστες', 'Pants': 'Παντελόνια', 'Sets': 'Σετ', 'Tunics': 'Τουνίκ', 'Bikini': 'Μπικίνι',
     'Sneakers': 'Αθλητικά', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
     'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
-    'Gold Jewelry': 'Χρυσά Κοσμήματα', 'Silver Jewelry': 'Ασημένια Κοσμήματα',
+    'Gold Jewelry': 'Χρυσά Κοσμήματα', 'Silver Jewelry': 'Ασημένια Κοσμήματα', 'Full Sets': 'Πλήρη Σετ',
     'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
     'Leather Bags': 'Δερμάτινες Τσάντες', 'Luxury Bags': 'Πολυτελείς Τσάντες',
     'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
