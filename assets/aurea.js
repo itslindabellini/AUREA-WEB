@@ -394,11 +394,21 @@
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
           .then(function (res) {
             if (!res.ok) {
-              // Surface Shopify's real reason instead of always claiming "out of stock".
+              // Surface Shopify's real reason (full text) below the button instead of
+              // truncating it onto the button or claiming a blanket "out of stock".
               var reason = (res.body && (res.body.description || res.body.message)) || 'Δεν προστέθηκε';
               console.error('[AUREA cart/add] ' + res.status, res.body);
-              atc.textContent = reason.length > 34 ? reason.slice(0, 34) + '…' : reason;
-              setTimeout(paint, 3200); return;
+              var note = atc.parentNode && atc.parentNode.querySelector('.pdp-atc-err');
+              if (!note && atc.parentNode) {
+                note = document.createElement('div');
+                note.className = 'pdp-atc-err';
+                note.style.cssText = 'margin-top:10px;font-family:Manrope,sans-serif;font-size:12.5px;line-height:1.45;color:#B23A2E;';
+                atc.parentNode.insertBefore(note, atc.nextSibling);
+              }
+              if (note) note.textContent = reason;
+              atc.textContent = 'Δεν προστέθηκε';
+              setTimeout(function () { paint(); if (note) note.textContent = ''; }, 8000);
+              return;
             }
             atc.textContent = 'Προστέθηκε ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700);
           })
