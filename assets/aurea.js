@@ -58,6 +58,8 @@
     // shop-all so the link is never blank. Point this at the real handle once it exists.
     if (category === 'Winter Clothes' && item === 'Sweaters') return catUrl('Winter Clothes');
     if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
+    if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/a-gold-jewelry';
+    if (category === 'Jewelry' && item === 'Silver Jewelry') return '/collections/a-silver-jewelry';
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
