@@ -298,7 +298,14 @@
       fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
         .then(function (res) {
-          if (!res.ok) { btn.textContent = 'Εξαντλήθηκε'; setTimeout(function () { btn.textContent = orig; }, 1800); return; }
+          if (!res.ok) {
+            // Surface Shopify's real reason instead of always claiming "out of stock".
+            var reason = (res.body && (res.body.description || res.body.message)) || 'Δεν προστέθηκε';
+            console.error('[AUREA cart/add] ' + res.status, res.body);
+            btn.textContent = reason.length > 34 ? reason.slice(0, 34) + '…' : reason;
+            setTimeout(function () { btn.textContent = orig; }, 3000);
+            return;
+          }
           btn.textContent = 'Προστέθηκε ✓';
           document.dispatchEvent(new CustomEvent('aurea:cart-updated'));
           setTimeout(function () { btn.textContent = orig; }, 1600);
@@ -386,7 +393,13 @@
         fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
           .then(function (res) {
-            if (!res.ok) { atc.textContent = 'Εξαντλήθηκε'; setTimeout(paint, 1800); return; }
+            if (!res.ok) {
+              // Surface Shopify's real reason instead of always claiming "out of stock".
+              var reason = (res.body && (res.body.description || res.body.message)) || 'Δεν προστέθηκε';
+              console.error('[AUREA cart/add] ' + res.status, res.body);
+              atc.textContent = reason.length > 34 ? reason.slice(0, 34) + '…' : reason;
+              setTimeout(paint, 3200); return;
+            }
             atc.textContent = 'Προστέθηκε ✓'; document.dispatchEvent(new CustomEvent('aurea:cart-updated')); setTimeout(paint, 1700);
           })
           .catch(function () { atc.textContent = 'Δοκιμάστε ξανά'; setTimeout(paint, 1800); });
