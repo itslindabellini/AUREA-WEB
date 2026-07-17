@@ -6,7 +6,7 @@
 
   var MENUS = {
     'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
-    'Footwear':       ['Shop All', 'Sneakers', 'Heels', 'Flats', 'Boots', 'Sandals'],
+    'Footwear':       ['Shop All', 'Sandals', 'Flats', 'Heels', 'Boots', 'Sneakers'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings'],
     'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
     'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
