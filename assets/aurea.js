@@ -373,7 +373,7 @@
           // reports untracked (dropship) variants as available:false, which is wrong.
           // Keep the button active; the actual /cart/add call is the source of truth
           // (untracked variants add fine; a genuine rejection surfaces inline below).
-          atc.disabled = false; atc.textContent = 'Add to Cart'; atc.style.opacity = '1'; atc.style.cursor = 'pointer';
+          atc.disabled = false; atc.textContent = 'Προσθήκη στο Καλάθι'; atc.style.opacity = '1'; atc.style.cursor = 'pointer';
         });
       }
     }
