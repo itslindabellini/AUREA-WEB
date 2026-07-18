@@ -584,9 +584,9 @@
       var subtotal = cart.items_subtotal_price;
       var bundle = cart.total_discount || 0;
       var pct = bundle > 0 && subtotal > 0 ? Math.round(bundle / (subtotal + 0) * 100) : 0;
-      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Υποσύνολο</span><span>' + money(subtotal) + '</span></div>';
-      if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
+      var rows = '';
       if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση πακέτου (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
+      if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
       rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(cart.total_price) + '</span></div>';
       return '<div style="flex:0 0 auto;padding:26px 30px 30px;border-top:1px solid #EFEAE2;">' + rows +
         '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
