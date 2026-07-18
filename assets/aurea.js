@@ -549,7 +549,7 @@
     }
     function bannerHtml(pct) {
       return '<div style="margin-bottom:20px;background:#F5F0EB;padding:16px 18px;display:flex;align-items:center;gap:12px;">' +
-        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
+        '<span style="font-family:\'Milanesa Solid\',\'Milanesa Serif\',Georgia,serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
         '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;color:#4A4A4A;line-height:1.4;">Η έκπτωση πακέτου εφαρμόζεται αυτόματα</span>' +
       '</div>';
     }
