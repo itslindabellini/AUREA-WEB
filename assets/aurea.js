@@ -580,16 +580,20 @@
         '</div>' +
       '</div>';
     }
+    function bundlePctFor(count) { return count >= 4 ? 25 : (count === 3 ? 20 : (count === 2 ? 15 : 0)); }
     function totalsHtml(cart, saleSavings) {
       var subtotal = cart.items_subtotal_price;
-      var bundle = cart.total_discount || 0;
-      var pct = bundle > 0 && subtotal > 0 ? Math.round(bundle / (subtotal + 0) * 100) : 0;
+      var realDisc = cart.total_discount || 0;
+      var pct, bundle, total;
+      if (realDisc > 0) { bundle = realDisc; pct = subtotal > 0 ? Math.round(realDisc / subtotal * 100) : 0; total = cart.total_price; }
+      else { pct = bundlePctFor(cart.item_count); bundle = Math.round(subtotal * pct / 100); total = subtotal - bundle; }
+      var bcode = (realDisc <= 0 && pct > 0) ? ('BUNDLE' + pct) : '';
       var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Υποσύνολο</span><span>' + money(subtotal) + '</span></div>';
       if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
       if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση πακέτου (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
-      rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(cart.total_price) + '</span></div>';
+      rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(total) + '</span></div>';
       return '<div style="flex:0 0 auto;padding:26px 30px 30px;border-top:1px solid #EFEAE2;">' + rows +
-        '<button class="aurea-cart-checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
+        '<button class="aurea-cart-checkout" data-bundle="' + bcode + '" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
           'Ασφαλής πληρωμή &middot; Δωρεάν αποστολή σε όλη την Ελλάδα' +
@@ -634,12 +638,13 @@
         var saleSavings = cart.items.reduce(function (a, it) {
           return a + ((it._cmp && it._cmp > it.final_price) ? (it._cmp - it.final_price) * it.quantity : 0);
         }, 0);
-        var bundlePct = (cart.total_discount > 0 && cart.items_subtotal_price > 0)
-          ? Math.round(cart.total_discount / cart.items_subtotal_price * 100) : 0;
+        var bundlePct = cart.total_discount > 0
+          ? (cart.items_subtotal_price > 0 ? Math.round(cart.total_discount / cart.items_subtotal_price * 100) : 0)
+          : bundlePctFor(cart.item_count);
         var items = cart.items.map(function (it, i) { return lineHtml(it, i + 1); }).join('');
         var scroll = '<div style="flex:1 1 0%;overflow-y:auto;padding:22px 30px;">' +
           roadmapHtml(cart.item_count, nextTierMsg(cart.item_count, bundlePct)) +
-          (cart.total_discount > 0 ? bannerHtml(bundlePct) : '') +
+          (bundlePct > 0 ? bannerHtml(bundlePct) : '') +
           items + '</div>';
         body = reserveHtml() + scroll + totalsHtml(cart, saleSavings);
       }
@@ -650,7 +655,7 @@
       var cont = d.querySelector('.aurea-cart-continue');
       if (cont) cont.addEventListener('click', function () { close(inst); });
       var co = d.querySelector('.aurea-cart-checkout');
-      if (co) co.addEventListener('click', function () { window.location.href = '/checkout'; });
+      if (co) co.addEventListener('click', function () { var bc = co.getAttribute('data-bundle'); window.location.href = bc ? ('/discount/' + bc + '?redirect=/checkout') : '/checkout'; });
       d.querySelectorAll('.aurea-qty').forEach(function (b) {
         b.addEventListener('click', function () {
           changeLine(parseInt(b.getAttribute('data-line'), 10), parseInt(b.getAttribute('data-qty'), 10), b);
