@@ -129,3 +129,11 @@ x-dc{display:none!important}
 @font-face{font-family:'Milanesa Serif';font-style:normal;font-weight:100 900;src:url({{ 'gfsdidot-greek-ext.woff2' | asset_url }}) format('woff2');unicode-range:U+1F00-1FFF;font-display:swap;}
 @font-face{font-family:'Milanesa Serif';font-style:normal;font-weight:100 900;src:url({{ 'gfsdidot-greek.woff2' | asset_url }}) format('woff2');unicode-range:U+0370-03FF;font-display:swap;}
 @font-face{font-family:'GFS Didot';font-style:normal;font-weight:400;src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-display:swap;}
+
+/* Cart checkout CTA — idle gold shine sweep + tactile hover/press (respects reduced motion) */
+.aurea-cart-checkout{position:relative;overflow:hidden;}
+.aurea-cart-checkout::after{content:"";position:absolute;top:0;left:-65%;width:48%;height:100%;pointer-events:none;background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.05) 38%,rgba(199,168,103,.6) 50%,rgba(255,255,255,.05) 62%,transparent 100%);transform:skewX(-18deg);animation:aurea-checkout-shine 5s ease-in-out infinite;}
+@keyframes aurea-checkout-shine{0%{left:-65%;}45%{left:130%;}100%{left:130%;}}
+.aurea-cart-checkout:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(17,17,17,.24);}
+.aurea-cart-checkout:active{transform:translateY(0);box-shadow:0 3px 10px rgba(17,17,17,.2);}
+@media (prefers-reduced-motion:reduce){.aurea-cart-checkout::after{display:none;animation:none;}}
