@@ -588,7 +588,7 @@
       if (realDisc > 0) { bundle = realDisc; pct = subtotal > 0 ? Math.round(realDisc / subtotal * 100) : 0; total = cart.total_price; }
       else { pct = bundlePctFor(cart.item_count); bundle = Math.round(subtotal * pct / 100); total = subtotal - bundle; }
       var bcode = (realDisc <= 0 && pct > 0) ? ('BUNDLE' + pct) : '';
-      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Υποσύνολο</span><span>' + money(subtotal) + '</span></div>';
+      var rows = '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#4A4A4A;margin-bottom:10px;"><span>Υποσύνολο</span><span>' + money(subtotal + saleSavings) + '</span></div>';
       if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
       if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση πακέτου (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
       rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(total) + '</span></div>';
