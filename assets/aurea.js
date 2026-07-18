@@ -987,7 +987,7 @@
      grid then background-loads ALL remaining pages, appends them, and does a single global shuffle
      across the whole set. The shuffle is SEEDED from the collection (id + product count), so the order
      is identical on every refresh/return — it only re-mixes once when the product count changes (new
-     products added). Load More then reveals 4 rows at a time from that stable mix.
+     products added). Load More shows 10 rows initially, then reveals 10 rows at a time from that stable mix.
      A hidden grid (the inactive desktop/mobile variant) falls back to on-demand per-click fetching. */
   function collectionGrid() {
     document.querySelectorAll('.aurea-shuffle').forEach(function (grid) {
@@ -1006,7 +1006,7 @@
       var cols = 4, st = grid.getAttribute('style') || '', m = st.match(/grid-template-columns:\s*([^;]+)/);
       if (m) { var rep = m[1].match(/repeat\(\s*(\d+)/); cols = rep ? parseInt(rep[1], 10) : m[1].trim().split(/\s+/).length; }
       if (!cols || cols < 1) cols = 4;
-      var INITIAL = 6 * cols, STEP = 4 * cols, shown = 0, loading = false;
+      var INITIAL = 10 * cols, STEP = 10 * cols, shown = 0, loading = false;
       var scope = grid.closest('.aurea-mobile') ? '.aurea-mobile' : '.aurea-desktop';
       var pages = parseInt(btn.getAttribute('data-pages') || '1', 10) || 1;
       var firstNext = (btn.getAttribute('data-next') || '').trim();
