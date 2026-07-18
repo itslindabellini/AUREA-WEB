@@ -505,25 +505,27 @@
         '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;">Συνέχεια Αγορών</button>' +
       '</div>';
     }
-    // Reservation urgency bar (15-min looping countdown, persisted like the design).
+    // Reservation urgency bar: one-time 15-min countdown that starts on the first add
+    // (persisted). It does NOT loop — once it hits zero the bar switches to a
+    // "no longer reserved" message. It only restarts if the cart is emptied.
     var RWIN = 15 * 60 * 1000;
     function reserveEnd() {
       var e = 0; try { e = parseInt(localStorage.getItem('aurea-reserve-end-15') || '0', 10); } catch (x) {}
-      var now = Date.now();
-      if (!e || e <= now || e - now > RWIN) { e = now + RWIN; try { localStorage.setItem('aurea-reserve-end-15', String(e)); } catch (x) {} }
+      if (!e) { e = Date.now() + RWIN; try { localStorage.setItem('aurea-reserve-end-15', String(e)); } catch (x) {} }
       return e;
     }
-    function reserveDisplay() {
+    var CLOCK_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l2.5 2"></path></svg>';
+    function reserveBarInner() {
       var left = Math.round((reserveEnd() - Date.now()) / 1000);
-      if (left < 0) left = 0;
-      var m = Math.floor(left / 60), s = left % 60;
-      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      if (left > 0) {
+        var m = Math.floor(left / 60), s = left % 60;
+        var disp = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα σας κρατούνται για <strong style="font-weight:700;font-variant-numeric:tabular-nums;">' + disp + '</strong></span>';
+      }
+      return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα δεν κρατούνται πλέον — αγοράστε γρήγορα πριν εξαντληθούν</span>';
     }
     function reserveHtml() {
-      return '<div style="display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' +
-        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B23A2E" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l2.5 2"></path></svg>' +
-        '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα σας κρατούνται για <strong class="aurea-reserve" style="font-weight:700;font-variant-numeric:tabular-nums;">' + reserveDisplay() + '</strong></span>' +
-      '</div>';
+      return '<div class="aurea-reserve-bar" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' + reserveBarInner() + '</div>';
     }
 
     // Bundle-progress roadmap (2 / 3 / 4 items -> 15 / 20 / 25% off).
@@ -633,6 +635,7 @@
       var d = inst.drawer;
       var body;
       if (!cart.item_count) {
+        try { localStorage.removeItem('aurea-reserve-end-15'); } catch (x) {}
         body = emptyHtml();
       } else {
         var saleSavings = cart.items.reduce(function (a, it) {
@@ -738,8 +741,10 @@
 
     // Live reservation countdown — updates every open drawer's timer once a second.
     setInterval(function () {
-      var disp = reserveDisplay();
-      document.querySelectorAll('.aurea-reserve').forEach(function (s) { s.textContent = disp; });
+      var bars = document.querySelectorAll('.aurea-reserve-bar');
+      if (!bars.length) return;
+      var inner = reserveBarInner();
+      bars.forEach(function (bar) { bar.innerHTML = inner; });
     }, 1000);
 
     // Seed badge counts on load without opening anything.
