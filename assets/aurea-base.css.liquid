@@ -136,3 +136,12 @@ x-dc{display:none!important}
 .aurea-cart-checkout:hover{box-shadow:0 8px 22px rgba(17,17,17,.24);}
 .aurea-cart-checkout:active{box-shadow:0 3px 10px rgba(17,17,17,.2);}
 @media (prefers-reduced-motion:reduce){.aurea-cart-checkout{animation:none;}}
+
+/* Hide images embedded in product descriptions (imported promo photos break the layout).
+   Applies to every product automatically, including newly imported ones. Text stays. */
+body.template-product .rte img,
+body.template-product .rte picture,
+body.template-product .rte video{display:none !important;}
+body.template-product .rte p:has(> img:only-child),
+body.template-product .rte p:has(> picture:only-child),
+body.template-product .rte figure:has(> img:only-child){display:none !important;margin:0 !important;}
