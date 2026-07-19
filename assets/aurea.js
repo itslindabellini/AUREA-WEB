@@ -9,7 +9,7 @@
     'Footwear':       ['Shop All', 'Sandals', 'Flats', 'Heels', 'Boots', 'Sneakers'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', 'Ankle Jewelry', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
-    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Jeans', 'Pants', 'Sets']
+    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Winter Dresses', 'Jeans', 'Pants', 'Sets']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
   var FLAT = {};
@@ -25,7 +25,7 @@
     'Gold Jewelry': 'Χρυσά Κοσμήματα', 'Silver Jewelry': 'Ασημένια Κοσμήματα', 'Full Sets': 'Πλήρη Σετ', 'Ankle Jewelry': 'Κοσμήματα Ποδιού',
     'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
     'Leather Bags': 'Δερμάτινες Τσάντες', 'Luxury Bags': 'Πολυτελείς Τσάντες',
-    'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Jeans': 'Τζιν'
+    'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Winter Dresses': 'Χειμερινά Φορέματα', 'Jeans': 'Τζιν'
   };
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
   function trLabel(en) { return NAV_TR[en] || en; }
