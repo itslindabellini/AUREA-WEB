@@ -9,6 +9,10 @@
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  {%- if template.name == 'index' -%}
+  <link rel="preload" as="image" href="{{ 'hero-mobile.jpeg' | asset_url }}" media="(max-width: 749px)" fetchpriority="high">
+  <link rel="preload" as="image" href="{{ 'hero.jpeg' | asset_url }}" media="(min-width: 750px)" fetchpriority="high">
+  {%- endif -%}
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   {{ 'aurea-base.css' | asset_url | stylesheet_tag }}
   {{ content_for_header }}
