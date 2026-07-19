@@ -1153,6 +1153,9 @@
       var visible = grid.offsetParent !== null;
       if (visible && pages > 1 && firstNext) {
         // ---- primary path: load every remaining page, then GLOBAL shuffle across all of them ----
+        // Deferred to browser-idle so the fetch-storm doesn't compete with the initial paint;
+        // the final global-shuffle result is byte-identical, only its timing shifts slightly.
+        var loadRest = function () {
         var reqs = [];
         for (var n = 2; n <= pages; n++) {
           reqs.push(fetch(pageUrl(n), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
@@ -1174,6 +1177,8 @@
             restoreState();  // now the full stable mix is in place — return to where the shopper was
           }, 180);
         });
+        };
+        if (window.requestIdleCallback) { requestIdleCallback(loadRest, { timeout: 1500 }); } else { setTimeout(loadRest, 400); }
         // Load More is now a pure reveal (all cards are local)
         btn.addEventListener('click', function (e) {
           e.preventDefault();
