@@ -606,7 +606,7 @@
     var instances = drawers.map(function (drawer) {
       var wrapper = (drawer.closest && drawer.closest('.aurea-desktop, .aurea-mobile')) || document.body;
       var dimAlpha = (wrapper.classList && wrapper.classList.contains('aurea-mobile')) ? '0' : '.4';
-      var overlay = el('div', 'position:fixed;inset:0;background:rgba(20,18,16,' + dimAlpha + ');z-index:1000;opacity:0;visibility:hidden;transition:opacity .3s ease;');
+      var overlay = el('div', 'position:fixed;inset:0;background:rgba(20,18,16,' + dimAlpha + ');z-index:999;opacity:0;visibility:hidden;transition:opacity .3s ease;');
       document.body.appendChild(overlay);
       var inst = { drawer: drawer, overlay: overlay, wrapper: wrapper };
       overlay.addEventListener('click', function () { close(inst); });
