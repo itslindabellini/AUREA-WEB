@@ -733,7 +733,10 @@
       trig.style.cursor = 'pointer';
       if (getComputedStyle(trig).position === 'static') trig.style.position = 'relative';
       trig.addEventListener('click', function (e) { e.preventDefault(); getCart().then(function (c) { render(inst, c); updateBadges(c.item_count); open(inst); }); });
-      var badge = el('span', 'position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;background:#B23A2E;color:#fff;border-radius:9px;font-family:Manrope;font-weight:700;font-size:10px;line-height:17px;text-align:center;display:none;');
+      var isMob = inst.wrapper && inst.wrapper.classList && inst.wrapper.classList.contains('aurea-mobile');
+      var badge = el('span', isMob
+        ? 'margin-left:7px;flex:0 0 auto;min-width:19px;height:19px;padding:0 5px;box-sizing:border-box;background:#B23A2E;color:#fff;border-radius:10px;font-family:Manrope;font-weight:700;font-size:10.5px;line-height:19px;text-align:center;display:none;'
+        : 'position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;background:#B23A2E;color:#fff;border-radius:9px;font-family:Manrope;font-weight:700;font-size:10px;line-height:17px;text-align:center;display:none;');
       trig.appendChild(badge);
       badges.push(badge);
     });
