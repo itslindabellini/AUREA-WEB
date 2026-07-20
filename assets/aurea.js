@@ -1302,24 +1302,33 @@
   }
 
   function init() {
-    try { hoverPolish(); } catch (e) {}
-    try { trackForm(); } catch (e) {}
+    // Interaction-critical (nav, cart, product buy-box, gallery): run now so the
+    // first screen is fully responsive to taps.
     try { buildDropdowns(); } catch (e) {}
     try { buildMobileMenu(); } catch (e) {}
-    try { buildFAQ(); } catch (e) {}
-    try { restoreHovers(); } catch (e) {}
-    try { quickAdd(); } catch (e) {}
-    try { productPage(); } catch (e) {}
-    try { productAccordion(); } catch (e) {}
-    try { productGallery(); } catch (e) {}
-    try { pdpStickyPin(); } catch (e) {}
-    try { reviewsCarousel(); } catch (e) {}
-    try { collectionFilters(); } catch (e) {}
-    try { sizeChart(); } catch (e) {}
-    try { productReco(); } catch (e) {}
-    try { collectionGrid(); } catch (e) {}
     try { cartDrawer(); } catch (e) {}
-    try { savingsTags(); } catch (e) {}
+    try { productPage(); } catch (e) {}
+    try { productGallery(); } catch (e) {}
+    // Everything else decorates below-the-fold / non-critical UI. Defer it to idle so
+    // it doesn't block the main thread during load — invisible in the first screen,
+    // but it lowers Total Blocking Time on the throttled mobile Lighthouse run.
+    var deferred = function () {
+      try { hoverPolish(); } catch (e) {}
+      try { trackForm(); } catch (e) {}
+      try { buildFAQ(); } catch (e) {}
+      try { restoreHovers(); } catch (e) {}
+      try { quickAdd(); } catch (e) {}
+      try { productAccordion(); } catch (e) {}
+      try { pdpStickyPin(); } catch (e) {}
+      try { reviewsCarousel(); } catch (e) {}
+      try { collectionFilters(); } catch (e) {}
+      try { sizeChart(); } catch (e) {}
+      try { productReco(); } catch (e) {}
+      try { collectionGrid(); } catch (e) {}
+      try { savingsTags(); } catch (e) {}
+    };
+    if (window.requestIdleCallback) requestIdleCallback(deferred, { timeout: 1200 });
+    else setTimeout(deferred, 150);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
