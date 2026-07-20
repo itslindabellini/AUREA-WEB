@@ -24,6 +24,9 @@
       },
       "shipping_errors": {
         "empty_state": "Δωρεάν αποστολή σε όλη την Ελλάδα"
+      },
+      "alternative_payment_method_banner": {
+        "or": "12.000 ευχαριστημένοι πελάτες"
       }
     }
   }
