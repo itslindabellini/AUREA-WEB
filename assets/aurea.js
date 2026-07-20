@@ -1273,6 +1273,9 @@
   }
   function fmtMoney(n) { return '€' + Math.round(n); }
   function savingsTags(root) {
+    // On a dedicated jewelry/bags collection page every card is jewelry/bags,
+    // so we can force the tag top-right without relying on the per-card flag.
+    var pageJb = /jewl|jewel|necklace|earring|bracelet|\/rings|ankle-jew|\/bags|handbag|crossbody|tote-bag/i.test(location.pathname);
     (root || document).querySelectorAll('a[href*="/products/"]').forEach(function (card) {
       if (card.getAttribute('data-aurea-saved')) return;
       var strike = card.querySelector('[style*="line-through"]');
@@ -1290,7 +1293,7 @@
       // Mobile default: bottom-right (keeps the tag off the model's face). Bags &
       // jewelry cards (data-jb) look better top-right, matching desktop.
       var onMobile = card.closest && card.closest('.aurea-mobile');
-      var isJb = card.getAttribute('data-jb') === '1';
+      var isJb = pageJb || card.getAttribute('data-jb') === '1';
       var tagPos = (onMobile && !isJb) ? 'bottom:12px;right:12px' : 'top:12px;right:12px';
       var tag = el('div', 'position:absolute;' + tagPos + ';z-index:4;background:#111;color:#fff;font-family:Manrope;font-weight:700;font-size:12px;letter-spacing:.02em;line-height:1;padding:8px 12px;border-radius:2px;white-space:nowrap;pointer-events:none;');
       tag.textContent = 'εκτός ' + fmtMoney(saved);
