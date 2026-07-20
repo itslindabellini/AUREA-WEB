@@ -520,7 +520,7 @@
       if (left > 0) {
         var m = Math.floor(left / 60), s = left % 60;
         var disp = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-        return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα σας κρατούνται για <strong style="font-weight:700;font-variant-numeric:tabular-nums;">' + disp + '</strong></span>';
+        return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;white-space:nowrap;">Τα προϊόντα σας κρατούνται για <strong style="font-weight:700;font-variant-numeric:tabular-nums;">' + disp + '</strong></span>';
       }
       return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα δεν κρατούνται πλέον — αγοράστε γρήγορα πριν εξαντληθούν</span>';
     }
@@ -598,7 +598,7 @@
         '<button class="aurea-cart-checkout" data-bundle="' + bcode + '" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Ασφαλής πληρωμή &middot; Δωρεάν αποστολή σε όλη την Ελλάδα' +
+          'Ασφαλής πληρωμή &middot; Δωρεάν αποστολή στην Ελλάδα' +
         '</div>' +
       '</div>';
     }
