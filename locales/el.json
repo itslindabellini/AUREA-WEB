@@ -12,6 +12,9 @@
     "checkout": {
       "order_summary": {
         "enter_shipping_address": "ΔΩΡΕΑΝ"
+      },
+      "contact": {
+        "contact_method_title": "Στοιχεία επικοινωνίας (βήμα 1/3)"
       }
     }
   }
