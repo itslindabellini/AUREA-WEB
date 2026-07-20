@@ -189,9 +189,9 @@
       '</div>' +
       '<div style="margin-top:auto;padding:22px 20px;border-top:1px solid #EFEAE2;">' +
         '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Αγοράστε Τώρα</a>' +
-        '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:11.5px;color:#9A948C;">' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:11.5px;color:#9A948C;white-space:nowrap;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Ασφαλής πληρωμή · Δωρεάν αποστολή σε όλη την Ελλάδα' +
+          'Ασφαλής πληρωμή · Δωρεάν αποστολή στην Ελλάδα' +
         '</div>' +
       '</div>';
     overlay.appendChild(drawer);
