@@ -1273,9 +1273,9 @@
   }
   function fmtMoney(n) { return '€' + Math.round(n); }
   function savingsTags(root) {
-    // On a dedicated jewelry/bags collection page every card is jewelry/bags,
+    // On a dedicated bags/footwear collection page every card is a bag/shoe,
     // so we can force the tag top-right without relying on the per-card flag.
-    var pageJb = /jewl|jewel|necklace|earring|bracelet|\/rings|ankle-jew|\/bags|handbag|crossbody|tote-bag/i.test(location.pathname);
+    var pageJb = /\/bags|handbag|crossbody|tote-bag|\/footwear|\/sandals|\/flats|\/heels|\/boots|\/sneakers|\/shoes/i.test(location.pathname);
     (root || document).querySelectorAll('a[href*="/products/"]').forEach(function (card) {
       if (card.getAttribute('data-aurea-saved')) return;
       var strike = card.querySelector('[style*="line-through"]');
@@ -1291,7 +1291,7 @@
       var wrap = card.querySelector('div[style*="position: relative"]') || card.querySelector('div[style*="position:relative"]');
       if (!wrap) { wrap = card; if (getComputedStyle(card).position === 'static') card.style.position = 'relative'; }
       // Mobile default: bottom-right (keeps the tag off the model's face). Bags &
-      // jewelry cards (data-jb) look better top-right, matching desktop.
+      // footwear cards (data-jb) look better top-right, matching desktop.
       var onMobile = card.closest && card.closest('.aurea-mobile');
       var isJb = pageJb || card.getAttribute('data-jb') === '1';
       var tagPos = (onMobile && !isJb) ? 'bottom:12px;right:12px' : 'top:12px;right:12px';
