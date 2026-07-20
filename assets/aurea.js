@@ -525,7 +525,7 @@
       return CLOCK_SVG + '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;letter-spacing:.01em;color:#B23A2E;">Τα προϊόντα δεν κρατούνται πλέον — αγοράστε γρήγορα πριν εξαντληθούν</span>';
     }
     function reserveHtml() {
-      return '<div class="aurea-reserve-bar" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' + reserveBarInner() + '</div>';
+      return '<div class="aurea-reserve-bar" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' + reserveBarInner() + '</div>';
     }
 
     // Bundle-progress roadmap (2 / 3 / 4 items -> 15 / 20 / 25% off).
@@ -533,7 +533,7 @@
       var gold = '#C7A867', dark = '#111', line = '#EAE2D6', nBg = '#F5F0EB', nFg = '#9A948C';
       var r1 = count >= 2, r2 = count >= 3, r3 = count >= 4;
       function dot(num, bg, fg) { return '<div style="width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:700;font-size:11px;background:' + bg + ';color:' + fg + ';">' + num + '</div>'; }
-      return '<div style="margin-bottom:22px;">' +
+      return '<div style="margin-bottom:16px;">' +
         '<div style="font-family:Manrope;font-weight:700;font-size:13px;color:#111;text-align:center;margin-bottom:16px;">' + msg + '</div>' +
         '<div style="display:flex;align-items:center;">' +
           dot(2, r1 ? dark : nBg, r1 ? '#fff' : nFg) +
@@ -594,7 +594,7 @@
       if (saleSavings > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση προσφοράς</span><span>&minus;' + money(saleSavings) + '</span></div>';
       if (bundle > 0) rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:500;font-size:14px;color:#B23A2E;margin-bottom:10px;"><span>Έκπτωση πακέτου (' + pct + '%)</span><span>&minus;' + money(bundle) + '</span></div>';
       rows += '<div style="display:flex;justify-content:space-between;font-family:Manrope;font-weight:700;font-size:17px;color:#111;padding-top:14px;border-top:1px solid #EFEAE2;margin-bottom:22px;"><span>Σύνολο</span><span>' + money(total) + '</span></div>';
-      return '<div style="flex:0 0 auto;padding:26px 30px 30px;border-top:1px solid #EFEAE2;">' + rows +
+      return '<div style="flex:0 0 auto;padding:20px 30px 24px;border-top:1px solid #EFEAE2;">' + rows +
         '<button class="aurea-cart-checkout" data-bundle="' + bcode + '" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
@@ -646,7 +646,7 @@
           ? (cart.items_subtotal_price > 0 ? Math.round(cart.total_discount / cart.items_subtotal_price * 100) : 0)
           : bundlePctFor(cart.item_count);
         var items = cart.items.map(function (it, i) { return lineHtml(it, i + 1); }).join('');
-        var scroll = '<div style="flex:1 1 0%;overflow-y:auto;padding:22px 30px;">' +
+        var scroll = '<div style="flex:1 1 0%;overflow-y:auto;padding:16px 30px;">' +
           roadmapHtml(cart.item_count, nextTierMsg(cart.item_count, bundlePct)) +
           (bundlePct > 0 ? bannerHtml(bundlePct) : '') +
           items + '</div>';
@@ -667,15 +667,25 @@
       });
     }
 
-    function renderAll(cart) { instances.forEach(function (inst) { render(inst, cart); }); updateBadges(cart.item_count); }
+    var lastCart = null;
+    function renderAll(cart) { lastCart = cart; instances.forEach(function (inst) { render(inst, cart); }); updateBadges(cart.item_count); }
 
     function changeLine(line, qty, btn) {
-      if (btn) btn.style.pointerEvents = 'none';
+      // Optimistic: reflect the new quantity + totals instantly, then reconcile with the server.
+      if (lastCart && lastCart.items && lastCart.items[line - 1]) {
+        var oc = JSON.parse(JSON.stringify(lastCart));
+        if (qty <= 0) { oc.items.splice(line - 1, 1); }
+        else { oc.items[line - 1].quantity = qty; }
+        var sub = 0, cnt = 0;
+        oc.items.forEach(function (x) { sub += (x.final_price || 0) * x.quantity; cnt += x.quantity; });
+        oc.items_subtotal_price = sub; oc.total_price = sub; oc.total_discount = 0; oc.item_count = cnt;
+        renderAll(oc);
+      }
       fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ line: line, quantity: qty }) })
         .then(function (r) { return r.json(); })
         .then(function (cart) { return enrich(cart); })
         .then(function (cart) { renderAll(cart); })
-        .catch(function () { if (btn) btn.style.pointerEvents = ''; });
+        .catch(function () { getCart().then(renderAll).catch(function () {}); });
     }
 
     // compare_at prices aren't in cart.js — fetch each product once and cache the map.
