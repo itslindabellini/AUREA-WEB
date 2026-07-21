@@ -1,0 +1,1116 @@
+<!--
+  AUREA — Expense Dashboard
+  Single-file, self-contained expense tracker for a drop-shipping store.
+  Data is stored locally in the browser (localStorage). Nothing is uploaded.
+  Design mirrors the reference analytics layout: KPI cards, donuts, bar +
+  line charts, and an interactive expense table with add / edit / delete.
+-->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AUREA · Expense Dashboard</title>
+<style>
+  /* ---------- Design tokens (light) ---------- */
+  :root {
+    --ground:        #eef0f4;   /* page plane */
+    --surface:       #ffffff;   /* cards */
+    --surface-2:     #f6f7f9;   /* subtle inner fills */
+    --ink:           #1c1f26;   /* primary text */
+    --ink-2:         #5b6270;   /* secondary text */
+    --muted:         #9298a5;   /* labels / axis */
+    --line:          #eceef2;   /* hairlines */
+    --line-2:        #e2e5ea;
+
+    --accent:        #3b5bdb;   /* primary blue */
+    --accent-2:      #5b74e6;
+    --accent-soft:   #eaeeff;
+
+    /* categorical (validated reference order) */
+    --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100;
+    --c5:#e87ba4; --c6:#008300; --c7:#4a3aa7; --c8:#e34948;
+
+    /* status */
+    --good:#0ca35a; --good-soft:#e5f5ec;
+    --warn:#c98a00; --warn-soft:#fbf1dc;
+    --bad:#e0433c;  --bad-soft:#fdeceb;
+    --info:#6a55d6; --info-soft:#efecfb;
+
+    --ring-track:#eceef3;
+    --shadow: 0 1px 2px rgba(28,31,38,.04), 0 6px 24px rgba(28,31,38,.06);
+    --shadow-lg: 0 8px 40px rgba(28,31,38,.14);
+    --r: 18px;   /* card radius */
+    --r-sm: 11px;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --ground:        #0e1013;
+    --surface:       #171a1f;
+    --surface-2:     #1d2127;
+    --ink:           #f3f4f6;
+    --ink-2:         #aab1bf;
+    --muted:         #7b828f;
+    --line:          #23272e;
+    --line-2:        #2b303a;
+    --accent:        #5b74e6;
+    --accent-2:      #7d90ec;
+    --accent-soft:   #1c2440;
+    --c1:#3987e5; --c2:#f0763f; --c3:#1cc389; --c4:#f0b32a;
+    --c5:#ef94b6; --c6:#22a922; --c7:#9085e9; --c8:#ef6b6a;
+    --good:#26c06e; --good-soft:#12331f;
+    --warn:#e0a52a; --warn-soft:#332815;
+    --bad:#ef6b6a;  --bad-soft:#3a1c1c;
+    --info:#9085e9; --info-soft:#231d3f;
+    --ring-track:#262b33;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 30px rgba(0,0,0,.35);
+    --shadow-lg: 0 10px 46px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--ground);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  h1,h2,h3,h4 { margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  .app { max-width: 1280px; margin: 0 auto; padding: 22px clamp(12px, 3vw, 30px) 60px; }
+
+  /* ---------- Top bar ---------- */
+  .topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .wordmark { font-size: 22px; font-weight: 700; letter-spacing: .16em; }
+  .wordmark small { display:block; font-size:10px; letter-spacing:.34em; color: var(--muted); font-weight:600; margin-top:2px; }
+  .period {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line-2); color: var(--ink-2);
+    padding: 8px 12px; border-radius: 10px; box-shadow: var(--shadow); font-size: 13px;
+  }
+  .period select { border: 0; background: transparent; color: var(--ink); font-weight: 600; font-size: 13px; padding: 0 2px; }
+  .spacer { flex: 1 1 auto; }
+  .theme-toggle {
+    display: inline-flex; align-items: center; background: var(--surface);
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 4px; gap: 2px; box-shadow: var(--shadow);
+  }
+  .theme-toggle button { border:0; background:transparent; color: var(--muted); width: 30px; height: 26px; border-radius: 999px; display:grid; place-items:center; }
+  .theme-toggle button.on { background: var(--accent); color:#fff; }
+  .user { display:flex; align-items:center; gap:10px; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--info)); color:#fff; display:grid; place-items:center; font-weight:700; font-size:14px; }
+  .user b { font-weight: 600; font-size: 13px; }
+
+  /* ---------- Grid ---------- */
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+  .card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px 18px; }
+  .card h3.title { font-size: 15px; }
+  .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; }
+  .col-5 { grid-column: span 5; } .col-6 { grid-column: span 6; }
+  .col-7 { grid-column: span 7; } .col-8 { grid-column: span 8; }
+  .col-12 { grid-column: span 12; }
+
+  /* ---------- KPI cards ---------- */
+  .kpi { display:flex; flex-direction: column; gap: 6px; min-height: 118px; }
+  .kpi .row { display:flex; align-items:flex-start; justify-content: space-between; }
+  .kpi .label { color: var(--ink-2); font-size: 13px; font-weight: 600; }
+  .kpi .ico { width: 34px; height: 34px; border-radius: 10px; background: var(--surface-2); display:grid; place-items:center; color: var(--ink-2); }
+  .kpi .value { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .kpi .sub { font-size: 12px; color: var(--muted); }
+  .delta { font-weight: 700; font-size: 12px; }
+  .delta.up { color: var(--bad); }     /* spend up = bad */
+  .delta.down { color: var(--good); }  /* spend down = good */
+
+  /* ---------- Donut cards ---------- */
+  .donut-card { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; min-height: 210px; }
+  .donut-legend { display:flex; flex-direction: column; gap: 9px; }
+  .leg { display:flex; align-items:center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+  .leg .dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+  .leg b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .donut-wrap { position: relative; }
+  .donut-center { position:absolute; inset:0; display:grid; place-items:center; text-align:center; pointer-events:none; }
+  .donut-center .big { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .donut-center .cap { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing:.08em; }
+
+  /* ---------- Chart cards ---------- */
+  .card-head { display:flex; align-items:center; justify-content: space-between; margin-bottom: 8px; gap:10px; }
+  .chart-svg { width: 100%; display: block; overflow: visible; }
+  .tick { fill: var(--muted); font-size: 10px; }
+  .gridline { stroke: var(--line); stroke-width: 1; }
+  .bar { fill: var(--accent); transition: fill .12s; }
+  .bar-bg { fill: var(--surface-2); }
+  .bar:hover { fill: var(--accent-2); }
+
+  /* ring stat cards */
+  .ringrow { display:flex; align-items:center; gap: 16px; }
+  .ring-meta .cap { font-size:12.5px; color: var(--ink-2); font-weight:600; }
+  .ring-meta .amt { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing:-.02em; white-space:nowrap; }
+  .ring-meta .note { font-size: 11.5px; color: var(--muted); }
+  .ring-badge { font-size: 11px; font-weight:700; padding: 3px 8px; border-radius: 999px; }
+
+  /* ---------- Upcoming list ---------- */
+  .up-item { display:flex; align-items:center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .up-item:first-child { border-top: 0; }
+  .up-date { width: 44px; text-align:center; flex:0 0 auto; }
+  .up-date .d { font-size: 17px; font-weight: 700; line-height:1; }
+  .up-date .m { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing:.06em; }
+  .up-main { flex: 1 1 auto; min-width: 0; }
+  .up-main .n { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+  .up-main .c { font-size: 11.5px; color: var(--muted); }
+  .up-amt { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Toolbar + Table ---------- */
+  .toolbar { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .search { position:relative; flex: 1 1 200px; max-width: 320px; }
+  .search input { width:100%; padding: 9px 12px 9px 34px; border-radius: 10px; border:1px solid var(--line-2); background: var(--surface); color: var(--ink); font-size:13px; }
+  .search svg { position:absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+  .selctl { padding: 9px 12px; border-radius: 10px; border:1px solid var(--line-2); background: var(--surface); color: var(--ink-2); font-size:13px; font-weight:600; }
+  .btn { border:1px solid var(--line-2); background: var(--surface); color: var(--ink); padding: 9px 14px; border-radius: 10px; font-weight:600; font-size:13px; display:inline-flex; align-items:center; gap:7px; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color:#fff; }
+  .btn.primary:hover { background: var(--accent-2); }
+  .btn.ghost { background: transparent; }
+  .menu-wrap { position: relative; }
+  .menu { position:absolute; right:0; top: calc(100% + 6px); background: var(--surface); border:1px solid var(--line-2); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 6px; min-width: 210px; z-index: 40; display:none; }
+  .menu.open { display:block; }
+  .menu button { display:flex; width:100%; align-items:center; gap:10px; padding: 9px 10px; border:0; background:transparent; color: var(--ink); border-radius: 8px; font-size:13px; text-align:left; }
+  .menu button:hover { background: var(--surface-2); }
+  .menu .sep { height:1px; background: var(--line); margin: 5px 4px; }
+  .menu .danger { color: var(--bad); }
+
+  .table-wrap { overflow-x: auto; }
+  table.exp { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.exp th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing:.04em; padding: 0 12px 12px; white-space:nowrap; cursor: pointer; user-select:none; }
+  table.exp th .arw { opacity:.5; font-size:9px; }
+  table.exp td { padding: 12px; border-top: 1px solid var(--line); vertical-align: middle; }
+  table.exp tr:hover td { background: var(--surface-2); }
+  table.exp .amt { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space:nowrap; }
+  .vend { display:flex; align-items:center; gap:10px; }
+  .vend .sw { width: 30px; height: 30px; border-radius: 9px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:12px; flex:0 0 auto; }
+  .vend .nm { font-weight:600; }
+  .vend .nt { font-size: 11px; color: var(--muted); }
+  .pill { display:inline-flex; align-items:center; gap:5px; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space:nowrap; }
+  .pill.paid { background: var(--good-soft); color: var(--good); }
+  .pill.upcoming { background: var(--warn-soft); color: var(--warn); }
+  .pill.overdue { background: var(--bad-soft); color: var(--bad); }
+  .pill.recurring { background: var(--info-soft); color: var(--info); }
+  .pill .pdot { width:6px; height:6px; border-radius:50%; background: currentColor; }
+  .catchip { font-size:11.5px; color: var(--ink-2); display:inline-flex; align-items:center; gap:6px; }
+  .catchip .cdot { width:8px; height:8px; border-radius:3px; }
+  .rowbtns { display:flex; gap:4px; justify-content:flex-end; }
+  .iconbtn { width:30px; height:30px; border-radius:8px; border:1px solid transparent; background:transparent; color: var(--muted); display:grid; place-items:center; }
+  .iconbtn:hover { background: var(--surface-2); color: var(--ink); border-color: var(--line-2); }
+  .iconbtn.del:hover { color: var(--bad); }
+
+  .empty { text-align:center; padding: 40px 20px; color: var(--ink-2); }
+  .empty h4 { font-size: 16px; margin-bottom: 6px; }
+  .empty p { color: var(--muted); max-width: 380px; margin: 0 auto 16px; }
+
+  .store-note { font-size: 12px; color: var(--muted); display:flex; align-items:center; gap:8px; margin-top: 18px; }
+  .store-note svg { flex:0 0 auto; }
+
+  /* ---------- Modal ---------- */
+  .overlay { position: fixed; inset:0; background: rgba(16,18,22,.5); backdrop-filter: blur(2px); display:none; align-items:center; justify-content:center; z-index: 100; padding: 16px; }
+  .overlay.open { display:flex; }
+  .modal { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow-lg); width: 100%; max-width: 480px; max-height: 92vh; overflow:auto; }
+  .modal-head { display:flex; align-items:center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); position: sticky; top:0; background: var(--surface); }
+  .modal-head h3 { font-size: 16px; }
+  .modal-body { padding: 18px 20px; display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display:flex; flex-direction:column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .field input, .field select, .field textarea {
+    padding: 10px 12px; border-radius: 10px; border:1px solid var(--line-2);
+    background: var(--surface); color: var(--ink); font-size: 14px; width:100%;
+  }
+  .field textarea { resize: vertical; min-height: 58px; }
+  .seg { display:flex; gap:8px; }
+  .seg label { flex:1; border:1px solid var(--line-2); border-radius: 10px; padding: 9px; text-align:center; font-size:13px; font-weight:600; color: var(--ink-2); cursor:pointer; }
+  .seg input { display:none; }
+  .seg input:checked + span { color: var(--accent); }
+  .seg label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .modal-foot { display:flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--line); position: sticky; bottom:0; background: var(--surface); }
+  .hint { font-size: 11.5px; color: var(--muted); }
+
+  .tt { position: fixed; pointer-events:none; z-index: 200; background: var(--ink); color: var(--surface); padding: 7px 10px; border-radius: 8px; font-size: 12px; box-shadow: var(--shadow-lg); opacity:0; transition: opacity .1s; font-variant-numeric: tabular-nums; }
+  .tt b { color: var(--surface); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--surface); padding: 11px 18px; border-radius: 10px; box-shadow: var(--shadow-lg); font-size: 13px; font-weight:600; opacity:0; transition: all .2s; z-index: 300; }
+  .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1080px) {
+    .col-3 { grid-column: span 6; } .col-4 { grid-column: span 6; }
+    .col-5,.col-7,.col-8 { grid-column: span 12; } .col-6 { grid-column: span 12; }
+  }
+  @media (max-width: 720px) {
+    .col-3 { grid-column: span 6; }
+    .modal-body { grid-template-columns: 1fr; }
+    .kpi .value { font-size: 26px; }
+    .donut-card { grid-template-columns: 1fr; justify-items:center; text-align:center; }
+  }
+  @media (max-width: 480px) {
+    .col-3 { grid-column: span 12; }
+    .hide-sm { display:none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="wordmark">AUREA<small>EXPENSE CONTROL</small></div>
+    </div>
+    <div class="period">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+      <select id="yearSel" aria-label="Year"></select>
+      <span style="color:var(--muted)">·</span>
+      <select id="monthSel" aria-label="Month"></select>
+    </div>
+    <div class="spacer"></div>
+    <div class="theme-toggle" id="themeToggle">
+      <button data-theme-set="light" title="Light" aria-label="Light theme"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg></button>
+      <button data-theme-set="dark" title="Dark" aria-label="Dark theme"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    </div>
+    <div class="user">
+      <div class="avatar" id="avatar">A</div>
+      <b class="hide-sm" id="userName">Store Owner</b>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid" id="dash">
+
+    <!-- KPI cluster (left 2x2) -->
+    <div class="card kpi col-3">
+      <div class="row"><span class="label">This month</span>
+        <span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></span></div>
+      <div class="value" id="kpiMonth">—</div>
+      <div class="sub"><span class="delta" id="kpiMonthDelta"></span> vs last month</div>
+    </div>
+    <div class="card kpi col-3">
+      <div class="row"><span class="label">Recurring / mo</span>
+        <span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span></div>
+      <div class="value" id="kpiRecurring">—</div>
+      <div class="sub" id="kpiRecurringSub">fixed subscriptions</div>
+    </div>
+    <div class="card kpi col-3">
+      <div class="row"><span class="label">Year to date</span>
+        <span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span></div>
+      <div class="value" id="kpiYear">—</div>
+      <div class="sub" id="kpiYearSub">total spent</div>
+    </div>
+    <div class="card kpi col-3">
+      <div class="row"><span class="label">Upcoming 30d</span>
+        <span class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div>
+      <div class="value" id="kpiUpcoming">—</div>
+      <div class="sub" id="kpiUpcomingSub">due soon</div>
+    </div>
+
+    <!-- Donut: spending by type -->
+    <div class="card col-3">
+      <div class="card-head"><h3 class="title">By payment type</h3></div>
+      <div class="donut-card">
+        <div class="donut-legend" id="typeLegend"></div>
+        <div class="donut-wrap" id="typeDonut"></div>
+      </div>
+    </div>
+
+    <!-- Donut: spending by category -->
+    <div class="card col-3">
+      <div class="card-head"><h3 class="title">By category</h3></div>
+      <div class="donut-card">
+        <div class="donut-legend" id="catLegend"></div>
+        <div class="donut-wrap" id="catDonut"></div>
+      </div>
+    </div>
+
+    <!-- Monthly expenses bar chart -->
+    <div class="card col-6">
+      <div class="card-head">
+        <h3 class="title">Monthly expenses</h3>
+        <span class="hint" id="barYearLabel"></span>
+      </div>
+      <div id="barChart"></div>
+    </div>
+
+    <!-- Ring stat cards -->
+    <div class="card col-3" style="display:flex; flex-direction:column;">
+      <div class="card-head"><h3 class="title">Budget health</h3></div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:20px; justify-content:center;">
+        <div class="ringrow">
+          <div id="ringPaid"></div>
+          <div class="ring-meta">
+            <div class="cap">Paid year to date</div>
+            <div class="amt" id="paidAmt">—</div>
+            <div class="note">of total budgeted</div>
+          </div>
+        </div>
+        <div style="height:1px; background:var(--line)"></div>
+        <div class="ringrow">
+          <div id="ringUpcoming"></div>
+          <div class="ring-meta">
+            <div class="cap">Committed recurring</div>
+            <div class="amt" id="recurAmt">—</div>
+            <div class="note">annualised run-rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spending trend line -->
+    <div class="card col-6">
+      <div class="card-head">
+        <h3 class="title">Spending trend</h3>
+        <span class="hint">cumulative · <span id="trendYear"></span></span>
+      </div>
+      <div id="lineChart"></div>
+    </div>
+
+    <!-- Upcoming payments -->
+    <div class="card col-3">
+      <div class="card-head"><h3 class="title">Upcoming &amp; due</h3><span class="hint">next 45 days</span></div>
+      <div id="upcomingList"></div>
+    </div>
+
+    <!-- Expense table -->
+    <div class="card col-12">
+      <div class="card-head" style="margin-bottom:14px;">
+        <h3 class="title">Expenses</h3>
+        <span class="hint" id="tableCount"></span>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input id="searchInput" placeholder="Search vendor or note…" />
+        </div>
+        <select class="selctl" id="filterCat"><option value="">All categories</option></select>
+        <select class="selctl" id="filterType"><option value="">All types</option><option value="recurring">Recurring</option><option value="one-time">One-time</option></select>
+        <select class="selctl" id="filterStatus"><option value="">All statuses</option><option value="paid">Paid</option><option value="upcoming">Upcoming</option><option value="overdue">Overdue</option></select>
+        <div class="spacer"></div>
+        <div class="menu-wrap">
+          <button class="btn" id="dataBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 21h16"/></svg>Data</button>
+          <div class="menu" id="dataMenu">
+            <button data-act="csv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Export CSV</button>
+            <button data-act="json"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 21h16"/></svg>Backup (JSON)</button>
+            <button data-act="import"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9M8 13l4-4 4 4"/><path d="M4 3h16"/></svg>Import backup</button>
+            <div class="sep"></div>
+            <button data-act="sample"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg>Load sample data</button>
+            <button data-act="clear" class="danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Clear all data</button>
+          </div>
+        </div>
+        <button class="btn primary" id="addBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>Add expense</button>
+      </div>
+      <div class="table-wrap">
+        <table class="exp">
+          <thead><tr id="theadRow"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div id="tableEmpty"></div>
+    </div>
+  </div>
+
+  <div class="store-note">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Your data is stored privately in this browser (localStorage). Nothing is uploaded. Use <b>Data → Backup</b> regularly to save a copy.
+  </div>
+</div>
+
+<!-- Add / edit modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h3 id="modalTitle">Add expense</h3>
+      <button class="iconbtn" id="closeModal" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <form id="expForm">
+      <input type="hidden" id="fId" />
+      <div class="modal-body">
+        <div class="field full">
+          <label for="fName">Vendor / description</label>
+          <input id="fName" required placeholder="e.g. Shopify, Meta Ads, AliExpress order" />
+        </div>
+        <div class="field">
+          <label for="fCategory">Category</label>
+          <select id="fCategory"></select>
+        </div>
+        <div class="field">
+          <label for="fAmount">Amount</label>
+          <input id="fAmount" type="number" step="0.01" min="0" required placeholder="0.00" />
+        </div>
+        <div class="field full">
+          <label>Payment type</label>
+          <div class="seg">
+            <label><input type="radio" name="ftype" value="one-time" checked /><span>One-time</span></label>
+            <label><input type="radio" name="ftype" value="recurring" /><span>Recurring (monthly)</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fDate" id="fDateLabel">Date</label>
+          <input id="fDate" type="date" required />
+        </div>
+        <div class="field" id="endWrap" style="display:none;">
+          <label for="fEnd">Ends (optional)</label>
+          <input id="fEnd" type="date" />
+        </div>
+        <div class="field full" id="paidWrap">
+          <label><input type="checkbox" id="fPaid" style="width:auto; margin-right:8px;" />Already paid</label>
+          <span class="hint">Leave unchecked for a bill that is scheduled but not yet paid.</span>
+        </div>
+        <div class="field full">
+          <label for="fNotes">Note (optional)</label>
+          <textarea id="fNotes" placeholder="Reference, invoice #, anything useful…"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" id="cancelModal">Cancel</button>
+        <button type="submit" class="btn primary" id="saveBtn">Save expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="tt" id="tooltip"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept="application/json" style="display:none" />
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Config ----------
+  var STORE_KEY = "aurea_expenses_v1";
+  var SET_KEY   = "aurea_settings_v1";
+  var CUR = "$";
+  var CATEGORIES = [
+    "Supplier / COGS", "Ads & Marketing", "Software / SaaS", "Shipping",
+    "Payment Fees", "Team / VA", "Returns / Refunds", "Other"
+  ];
+  var CAT_COLORS = ["--c1","--c2","--c3","--c4","--c5","--c6","--c7","--c8"];
+  function catColor(cat){ var i = CATEGORIES.indexOf(cat); if(i<0)i=CATEGORIES.length-1; return getVar(CAT_COLORS[i]); }
+  function getVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  // ---------- State ----------
+  var expenses = [];
+  var settings = { theme: "light", year: null, month: null, userName: "Store Owner" };
+  var sortKey = "date", sortDir = -1;
+  var filters = { search:"", cat:"", type:"", status:"" };
+
+  // ---------- Persistence ----------
+  function load() {
+    try { expenses = JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch(e){ expenses = []; }
+    try { var s = JSON.parse(localStorage.getItem(SET_KEY)); if (s) settings = Object.assign(settings, s); } catch(e){}
+  }
+  function save() { localStorage.setItem(STORE_KEY, JSON.stringify(expenses)); }
+  function saveSettings() { localStorage.setItem(SET_KEY, JSON.stringify(settings)); }
+
+  // ---------- Date helpers ----------
+  function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10); }
+  function parse(iso){ if(!iso) return null; var p=iso.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function ym(iso){ var d=parse(iso); return d ? d.getFullYear()*12 + d.getMonth() : null; }
+  function fmt(n){ return CUR + (Math.round(n*100)/100).toLocaleString(undefined,{minimumFractionDigits: n%1?2:0, maximumFractionDigits:2}); }
+  function fmtK(n){ if(n>=1000) return CUR + (n/1000).toFixed(n>=10000?0:1) + "k"; return CUR + Math.round(n); }
+  function daysBetween(a,b){ return Math.round((b - a)/86400000); }
+
+  // Does expense apply in a given year+monthIndex? returns amount contributed.
+  function amountInMonth(e, year, mIdx) {
+    var target = year*12 + mIdx;
+    if (e.type === "recurring") {
+      var start = ym(e.date); var end = e.endDate ? ym(e.endDate) : Infinity;
+      return (target >= start && target <= end) ? +e.amount : 0;
+    } else {
+      var d = parse(e.date);
+      return (d && d.getFullYear()===year && d.getMonth()===mIdx) ? +e.amount : 0;
+    }
+  }
+  // Next occurrence date for an expense on/after `from` (Date). null if none upcoming.
+  function nextDue(e, from) {
+    if (e.type === "one-time") {
+      var d = parse(e.date);
+      return (d && d >= stripTime(from)) ? d : null;
+    }
+    // recurring: same day-of-month, first occurrence >= from within active range
+    var start = parse(e.date); if (!start) return null;
+    var end = e.endDate ? parse(e.endDate) : null;
+    var day = start.getDate();
+    var probe = new Date(from.getFullYear(), from.getMonth(), day);
+    if (probe < stripTime(from)) probe = new Date(from.getFullYear(), from.getMonth()+1, day);
+    if (probe < start) probe = new Date(start.getFullYear(), start.getMonth(), day);
+    if (end && probe > end) return null;
+    return probe;
+  }
+  function stripTime(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+  // Effective status of an expense as-of today.
+  function statusOf(e) {
+    var t = stripTime(new Date());
+    if (e.type === "recurring") return "recurring";
+    if (e.paid) return "paid";
+    var d = parse(e.date);
+    if (!d) return "upcoming";
+    return d < t ? "overdue" : "upcoming";
+  }
+
+  // ---------- Computations ----------
+  function monthlyTotals(year) {
+    var arr = [];
+    for (var m=0;m<12;m++){ var s=0; for (var i=0;i<expenses.length;i++) s+=amountInMonth(expenses[i], year, m); arr.push(s); }
+    return arr;
+  }
+  function categoryTotals(year, mIdx) {
+    var map = {};
+    CATEGORIES.forEach(function(c){ map[c]=0; });
+    expenses.forEach(function(e){
+      var amt = (mIdx==null) ? sumYear(e, year) : amountInMonth(e, year, mIdx);
+      if (amt) map[e.category] = (map[e.category]||0) + amt;
+    });
+    return map;
+  }
+  function sumYear(e, year){ var s=0; for (var m=0;m<12;m++) s+=amountInMonth(e, year, m); return s; }
+  function typeTotals(year, mIdx) {
+    var r=0,o=0;
+    expenses.forEach(function(e){
+      var amt = (mIdx==null) ? sumYear(e, year) : amountInMonth(e, year, mIdx);
+      if (e.type==="recurring") r+=amt; else o+=amt;
+    });
+    return { recurring:r, oneTime:o };
+  }
+  function upcomingWithin(days) {
+    var from = new Date(); var horizon = new Date(); horizon.setDate(horizon.getDate()+days);
+    var out = [];
+    expenses.forEach(function(e){
+      if (e.type==="one-time" && e.paid) return;
+      var due = nextDue(e, from);
+      if (due && due <= horizon) out.push({ e:e, due:due });
+    });
+    out.sort(function(a,b){ return a.due-b.due; });
+    return out;
+  }
+
+  // ---------- Rendering ----------
+  function renderAll() {
+    applyTheme();
+    populatePeriod();
+    renderKPIs();
+    renderTypeDonut();
+    renderCatDonut();
+    renderBar();
+    renderRings();
+    renderLine();
+    renderUpcoming();
+    renderTable();
+    document.getElementById("userName").textContent = settings.userName;
+    document.getElementById("avatar").textContent = (settings.userName||"A").charAt(0).toUpperCase();
+  }
+
+  function renderKPIs() {
+    var y = settings.year, m = settings.month;
+    var totals = monthlyTotals(y);
+    var monthTotal = totals[m] || 0;
+    var prev = m>0 ? totals[m-1] : (function(){ var pt=monthlyTotals(y-1); return pt[11]; })();
+    var yearTotal = totals.reduce(function(a,b){return a+b;},0);
+    var tt = typeTotals(y, m);
+    var up = upcomingWithin(30).reduce(function(a,x){return a + (+x.e.amount);},0);
+
+    setText("kpiMonth", fmt(monthTotal));
+    var deltaEl = document.getElementById("kpiMonthDelta");
+    if (prev>0) {
+      var pct = ((monthTotal - prev)/prev*100);
+      deltaEl.textContent = (pct>=0?"▲ ":"▼ ") + Math.abs(pct).toFixed(1) + "%";
+      deltaEl.className = "delta " + (pct>=0?"up":"down");
+    } else { deltaEl.textContent = "—"; deltaEl.className="delta"; }
+
+    setText("kpiRecurring", fmt(tt.recurring));
+    var recCount = expenses.filter(function(e){ return e.type==="recurring" && amountInMonth(e,y,m)>0; }).length;
+    setText("kpiRecurringSub", recCount + " active subscription" + (recCount===1?"":"s"));
+    setText("kpiYear", fmt(yearTotal));
+    setText("kpiYearSub", "total spent in " + y);
+    setText("kpiUpcoming", fmt(up));
+    var upCount = upcomingWithin(30).length;
+    setText("kpiUpcomingSub", upCount + " payment" + (upCount===1?"":"s") + " due");
+  }
+
+  function donutSVG(segments, size, centerBig, centerCap) {
+    // segments: [{value, color, label}]
+    var total = segments.reduce(function(a,s){return a+s.value;},0);
+    var r = size/2, stroke = size*0.17, rad = r - stroke/2 - 2;
+    var cx=r, cy=r, circ = 2*Math.PI*rad;
+    var svg = '<svg class="chart-svg" width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">';
+    svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="none" stroke="var(--ring-track)" stroke-width="'+stroke+'"/>';
+    if (total>0) {
+      var acc = 0;
+      segments.forEach(function(s){
+        if (s.value<=0) return;
+        var frac = s.value/total;
+        var dash = frac*circ;
+        var off = circ*0.25 - acc*circ; // start at top
+        svg += '<circle cx="'+cx+'" cy="'+cy+'" r="'+rad+'" fill="none" stroke="'+s.color+'" stroke-width="'+stroke+'" '
+             + 'stroke-dasharray="'+dash+' '+(circ-dash)+'" stroke-dashoffset="'+off+'" stroke-linecap="butt" '
+             + 'transform="rotate(-90 '+cx+' '+cy+')" data-seg="'+esc(s.label)+'" data-val="'+s.value+'"><title>'+esc(s.label)+': '+fmt(s.value)+'</title></circle>';
+        acc += frac;
+      });
+    }
+    svg += '</svg>';
+    var center = '<div class="donut-center"><div class="big">'+centerBig+'</div><div class="cap">'+centerCap+'</div></div>';
+    return '<div style="position:relative">'+svg+center+'</div>';
+  }
+
+  function renderTypeDonut() {
+    var y=settings.year, m=settings.month;
+    var tt = typeTotals(y, m);
+    var segs = [
+      { value: tt.recurring, color: getVar("--c1"), label:"Recurring" },
+      { value: tt.oneTime,   color: getVar("--c2"), label:"One-time" }
+    ];
+    var total = tt.recurring + tt.oneTime;
+    document.getElementById("typeDonut").innerHTML = donutSVG(segs, 128, fmtK(total), MONTHS[m]);
+    var leg = segs.map(function(s){
+      var pct = total? Math.round(s.value/total*100):0;
+      return '<div class="leg"><span class="dot" style="background:'+s.color+'"></span>'+s.label+' · <b>'+pct+'%</b></div>';
+    }).join("");
+    document.getElementById("typeLegend").innerHTML = leg || '<div class="hint">No spend this month</div>';
+  }
+
+  function renderCatDonut() {
+    var y=settings.year, m=settings.month;
+    var map = categoryTotals(y, m);
+    var segs = CATEGORIES.map(function(c){ return { value: map[c], color: catColor(c), label: c }; }).filter(function(s){return s.value>0;});
+    segs.sort(function(a,b){return b.value-a.value;});
+    var total = segs.reduce(function(a,s){return a+s.value;},0);
+    document.getElementById("catDonut").innerHTML = donutSVG(segs, 128, fmtK(total), MONTHS[m]);
+    var top = segs.slice(0,5);
+    var leg = top.map(function(s){
+      return '<div class="leg"><span class="dot" style="background:'+s.color+'"></span>'+shortCat(s.label)+' · <b>'+fmtK(s.value)+'</b></div>';
+    }).join("");
+    if (segs.length>5) leg += '<div class="leg"><span class="dot" style="background:var(--muted)"></span>+'+(segs.length-5)+' more</div>';
+    document.getElementById("catLegend").innerHTML = leg || '<div class="hint">No spend this month</div>';
+  }
+  var SHORT_CAT = { "Supplier / COGS":"Supplier", "Ads & Marketing":"Ads", "Software / SaaS":"Software", "Shipping":"Shipping", "Payment Fees":"Fees", "Team / VA":"Team", "Returns / Refunds":"Returns", "Other":"Other" };
+  function shortCat(c){ return SHORT_CAT[c] || c; }
+
+  function renderBar() {
+    var y = settings.year;
+    var totals = monthlyTotals(y);
+    var max = Math.max.apply(null, totals.concat([1]));
+    var W=100, H=210, padL=6, padB=22, padT=10;
+    var innerH = H - padB - padT;
+    var n = 12, gap = 2.4, bw = (W - padL)/n - gap;
+    document.getElementById("barYearLabel").textContent = "Total " + fmt(totals.reduce(function(a,b){return a+b;},0));
+    var svg = '<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:210px">';
+    // gridlines
+    for (var g=0; g<=3; g++){ var gy = padT + innerH*(g/3); svg += '<line class="gridline" x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" vector-effect="non-scaling-stroke"/>'; }
+    for (var i=0;i<12;i++){
+      var x = padL + i*((W-padL)/n) + gap/2;
+      var h = max? (totals[i]/max)*innerH : 0;
+      var yb = padT + innerH - h;
+      svg += '<rect class="bar-bg" x="'+x+'" y="'+padT+'" width="'+bw+'" height="'+innerH+'" rx="1.2"/>';
+      if (h>0) svg += '<rect class="bar" x="'+x+'" y="'+yb+'" width="'+bw+'" height="'+h+'" rx="1.2" data-m="'+i+'" data-v="'+totals[i]+'"><title>'+MONTHS[i]+': '+fmt(totals[i])+'</title></rect>';
+      else svg += '<rect class="bar" x="'+x+'" y="'+(padT+innerH-0.6)+'" width="'+bw+'" height="0.6" data-m="'+i+'" data-v="0"></rect>';
+    }
+    svg += '</svg>';
+    // month labels (separate flex row so text isn't stretched)
+    var labels = '<div style="display:flex; padding-left:'+padL+'%; margin-top:4px;">' +
+      MONTHS.map(function(mn,idx){ return '<div style="flex:1; text-align:center; font-size:10px; color:var(--muted); font-weight:'+(idx===settings.month?700:400)+'">'+mn.charAt(0)+'</div>'; }).join("") + '</div>';
+    document.getElementById("barChart").innerHTML = svg + labels;
+    // hover
+    hookBarHover();
+  }
+
+  function ringSVG(pct, color, label) {
+    var size=76, sw=8, r=(size-sw)/2, cx=size/2, circ=2*Math.PI*r;
+    var dash = Math.max(0,Math.min(1,pct))*circ;
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">' +
+      '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="var(--ring-track)" stroke-width="'+sw+'"/>' +
+      '<circle cx="'+cx+'" cy="'+cx+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="'+sw+'" stroke-linecap="round" '+
+      'stroke-dasharray="'+dash+' '+(circ-dash)+'" transform="rotate(-90 '+cx+' '+cx+')"/>' +
+      '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="700" fill="var(--ink)">'+label+'</text></svg>';
+  }
+  function renderRings() {
+    var y=settings.year;
+    var totals = monthlyTotals(y);
+    var yearTotal = totals.reduce(function(a,b){return a+b;},0);
+    // paid so far this year = expenses with status paid OR recurring in past months + current
+    var t = stripTime(new Date());
+    var paid = 0;
+    expenses.forEach(function(e){
+      for (var m=0;m<12;m++){
+        var amt = amountInMonth(e, y, m); if (!amt) continue;
+        if (e.type==="recurring") { var occ = new Date(y,m,parse(e.date).getDate()); if (occ<=t) paid+=amt; }
+        else { if (e.paid || parse(e.date) < t) paid+=amt; }
+      }
+    });
+    var pct = yearTotal? paid/yearTotal : 0;
+    document.getElementById("ringPaid").innerHTML = ringSVG(pct, getVar("--good"), Math.round(pct*100)+"%");
+    setText("paidAmt", fmt(paid));
+    var tt = typeTotals(y, null);
+    var runRate = 0;
+    expenses.forEach(function(e){ if (e.type==="recurring" && !e.endDate) runRate += +e.amount; });
+    document.getElementById("ringUpcoming").innerHTML = ringSVG(yearTotal? tt.recurring/yearTotal : 0, getVar("--info"), Math.round((yearTotal? tt.recurring/yearTotal:0)*100)+"%");
+    setText("recurAmt", fmt(runRate*12) + "/yr");
+  }
+
+  function renderLine() {
+    var y=settings.year;
+    var totals = monthlyTotals(y);
+    var cum = []; var run=0; totals.forEach(function(v){ run+=v; cum.push(run); });
+    var max = Math.max.apply(null, cum.concat([1]));
+    var W=100,H=200,padL=2,padR=2,padT=10,padB=20; var innerH=H-padT-padB, innerW=W-padL-padR;
+    document.getElementById("trendYear").textContent = y;
+    var pts = cum.map(function(v,i){ var x=padL + (i/11)*innerW; var yv=padT+innerH-(max?v/max*innerH:0); return [x,yv]; });
+    var dPath = pts.map(function(p,i){ return (i?"L":"M")+p[0].toFixed(2)+" "+p[1].toFixed(2); }).join(" ");
+    var area = dPath + " L"+pts[11][0].toFixed(2)+" "+(padT+innerH)+" L"+pts[0][0].toFixed(2)+" "+(padT+innerH)+" Z";
+    var col = getVar("--c7");
+    var svg = '<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="height:200px">';
+    svg += '<defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity="0.22"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>';
+    for (var g=0;g<=3;g++){ var gy=padT+innerH*(g/3); svg += '<line class="gridline" x1="0" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" vector-effect="non-scaling-stroke"/>'; }
+    svg += '<path d="'+area+'" fill="url(#lg)"/>';
+    svg += '<path d="'+dPath+'" fill="none" stroke="'+col+'" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>';
+    // endpoint marker at current month
+    var cm = Math.min(settings.month, 11); var ep = pts[cm];
+    svg += '<circle cx="'+ep[0]+'" cy="'+ep[1]+'" r="3" fill="'+col+'" stroke="var(--surface)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>';
+    svg += '</svg>';
+    var labels = '<div style="display:flex; margin-top:2px;">'+MONTHS.map(function(mn){return '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted)">'+mn.charAt(0)+'</div>';}).join("")+'</div>';
+    document.getElementById("lineChart").innerHTML = svg + labels;
+  }
+
+  function renderUpcoming() {
+    var list = upcomingWithin(45).slice(0, 8);
+    var el = document.getElementById("upcomingList");
+    if (!list.length) { el.innerHTML = '<div class="hint" style="padding:14px 0">Nothing due in the next 45 days. 🎉</div>'; return; }
+    var t = stripTime(new Date());
+    el.innerHTML = list.map(function(x){
+      var overdue = x.due < t;
+      var col = overdue ? "var(--bad)" : (daysBetween(t,x.due)<=7 ? "var(--warn)" : "var(--ink)");
+      return '<div class="up-item">' +
+        '<div class="up-date"><div class="d" style="color:'+col+'">'+x.due.getDate()+'</div><div class="m">'+MONTHS[x.due.getMonth()]+'</div></div>' +
+        '<div class="up-main"><div class="n">'+esc(x.e.name)+'</div><div class="c"><span class="catchip"><span class="cdot" style="background:'+catColor(x.e.category)+'"></span>'+esc(x.e.category)+'</span>'+(x.e.type==="recurring"?" · recurring":"")+'</div></div>' +
+        '<div class="up-amt">'+fmt(x.e.amount)+'</div></div>';
+    }).join("");
+  }
+
+  var COLS = [
+    { key:"name", label:"Vendor" },
+    { key:"category", label:"Category" },
+    { key:"type", label:"Type" },
+    { key:"date", label:"Date" },
+    { key:"status", label:"Status" },
+    { key:"amount", label:"Amount", right:true }
+  ];
+  function renderTable() {
+    var thead = document.getElementById("theadRow");
+    thead.innerHTML = COLS.map(function(c){
+      var arw = sortKey===c.key ? (sortDir>0?" ▲":" ▼") : "";
+      return '<th data-key="'+c.key+'" '+(c.right?'style="text-align:right"':'')+'>'+c.label+'<span class="arw">'+arw+'</span></th>';
+    }).join("") + '<th></th>';
+
+    var rows = expenses.filter(function(e){
+      if (filters.search) { var q=filters.search.toLowerCase(); if ((e.name+" "+(e.notes||"")).toLowerCase().indexOf(q)<0) return false; }
+      if (filters.cat && e.category!==filters.cat) return false;
+      if (filters.type && e.type!==filters.type) return false;
+      if (filters.status && statusOf(e)!==filters.status) return false;
+      return true;
+    });
+    rows.sort(function(a,b){
+      var av,bv;
+      if (sortKey==="amount"){ av=+a.amount; bv=+b.amount; }
+      else if (sortKey==="status"){ av=statusOf(a); bv=statusOf(b); }
+      else { av=(a[sortKey]||"").toString().toLowerCase(); bv=(b[sortKey]||"").toString().toLowerCase(); }
+      if (av<bv) return -sortDir; if (av>bv) return sortDir; return 0;
+    });
+
+    var tbody = document.getElementById("tbody");
+    var emptyEl = document.getElementById("tableEmpty");
+    document.getElementById("tableCount").textContent = rows.length + " of " + expenses.length + " shown";
+
+    if (!expenses.length) {
+      tbody.innerHTML = "";
+      emptyEl.innerHTML = '<div class="empty"><h4>No expenses yet</h4><p>Start tracking your store costs — suppliers, ads, apps, shipping and fees. Add your first expense, or load sample data to see how it works.</p>' +
+        '<button class="btn primary" id="emptyAdd" style="margin-right:8px">Add expense</button><button class="btn" id="emptySample">Load sample data</button></div>';
+      document.getElementById("emptyAdd").onclick = openAdd;
+      document.getElementById("emptySample").onclick = loadSample;
+      return;
+    }
+    emptyEl.innerHTML = "";
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>No expenses match your filters.</p></div></td></tr>'; return; }
+
+    tbody.innerHTML = rows.map(function(e){
+      var st = statusOf(e);
+      var stLabel = st.charAt(0).toUpperCase()+st.slice(1);
+      var initials = e.name.trim().charAt(0).toUpperCase();
+      var dateStr = e.type==="recurring" ? ("Day "+parse(e.date).getDate()+" · monthly") : formatDate(e.date);
+      return '<tr>' +
+        '<td><div class="vend"><div class="sw" style="background:'+catColor(e.category)+'">'+esc(initials)+'</div>' +
+          '<div><div class="nm">'+esc(e.name)+'</div>'+(e.notes?'<div class="nt">'+esc(e.notes)+'</div>':'')+'</div></div></td>' +
+        '<td><span class="catchip"><span class="cdot" style="background:'+catColor(e.category)+'"></span>'+esc(shortCat(e.category))+'</span></td>' +
+        '<td>'+(e.type==="recurring"?'<span class="pill recurring"><span class="pdot"></span>Recurring</span>':'<span class="catchip">One-time</span>')+'</td>' +
+        '<td style="white-space:nowrap; color:var(--ink-2)">'+dateStr+'</td>' +
+        '<td><span class="pill '+st+'"><span class="pdot"></span>'+stLabel+'</span></td>' +
+        '<td class="amt">'+fmt(e.amount)+'</td>' +
+        '<td><div class="rowbtns">' +
+          '<button class="iconbtn" data-edit="'+e.id+'" title="Edit" aria-label="Edit"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' +
+          '<button class="iconbtn del" data-del="'+e.id+'" title="Delete" aria-label="Delete"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join("");
+  }
+  function formatDate(iso){ var d=parse(iso); if(!d) return ""; return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear(); }
+
+  // ---------- Period selectors ----------
+  function availableYears() {
+    var ys = {};
+    expenses.forEach(function(e){ var d=parse(e.date); if(d) ys[d.getFullYear()]=1; if(e.endDate){var d2=parse(e.endDate); if(d2)ys[d2.getFullYear()]=1;} });
+    ys[new Date().getFullYear()] = 1;
+    if (settings.year) ys[settings.year]=1;
+    return Object.keys(ys).map(Number).sort();
+  }
+  function populatePeriod() {
+    var yearSel = document.getElementById("yearSel");
+    var years = availableYears();
+    yearSel.innerHTML = years.map(function(y){return '<option value="'+y+'"'+(y===settings.year?" selected":"")+'>'+y+'</option>';}).join("");
+    var monthSel = document.getElementById("monthSel");
+    monthSel.innerHTML = MONTHS.map(function(m,i){return '<option value="'+i+'"'+(i===settings.month?" selected":"")+'>'+fullMonth(i)+'</option>';}).join("");
+  }
+  function fullMonth(i){ return ["January","February","March","April","May","June","July","August","September","October","November","December"][i]; }
+
+  // ---------- Modal ----------
+  function populateCatSelects() {
+    var opts = CATEGORIES.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join("");
+    document.getElementById("fCategory").innerHTML = opts;
+    document.getElementById("filterCat").innerHTML = '<option value="">All categories</option>'+opts;
+  }
+  function openAdd() {
+    document.getElementById("modalTitle").textContent = "Add expense";
+    document.getElementById("expForm").reset();
+    document.getElementById("fId").value = "";
+    document.getElementById("fDate").value = todayISO();
+    setType("one-time");
+    document.getElementById("overlay").classList.add("open");
+    setTimeout(function(){ document.getElementById("fName").focus(); }, 30);
+  }
+  function openEdit(id) {
+    var e = expenses.find(function(x){return x.id===id;}); if (!e) return;
+    document.getElementById("modalTitle").textContent = "Edit expense";
+    document.getElementById("fId").value = e.id;
+    document.getElementById("fName").value = e.name;
+    document.getElementById("fCategory").value = e.category;
+    document.getElementById("fAmount").value = e.amount;
+    document.querySelector('input[name="ftype"][value="'+e.type+'"]').checked = true;
+    document.getElementById("fDate").value = e.date;
+    document.getElementById("fEnd").value = e.endDate || "";
+    document.getElementById("fPaid").checked = !!e.paid;
+    document.getElementById("fNotes").value = e.notes || "";
+    setType(e.type);
+    document.getElementById("overlay").classList.add("open");
+  }
+  function closeModal(){ document.getElementById("overlay").classList.remove("open"); }
+  function setType(type) {
+    document.getElementById("endWrap").style.display = type==="recurring" ? "flex" : "none";
+    document.getElementById("paidWrap").style.display = type==="recurring" ? "none" : "flex";
+    document.getElementById("fDateLabel").textContent = type==="recurring" ? "First charge date" : "Date";
+  }
+
+  // ---------- Data ops ----------
+  function uid(){ return "e"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  function saveForm(ev) {
+    ev.preventDefault();
+    var id = document.getElementById("fId").value;
+    var type = document.querySelector('input[name="ftype"]:checked').value;
+    var obj = {
+      id: id || uid(),
+      name: document.getElementById("fName").value.trim(),
+      category: document.getElementById("fCategory").value,
+      amount: parseFloat(document.getElementById("fAmount").value)||0,
+      type: type,
+      date: document.getElementById("fDate").value,
+      endDate: type==="recurring" ? (document.getElementById("fEnd").value||"") : "",
+      paid: type==="one-time" ? document.getElementById("fPaid").checked : false,
+      notes: document.getElementById("fNotes").value.trim()
+    };
+    if (id) { var i=expenses.findIndex(function(x){return x.id===id;}); expenses[i]=obj; toast("Expense updated"); }
+    else { expenses.push(obj); toast("Expense added"); }
+    save(); closeModal();
+    // jump period to the expense's month so the user sees it land
+    var d=parse(obj.date); if(d){ settings.year=d.getFullYear(); settings.month=d.getMonth(); saveSettings(); }
+    renderAll();
+  }
+  function delExpense(id) {
+    var e = expenses.find(function(x){return x.id===id;}); if(!e) return;
+    if (!confirm('Delete "'+e.name+'"? This cannot be undone.')) return;
+    expenses = expenses.filter(function(x){return x.id!==id;});
+    save(); renderAll(); toast("Expense deleted");
+  }
+
+  function exportCSV() {
+    var head = ["Vendor","Category","Type","Amount","Date","EndDate","Paid","Notes"];
+    var lines = [head.join(",")];
+    expenses.forEach(function(e){
+      lines.push([e.name,e.category,e.type,e.amount,e.date,e.endDate||"",e.paid?"yes":"no",(e.notes||"")].map(csvCell).join(","));
+    });
+    download("aurea-expenses-"+todayISO()+".csv", lines.join("\n"), "text/csv");
+    toast("CSV exported");
+  }
+  function csvCell(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+  function exportJSON() {
+    download("aurea-expenses-backup-"+todayISO()+".json", JSON.stringify({ version:1, exported: new Date().toISOString(), expenses: expenses }, null, 2), "application/json");
+    toast("Backup saved");
+  }
+  function importJSON(file) {
+    var reader = new FileReader();
+    reader.onload = function(){
+      try {
+        var data = JSON.parse(reader.result);
+        var incoming = Array.isArray(data) ? data : data.expenses;
+        if (!Array.isArray(incoming)) throw new Error("bad");
+        if (!confirm("Import "+incoming.length+" expenses? This replaces your current data.")) return;
+        expenses = incoming.map(function(e){ e.id=e.id||uid(); return e; });
+        save(); renderAll(); toast("Imported "+incoming.length+" expenses");
+      } catch(e){ alert("That file could not be read as an AUREA backup. Make sure it is a JSON backup exported from this dashboard."); }
+    };
+    reader.readAsText(file);
+  }
+  function download(name, content, type) {
+    var blob = new Blob([content], {type:type});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 500);
+  }
+  function clearAll() {
+    if (!confirm("Delete ALL expenses permanently? Export a backup first if unsure.")) return;
+    expenses = []; save(); renderAll(); toast("All data cleared");
+  }
+
+  // ---------- Sample data ----------
+  function loadSample() {
+    if (expenses.length && !confirm("This will add sample expenses to your existing data. Continue?")) return;
+    var yr = new Date().getFullYear();
+    var mo = new Date().getMonth();
+    function d(m, day){ var mm=((mo+m)%12+12)%12; var yy=yr + Math.floor((mo+m)/12); return yy+"-"+String(mm+1).padStart(2,"0")+"-"+String(day).padStart(2,"0"); }
+    var start = yr+"-01-05";
+    var s = [
+      { name:"Shopify (Basic plan)", category:"Software / SaaS", amount:39, type:"recurring", date:yr+"-01-05", endDate:"", paid:false, notes:"Store platform" },
+      { name:"DSers Pro", category:"Software / SaaS", amount:19.9, type:"recurring", date:yr+"-01-08", endDate:"", paid:false, notes:"AliExpress fulfilment" },
+      { name:"Klaviyo Email", category:"Software / SaaS", amount:45, type:"recurring", date:yr+"-01-12", endDate:"", paid:false, notes:"Email & SMS" },
+      { name:"Meta Ads", category:"Ads & Marketing", amount:850, type:"recurring", date:yr+"-01-01", endDate:"", paid:false, notes:"FB/IG campaigns" },
+      { name:"TikTok Ads", category:"Ads & Marketing", amount:400, type:"recurring", date:yr+"-01-01", endDate:"", paid:false, notes:"" },
+      { name:"Domain + email (Google)", category:"Software / SaaS", amount:12, type:"recurring", date:yr+"-01-15", endDate:"", paid:false, notes:"" },
+      { name:"VA – customer support", category:"Team / VA", amount:600, type:"recurring", date:yr+"-01-28", endDate:"", paid:false, notes:"20h/week" },
+      // one-time supplier orders
+      { name:"AliExpress bulk order #A231", category:"Supplier / COGS", amount:1240.5, type:"one-time", date:d(-2,6), endDate:"", paid:true, notes:"Summer dresses x150" },
+      { name:"AliExpress order #A248", category:"Supplier / COGS", amount:980, type:"one-time", date:d(-1,9), endDate:"", paid:true, notes:"Restock bags" },
+      { name:"AliExpress order #A263", category:"Supplier / COGS", amount:1520, type:"one-time", date:d(0,4), endDate:"", paid:true, notes:"Footwear line" },
+      { name:"Stripe processing fees", category:"Payment Fees", amount:312.4, type:"one-time", date:d(-1,30), endDate:"", paid:true, notes:"2.9% + 30c" },
+      { name:"Stripe processing fees", category:"Payment Fees", amount:288.9, type:"one-time", date:d(0,15), endDate:"", paid:true, notes:"" },
+      { name:"Product photography", category:"Ads & Marketing", amount:450, type:"one-time", date:d(-1,18), endDate:"", paid:true, notes:"UGC creator" },
+      { name:"Customer refund – order 5521", category:"Returns / Refunds", amount:89.9, type:"one-time", date:d(0,8), endDate:"", paid:true, notes:"Damaged item" },
+      { name:"Canva Pro (annual)", category:"Software / SaaS", amount:119, type:"one-time", date:d(-3,2), endDate:"", paid:true, notes:"" },
+      // upcoming / unpaid
+      { name:"AliExpress order #A279", category:"Supplier / COGS", amount:1680, type:"one-time", date:d(0, Math.min(28,new Date().getDate()+6)), endDate:"", paid:false, notes:"Autumn collection deposit" },
+      { name:"Influencer collab", category:"Ads & Marketing", amount:600, type:"one-time", date:d(0, Math.min(28,new Date().getDate()+12)), endDate:"", paid:false, notes:"Instagram reel" },
+      { name:"Loox reviews app", category:"Software / SaaS", amount:34.99, type:"recurring", date:yr+"-02-03", endDate:"", paid:false, notes:"" }
+    ];
+    s.forEach(function(e){ e.id=uid(); expenses.push(e); });
+    save();
+    settings.year = yr; settings.month = mo; saveSettings();
+    renderAll(); toast("Sample data loaded");
+  }
+
+  // ---------- Theme ----------
+  function applyTheme() {
+    document.documentElement.setAttribute("data-theme", settings.theme);
+    document.querySelectorAll("#themeToggle button").forEach(function(b){
+      b.classList.toggle("on", b.getAttribute("data-theme-set")===settings.theme);
+    });
+  }
+
+  // ---------- Tooltip / hover ----------
+  var tip = document.getElementById("tooltip");
+  function hookBarHover() {
+    document.querySelectorAll("#barChart .bar").forEach(function(bar){
+      bar.addEventListener("mousemove", function(ev){
+        var m=+bar.getAttribute("data-m"), v=+bar.getAttribute("data-v");
+        tip.innerHTML = "<b>"+MONTHS[m]+" "+settings.year+"</b><br>"+fmt(v);
+        tip.style.opacity="1"; tip.style.left=(ev.clientX+12)+"px"; tip.style.top=(ev.clientY-10)+"px";
+      });
+      bar.addEventListener("mouseleave", function(){ tip.style.opacity="0"; });
+      bar.addEventListener("click", function(){ settings.month=+bar.getAttribute("data-m"); saveSettings(); renderAll(); });
+    });
+  }
+
+  // ---------- Utilities ----------
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function setText(id,t){ var el=document.getElementById(id); if(el) el.textContent=t; }
+  var toastTimer;
+  function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove("show");},2200); }
+
+  // ---------- Events ----------
+  function bind() {
+    document.getElementById("addBtn").onclick = openAdd;
+    document.getElementById("closeModal").onclick = closeModal;
+    document.getElementById("cancelModal").onclick = closeModal;
+    document.getElementById("overlay").addEventListener("click", function(e){ if(e.target.id==="overlay") closeModal(); });
+    document.getElementById("expForm").addEventListener("submit", saveForm);
+    document.querySelectorAll('input[name="ftype"]').forEach(function(r){ r.addEventListener("change", function(){ setType(r.value); }); });
+
+    document.getElementById("yearSel").onchange = function(){ settings.year=+this.value; saveSettings(); renderAll(); };
+    document.getElementById("monthSel").onchange = function(){ settings.month=+this.value; saveSettings(); renderAll(); };
+
+    document.getElementById("searchInput").addEventListener("input", function(){ filters.search=this.value; renderTable(); });
+    document.getElementById("filterCat").onchange = function(){ filters.cat=this.value; renderTable(); };
+    document.getElementById("filterType").onchange = function(){ filters.type=this.value; renderTable(); };
+    document.getElementById("filterStatus").onchange = function(){ filters.status=this.value; renderTable(); };
+
+    // table sort + row actions (delegated)
+    document.getElementById("theadRow").addEventListener("click", function(e){
+      var th=e.target.closest("th"); if(!th||!th.dataset.key) return;
+      var k=th.dataset.key; if(sortKey===k) sortDir=-sortDir; else { sortKey=k; sortDir = (k==="amount"||k==="date")?-1:1; }
+      renderTable();
+    });
+    document.getElementById("tbody").addEventListener("click", function(e){
+      var ed=e.target.closest("[data-edit]"); if(ed){ openEdit(ed.getAttribute("data-edit")); return; }
+      var dl=e.target.closest("[data-del]"); if(dl){ delExpense(dl.getAttribute("data-del")); return; }
+    });
+
+    // theme
+    document.getElementById("themeToggle").addEventListener("click", function(e){
+      var b=e.target.closest("button"); if(!b) return; settings.theme=b.getAttribute("data-theme-set"); saveSettings(); renderAll();
+    });
+
+    // data menu
+    var menu=document.getElementById("dataMenu");
+    document.getElementById("dataBtn").onclick=function(e){ e.stopPropagation(); menu.classList.toggle("open"); };
+    document.addEventListener("click", function(){ menu.classList.remove("open"); });
+    menu.addEventListener("click", function(e){
+      var b=e.target.closest("button"); if(!b) return; var act=b.getAttribute("data-act"); menu.classList.remove("open");
+      if(act==="csv") exportCSV();
+      else if(act==="json") exportJSON();
+      else if(act==="import") document.getElementById("importFile").click();
+      else if(act==="sample") loadSample();
+      else if(act==="clear") clearAll();
+    });
+    document.getElementById("importFile").addEventListener("change", function(){ if(this.files[0]) importJSON(this.files[0]); this.value=""; });
+
+    // avatar name edit
+    document.getElementById("userName").addEventListener("dblclick", function(){
+      var n=prompt("Your name / store name:", settings.userName); if(n){ settings.userName=n.trim()||settings.userName; saveSettings(); renderAll(); }
+    });
+
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeModal(); });
+  }
+
+  // ---------- Init ----------
+  function init() {
+    load();
+    if (settings.year==null) settings.year = new Date().getFullYear();
+    if (settings.month==null) settings.month = new Date().getMonth();
+    populateCatSelects();
+    bind();
+    renderAll();
+  }
+  init();
+})();
+</script>
