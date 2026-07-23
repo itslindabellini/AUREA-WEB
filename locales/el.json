@@ -7,4 +7,27 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{}
+{
+  "shopify": {
+    "checkout": {
+      "order_summary": {
+        "enter_shipping_address": "ΔΩΡΕΑΝ"
+      },
+      "contact": {
+        "contact_method_title": "Στοιχεία επικοινωνίας (βήμα 1/3)"
+      },
+      "shipping": {
+        "delivery_title": "Παράδοση (βήμα 2/3)"
+      },
+      "payment": {
+        "title": "Πληρωμή (βήμα 3/3)"
+      },
+      "shipping_errors": {
+        "empty_state": "Δωρεάν αποστολή σε όλη την Ελλάδα"
+      },
+      "alternative_payment_method_banner": {
+        "or": "12,000 ευχαριστημένοι πελάτες"
+      }
+    }
+  }
+}
