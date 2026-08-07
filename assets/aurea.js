@@ -1052,23 +1052,37 @@
         };
       }
       var seedInt = hashSeed(grid.getAttribute('data-seed') || 'aurea');
+      // The first PIN products (in the collection's own Shopify order) are PINNED to the
+      // front so the shop owner can hand-curate the opening rows; everything after that is
+      // seeded-shuffled. Set the collection to "Manually" sorted in Shopify and drag the
+      // hero products into the first PIN slots.
+      var PIN = 8;
       function shuffle(nodes) {
-        // sort by product id first so the seeded keys are deterministic regardless of
+        var pinned = [], rest = [];
+        nodes.forEach(function (c) {
+          var o = parseInt(c.getAttribute('data-ord'), 10);
+          if (!isNaN(o) && o < PIN) pinned.push(c); else rest.push(c);
+        });
+        // pinned keep the exact Shopify manual order
+        pinned.sort(function (a, b) {
+          return (parseInt(a.getAttribute('data-ord') || '0', 10)) - (parseInt(b.getAttribute('data-ord') || '0', 10));
+        });
+        // sort the rest by product id first so the seeded keys are deterministic regardless of
         // page-load timing -> same result every refresh
-        nodes.sort(function (a, b) {
+        rest.sort(function (a, b) {
           return (parseInt(a.getAttribute('data-pid') || '0', 10)) - (parseInt(b.getAttribute('data-pid') || '0', 10));
         });
         var rng = mulberry32(seedInt);
         // Weighted mix (Efraimidis–Spirakis): key = r^(1/weight). Higher-weight products
         // (dresses, esp. bestsellers) trend toward the top; lower-weight (swimwear) toward the
         // back — but it stays interleaved, so it's still a mix of dresses, sets, etc.
-        nodes.forEach(function (c) {
+        rest.forEach(function (c) {
           var w = parseFloat(c.getAttribute('data-w')); if (!(w > 0)) w = 12;
           var r = rng(); if (r <= 0) r = 1e-9;
           c._k = Math.pow(r, 1 / w);
         });
-        nodes.sort(function (a, b) { return b._k - a._k; });
-        return nodes;
+        rest.sort(function (a, b) { return b._k - a._k; });
+        return pinned.concat(rest);
       }
       function nextUrl() { return (btn.getAttribute('data-next') || '').trim(); }
       function apply() {
