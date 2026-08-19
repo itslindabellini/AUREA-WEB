@@ -1315,6 +1315,30 @@
     });
   }
 
+  // Recommendation / analytics apps append long tracking params to product links
+  // (e.g. ?_su_rec=…&_su_rec_id=…&pb=0), which bloats the URL a shopper (or the shop
+  // owner) copies to share or advertise. Once the page has loaded — so the app has
+  // already read its attribution — strip those junk params from the address bar,
+  // leaving the short canonical URL. Underscore-prefixed keys are Shopify/app tracking
+  // params by convention; functional keys (variant, selling_plan, filter.*, sort_by,
+  // page, q) never start with "_" and are preserved.
+  function stripTrackingParams() {
+    try {
+      if (!window.history || !history.replaceState || !window.URL) return;
+      var u = new URL(location.href);
+      if (!u.search) return;
+      var keys = [], removed = false;
+      u.searchParams.forEach(function (v, k) { keys.push(k); });
+      keys.forEach(function (k) {
+        if (k.charAt(0) === '_' || k === 'pb') { u.searchParams.delete(k); removed = true; }
+      });
+      if (removed) {
+        var qs = u.searchParams.toString();
+        history.replaceState(history.state, '', u.pathname + (qs ? '?' + qs : '') + u.hash);
+      }
+    } catch (e) {}
+  }
+
   function init() {
     // Interaction-critical (nav, cart, product buy-box, gallery): run now so the
     // first screen is fully responsive to taps.
@@ -1327,6 +1351,7 @@
     // it doesn't block the main thread during load — invisible in the first screen,
     // but it lowers Total Blocking Time on the throttled mobile Lighthouse run.
     var deferred = function () {
+      try { stripTrackingParams(); } catch (e) {}
       try { hoverPolish(); } catch (e) {}
       try { trackForm(); } catch (e) {}
       try { buildFAQ(); } catch (e) {}
