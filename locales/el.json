@@ -11,7 +11,7 @@
   "shopify": {
     "checkout": {
       "order_summary": {
-        "enter_shipping_address": "ΔΩΡΕΑΝ"
+        "enter_shipping_address": "ΔΩΡΕΑΝ ασφαλισμένη αποστολή με παρακολούθηση"
       },
       "contact": {
         "contact_method_title": "Στοιχεία επικοινωνίας (βήμα 1/3)"
