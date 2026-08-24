@@ -27,6 +27,12 @@
       },
       "alternative_payment_method_banner": {
         "or": "12,000 ευχαριστημένοι πελάτες"
+      },
+      "general": {
+        "pay_now_button_label": "Ολοκλήρωση παραγγελίας"
+      },
+      "order_payment_collection": {
+        "pay_now": "Ολοκλήρωση παραγγελίας"
       }
     }
   }
