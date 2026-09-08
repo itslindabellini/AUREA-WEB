@@ -12,7 +12,7 @@
     'Winter Clothes': ['Shop All']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
-  var FLAT = {};
+  var FLAT = { 'Bags': true };
   // Greek display labels for the nav. URLs stay keyed by the English names above (so the
   // collection handles are unchanged); we only translate what the shopper sees.
   var NAV_TR = {
