@@ -5,7 +5,7 @@
   'use strict';
 
   var MENUS = {
-    'Summer Clothes': ['Shop All'],
+    'Summer Clothes': ['Shop All', { label: 'Dresses', children: ['Summer Dresses', 'Casual Dresses', 'Evening Dresses', 'Holiday Dresses'] }],
     'Footwear':       ['Shop All'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All'],
@@ -95,9 +95,35 @@
 
         var panel = el('div', 'position:absolute;top:100%;left:50%;transform:translateX(-50%);padding-top:16px;z-index:600;opacity:0;visibility:hidden;transition:opacity .18s ease;pointer-events:none;');
         var card = el('div', "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;");
+        var ITEMCSS = "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;";
+        var CARDCSS = "background:#fff;border:1px solid #EFEAE2;box-shadow:0 18px 44px rgba(20,18,16,.13);min-width:200px;padding:8px 0;display:flex;flex-direction:column;";
         MENUS[label].forEach(function (item) {
           if (item === '---') { card.appendChild(el('div', 'height:1px;margin:8px 20px;background:#EFEAE2;')); return; }
-          var link = el('a', "padding:11px 24px;font-family:'Manrope',sans-serif;font-weight:500;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#4A4A4A;white-space:nowrap;transition:background .15s ease,color .15s ease;", trLabel(item));
+          // second-level item: hovering the row rolls a submenu out to the right
+          if (item && typeof item === 'object' && item.children) {
+            var row = el('div', 'position:relative;');
+            var plink = el('a', ITEMCSS + 'display:flex;align-items:center;justify-content:space-between;gap:18px;');
+            plink.href = itemUrl(label, item.label);
+            plink.appendChild(el('span', '', trLabel(item.label)));
+            plink.appendChild(el('span', 'font-size:13px;line-height:1;opacity:.55;', '›'));
+            var fly = el('div', 'position:absolute;top:-8px;left:100%;padding-left:6px;z-index:610;opacity:0;visibility:hidden;transition:opacity .16s ease;pointer-events:none;');
+            var flycard = el('div', CARDCSS);
+            item.children.forEach(function (ch) {
+              var cl = el('a', ITEMCSS, trLabel(ch));
+              cl.href = itemUrl(label, ch);
+              cl.setAttribute('data-aurea-hv', '1');
+              cl.addEventListener('mouseenter', function () { cl.style.background = '#F5F0EB'; cl.style.color = '#111'; });
+              cl.addEventListener('mouseleave', function () { cl.style.background = ''; cl.style.color = '#4A4A4A'; });
+              flycard.appendChild(cl);
+            });
+            fly.appendChild(flycard);
+            row.appendChild(plink); row.appendChild(fly);
+            row.addEventListener('mouseenter', function () { fly.style.opacity = '1'; fly.style.visibility = 'visible'; fly.style.pointerEvents = 'auto'; plink.style.background = '#F5F0EB'; plink.style.color = '#111'; });
+            row.addEventListener('mouseleave', function () { fly.style.opacity = '0'; fly.style.visibility = 'hidden'; fly.style.pointerEvents = 'none'; plink.style.background = ''; plink.style.color = '#4A4A4A'; });
+            card.appendChild(row);
+            return;
+          }
+          var link = el('a', ITEMCSS, trLabel(item));
           link.href = itemUrl(label, item);
           // own hover here; flag so the generic hover-restore pass skips it (avoids double-binding that made items stick)
           link.setAttribute('data-aurea-hv', '1');
@@ -143,6 +169,13 @@
       }
       var subs = MENUS[cat].map(function (item) {
         if (item === '---') return '<div style="height:1px;margin:9px 22px;background:#F0EAE0;"></div>';
+        if (item && typeof item === 'object' && item.children) {
+          var head = '<a href="' + itemUrl(cat, item.label) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:600;font-size:14px;letter-spacing:.01em;color:#4A4A4A;text-decoration:none;">' + trLabel(item.label) + '</a>';
+          var kids = item.children.map(function (ch) {
+            return '<a href="' + itemUrl(cat, ch) + '" style="padding:8px 8px 8px 40px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:13px;letter-spacing:.01em;color:#8A7F70;text-decoration:none;">' + trLabel(ch) + '</a>';
+          }).join('');
+          return head + kids;
+        }
         return '<a href="' + itemUrl(cat, item) + '" style="padding:10px 8px 10px 22px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:14px;letter-spacing:.01em;color:#6E675E;text-decoration:none;">' + trLabel(item) + '</a>';
       }).join('');
       return '<div style="border-bottom:1px solid #F5F0EB;">' +
@@ -170,23 +203,23 @@
     drawer.className = 'aurea-mm';
     drawer.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px;border-bottom:1px solid #EFEAE2;">' +
-        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">Μενού</span>' +
+        '<span style="font-family:\'Milanesa Serif\',Georgia,serif;font-weight:500;font-size:21px;color:#111;">Menu</span>' +
         '<button class="aurea-mm-close" aria-label="Close" style="width:38px;height:38px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>' +
       '</div>' +
       '<div style="flex:1 1 auto;overflow-y:auto;padding:14px 26px 6px;display:flex;flex-direction:column;">' +
-        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Αρχική</a>' +
+        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Home</a>' +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
         catHtml +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
-        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Σχετικά με εμάς</a>' +
-        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Παρακολούθηση</a>' +
-        '<a href="/pages/contact" style="' + LINK + '">Επικοινωνία</a>' +
+        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">About Us</a>' +
+        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Tracking</a>' +
+        '<a href="/pages/contact" style="' + LINK + '">Contact</a>' +
       '</div>' +
       '<div style="margin-top:auto;padding:22px 20px;border-top:1px solid #EFEAE2;">' +
-        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Αγοράστε Τώρα</a>' +
+        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Shop Now</a>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:11.5px;color:#9A948C;white-space:nowrap;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Ασφαλής πληρωμή · Δωρεάν αποστολή στην Ελλάδα' +
+          'Secure payment · Free shipping' +
         '</div>' +
       '</div>';
     overlay.appendChild(drawer);
@@ -593,7 +626,7 @@
         '<button class="aurea-cart-checkout" data-bundle="' + bcode + '" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Ασφαλής πληρωμή &middot; Δωρεάν αποστολή στην Ελλάδα' +
+          'Secure payment &middot; Free shipping' +
         '</div>' +
       '</div>';
     }
