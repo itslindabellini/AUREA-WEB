@@ -66,6 +66,8 @@
     return '/collections/' + handleize(item);
   }
   function catUrl(category) {
+    // The Shoes collection lives at the handle "shoes", not "footwear".
+    if (category === 'Footwear') return '/collections/shoes';
     return '/collections/' + handleize(category);
   }
 
