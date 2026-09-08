@@ -9,7 +9,7 @@
     'Footwear':       ['Shop All', 'Loafers', 'Sandals', 'Boots'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All'],
-    'Winter Clothes': ['Shop All', 'Sweaters', 'Coats', 'Vests']
+    'Winter Clothes': ['Shop All', 'Sweaters', 'Coats', 'Vests', { label: 'Bottoms', children: ['Trousers', 'Jeans', 'Skirts', 'Shorts'] }, 'Tops & Blouses']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
   var FLAT = { 'Bags': true };
