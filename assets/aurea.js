@@ -621,7 +621,7 @@
         '</div>' +
       '</div>';
     }
-    function bundlePctFor(count) { return count >= 4 ? 25 : (count === 3 ? 20 : (count === 2 ? 15 : 0)); }
+    function bundlePctFor(count) { return count >= 5 ? 25 : (count === 4 ? 20 : (count === 3 ? 15 : (count === 2 ? 10 : 0))); }
     function totalsHtml(cart, saleSavings) {
       var subtotal = cart.items_subtotal_price;
       var realDisc = cart.total_discount || 0;
@@ -665,10 +665,11 @@
     }
 
     function nextTierMsg(count, pct) {
-      if (count === 1) return 'Ajoutez 1 article de plus pour 15% de remise';
-      if (count === 2) return 'Ajoutez 1 article de plus pour 20% de remise';
-      if (count === 3) return 'Ajoutez 1 article de plus pour 25% de remise';
-      if (count >= 4) return "Vous économisez " + (pct || 25) + '% sur cette commande !';
+      if (count === 1) return 'Ajoutez 1 article de plus pour 10% de remise';
+      if (count === 2) return 'Ajoutez 1 article de plus pour 15% de remise';
+      if (count === 3) return 'Ajoutez 1 article de plus pour 20% de remise';
+      if (count === 4) return 'Ajoutez 1 article de plus pour 25% de remise';
+      if (count >= 5) return "Vous économisez " + (pct || 25) + '% sur cette commande !';
       return '';
     }
     function render(inst, cart) {
