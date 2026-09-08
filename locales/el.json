@@ -11,7 +11,7 @@
   "shopify": {
     "checkout": {
       "order_summary": {
-        "enter_shipping_address": "ΔΩΡΕΑΝ"
+        "enter_shipping_address": "ΔΩΡΕΑΝ ασφαλισμένη αποστολή"
       },
       "contact": {
         "contact_method_title": "Στοιχεία επικοινωνίας (βήμα 1/3)"
@@ -27,6 +27,12 @@
       },
       "alternative_payment_method_banner": {
         "or": "12,000 ευχαριστημένοι πελάτες"
+      },
+      "general": {
+        "pay_now_button_label": "Ολοκλήρωση παραγγελίας"
+      },
+      "order_payment_collection": {
+        "pay_now": "Ολοκλήρωση παραγγελίας"
       }
     }
   }
