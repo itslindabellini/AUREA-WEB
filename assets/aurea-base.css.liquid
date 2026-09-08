@@ -137,6 +137,12 @@ x-dc{display:none!important}
 .aurea-cart-checkout:active{box-shadow:0 3px 10px rgba(17,17,17,.2);}
 @media (prefers-reduced-motion:reduce){.aurea-cart-checkout{animation:none;}}
 
+/* Product "Add to cart" CTA — subtle lift + shadow on hover, press-down on click.
+   Buttons already carry `transition: transform, box-shadow` inline so this animates. */
+.pdp-atc:hover,.pdp-sticky:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,17,17,.24);}
+.pdp-atc:active,.pdp-sticky:active{transform:translateY(0);box-shadow:0 3px 10px rgba(17,17,17,.2);}
+@media (prefers-reduced-motion:reduce){.pdp-atc:hover,.pdp-sticky:hover{transform:none;}}
+
 /* Hide images embedded in product descriptions (imported promo photos break the layout).
    Applies to every product automatically, including newly imported ones. Text stays. */
 body.template-product .rte img,
