@@ -58,6 +58,8 @@
     // shop-all so the link is never blank. Point this at the real handle once it exists.
     if (category === 'Winter Clothes' && item === 'Sweaters') return '/collections/sweaters';
     if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
+    if (category === 'Jewelry' && item === 'Necklaces') return '/collections/necklace';
+    if (category === 'Jewelry' && item === 'Earrings') return '/collections/ear-rings';
     if (category === 'Jewelry' && item === 'Ankle Jewelry') return '/collections/ankle-jewlery';
     if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewlery-sets';
     if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/gold-jewlery';
@@ -68,6 +70,8 @@
   function catUrl(category) {
     // The Shoes collection lives at the handle "shoes", not "footwear".
     if (category === 'Footwear') return '/collections/shoes';
+    // The jewelry umbrella collection lives at the (misspelled) handle "jewlery".
+    if (category === 'Jewelry') return '/collections/jewlery';
     return '/collections/' + handleize(category);
   }
 
