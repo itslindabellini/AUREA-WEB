@@ -16,12 +16,17 @@
   // Greek display labels for the nav. URLs stay keyed by the English names above (so the
   // collection handles are unchanged); we only translate what the shopper sees.
   var NAV_TR = {
-    'Shop All': 'Shop All',
-    'Summer Clothes': 'Summer Clothes', 'Winter Clothes': 'Winter Clothes', 'Footwear': 'Shoes',
-    'Jewelry': 'Jewelry', 'Bags': 'Bags',
-    'Necklaces': 'Necklaces', 'Earrings': 'Earrings', 'Bracelets': 'Bracelets', 'Rings': 'Rings',
-    'Gold Jewelry': 'Gold Jewelry', 'Silver Jewelry': 'Silver Jewelry', 'Full Sets': 'Full Sets'
-  }
+    'Shop All': 'Voir tout',
+    'Summer Clothes': "Vêtements d'été", 'Winter Clothes': "Vêtements d'hiver", 'Footwear': 'Chaussures',
+    'Jewelry': 'Bijoux', 'Bags': 'Sacs',
+    'Dresses': 'Robes', 'Summer Dresses': "Robes d'été", 'Casual Dresses': 'Robes décontractées', 'Evening Dresses': 'Robes de soirée', 'Holiday Dresses': 'Robes de vacances',
+    'Bottoms': 'Bas', 'Trousers': 'Pantalons', 'Jeans': 'Jeans', 'Skirts': 'Jupes', 'Shorts': 'Shorts',
+    'Tops & Blouses': 'Hauts & Chemisiers', 'Jumpsuits': 'Combinaisons', 'Overalls': 'Salopettes', 'Swimsuits': 'Maillots de bain',
+    'Loafers': 'Mocassins', 'Sandals': 'Sandales', 'Boots': 'Bottes',
+    'Necklaces': 'Colliers', 'Earrings': "Boucles d'oreilles", 'Bracelets': 'Bracelets', 'Rings': 'Bagues',
+    'Gold Jewelry': 'Bijoux en or', 'Silver Jewelry': 'Bijoux en argent',
+    'Sweaters': 'Pulls', 'Coats': 'Manteaux', 'Vests': 'Vestes'
+  };
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
   function trLabel(en) { return NAV_TR[en] || en; }
   var TOP_LINKS = [
@@ -207,16 +212,16 @@
         '<button class="aurea-mm-close" aria-label="Close" style="width:38px;height:38px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>' +
       '</div>' +
       '<div style="flex:1 1 auto;overflow-y:auto;padding:14px 26px 6px;display:flex;flex-direction:column;">' +
-        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Home</a>' +
+        '<a href="/" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Accueil</a>' +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
         catHtml +
         '<div style="height:36px;flex:0 0 auto;"></div>' +
-        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">About Us</a>' +
-        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Tracking</a>' +
+        '<a href="/pages/about-us" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">À propos</a>' +
+        '<a href="/pages/tracking" style="' + LINK + 'border-bottom:1px solid #F5F0EB;">Suivi de commande</a>' +
         '<a href="/pages/contact" style="' + LINK + '">Contact</a>' +
       '</div>' +
       '<div style="margin-top:auto;padding:22px 20px;border-top:1px solid #EFEAE2;">' +
-        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Shop Now</a>' +
+        '<a href="/collections/all" style="display:block;text-align:center;font-family:\'Manrope\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:#111;color:#fff;padding:18px;text-decoration:none;transition:opacity .2s ease;">Acheter maintenant</a>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;font-family:\'Manrope\',sans-serif;font-weight:500;font-size:11.5px;color:#9A948C;white-space:nowrap;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
           'Secure payment · Free shipping' +
@@ -626,7 +631,7 @@
         '<button class="aurea-cart-checkout" data-bundle="' + bcode + '" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:17px;font-family:Manrope;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;">Ολοκλήρωση Αγοράς &rarr;</button>' +
         '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-family:Manrope;font-weight:500;font-size:11.5px;color:#9A948C;">' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="1.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>' +
-          'Secure payment &middot; Free shipping' +
+          'Paiement sécurisé &middot; Livraison gratuite' +
         '</div>' +
       '</div>';
     }
