@@ -5,7 +5,7 @@
   'use strict';
 
   var MENUS = {
-    'Summer Clothes': ['Shop All', { label: 'Dresses', children: ['Summer Dresses', 'Casual Dresses', 'Evening Dresses', 'Holiday Dresses'] }],
+    'Summer Clothes': ['Shop All', { label: 'Dresses', children: ['Summer Dresses', 'Casual Dresses', 'Evening Dresses', 'Holiday Dresses'] }, { label: 'Bottoms', children: ['Trousers', 'Jeans', 'Skirts', 'Shorts'] }, 'Tops & Blouses'],
     'Footwear':       ['Shop All'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All'],
