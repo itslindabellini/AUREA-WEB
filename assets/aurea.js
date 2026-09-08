@@ -9,7 +9,7 @@
     'Footwear':       ['Shop All', 'Loafers', 'Sandals', 'Boots'],
     'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
     'Bags':           ['Shop All'],
-    'Winter Clothes': ['Shop All']
+    'Winter Clothes': ['Shop All', 'Sweaters', 'Coats', 'Vests']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
   var FLAT = { 'Bags': true };
@@ -51,7 +51,7 @@
     if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
     // No dedicated "sweaters" collection yet — fall back to the Winter Clothes
     // shop-all so the link is never blank. Point this at the real handle once it exists.
-    if (category === 'Winter Clothes' && item === 'Sweaters') return catUrl('Winter Clothes');
+    if (category === 'Winter Clothes' && item === 'Sweaters') return '/collections/sweaters';
     if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
     if (category === 'Jewelry' && item === 'Ankle Jewelry') return '/collections/ankle-jewlery';
     if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewlery-sets';
