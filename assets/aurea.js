@@ -1089,7 +1089,7 @@
       // front so the shop owner can hand-curate the opening rows; everything after that is
       // seeded-shuffled. Set the collection to "Manually" sorted in Shopify and drag the
       // hero products into the first PIN slots.
-      var PIN = 8;
+      var PIN = (grid.getAttribute('data-manual') === '1') ? 8 : 0;
       function shuffle(nodes) {
         var pinned = [], rest = [];
         nodes.forEach(function (c) {
