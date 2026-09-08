@@ -7,7 +7,7 @@
   var MENUS = {
     'Summer Clothes': ['Shop All', { label: 'Dresses', children: ['Summer Dresses', 'Casual Dresses', 'Evening Dresses', 'Holiday Dresses'] }, { label: 'Bottoms', children: ['Trousers', 'Jeans', 'Skirts', 'Shorts'] }, 'Tops & Blouses', 'Jumpsuits', 'Overalls', 'Swimsuits'],
     'Footwear':       ['Shop All', 'Loafers', 'Sandals', 'Boots'],
-    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
+    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry'],
     'Bags':           ['Shop All'],
     'Winter Clothes': ['Shop All', 'Sweaters', 'Coats', 'Vests', { label: 'Bottoms', children: ['Trousers', 'Jeans', 'Skirts', 'Shorts'] }, 'Tops & Blouses']
   };
