@@ -5,28 +5,23 @@
   'use strict';
 
   var MENUS = {
-    'Summer Clothes': ['Shop All', 'Dresses', 'Tops', 'Skirts', 'Pants', 'Sets', 'Tunics', 'Bikini'],
-    'Footwear':       ['Shop All', 'Sandals', 'Flats', 'Heels', 'Boots', 'Sneakers'],
-    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', 'Ankle Jewelry', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
-    'Bags':           ['Shop All', 'Leather Bags', 'Luxury Bags'],
-    'Winter Clothes': ['Shop All', 'Coats', 'Jackets', 'Sweaters', 'Winter Dresses', 'Jeans', 'Pants', 'Sets']
+    'Summer Clothes': ['Shop All'],
+    'Footwear':       ['Shop All'],
+    'Jewelry':        ['Shop All', 'Necklaces', 'Earrings', 'Bracelets', 'Rings', '---', 'Gold Jewelry', 'Silver Jewelry', '---', 'Full Sets'],
+    'Bags':           ['Shop All'],
+    'Winter Clothes': ['Shop All']
   };
   // Categories shown as a plain link (no roll-down submenu) — few products for now.
   var FLAT = {};
   // Greek display labels for the nav. URLs stay keyed by the English names above (so the
   // collection handles are unchanged); we only translate what the shopper sees.
   var NAV_TR = {
-    'Shop All': 'Δείτε όλα',
-    'Summer Clothes': 'Καλοκαιρινά Ρούχα', 'Winter Clothes': 'Χειμερινά Ρούχα', 'Footwear': 'Παπούτσια',
-    'Jewelry': 'Κοσμήματα', 'Bags': 'Τσάντες',
-    'Dresses': 'Φορέματα', 'Tops': 'Τοπ', 'Skirts': 'Φούστες', 'Pants': 'Παντελόνια', 'Sets': 'Σετ', 'Tunics': 'Τουνίκ', 'Bikini': 'Μπικίνι',
-    'Sneakers': 'Αθλητικά', 'Heels': 'Τακούνια', 'Flats': 'Μπαλαρίνες', 'Boots': 'Μπότες', 'Sandals': 'Πέδιλα',
-    'Necklaces': 'Κολιέ', 'Earrings': 'Σκουλαρίκια', 'Bracelets': 'Βραχιόλια', 'Rings': 'Δαχτυλίδια',
-    'Gold Jewelry': 'Χρυσά Κοσμήματα', 'Silver Jewelry': 'Ασημένια Κοσμήματα', 'Full Sets': 'Πλήρη Σετ', 'Ankle Jewelry': 'Κοσμήματα Ποδιού',
-    'Crossbody Bags': 'Τσάντες Χιαστί', 'Handbags': 'Τσάντες Χειρός', 'Tote Bags': 'Τσάντες Tote',
-    'Leather Bags': 'Δερμάτινες Τσάντες', 'Luxury Bags': 'Πολυτελείς Τσάντες',
-    'Coats': 'Παλτό', 'Jackets': 'Μπουφάν', 'Sweaters': 'Πουλόβερ', 'Winter Dresses': 'Χειμερινά Φορέματα', 'Jeans': 'Τζιν'
-  };
+    'Shop All': 'Shop All',
+    'Summer Clothes': 'Summer Clothes', 'Winter Clothes': 'Winter Clothes', 'Footwear': 'Shoes',
+    'Jewelry': 'Jewelry', 'Bags': 'Bags',
+    'Necklaces': 'Necklaces', 'Earrings': 'Earrings', 'Bracelets': 'Bracelets', 'Rings': 'Rings',
+    'Gold Jewelry': 'Gold Jewelry', 'Silver Jewelry': 'Silver Jewelry', 'Full Sets': 'Full Sets'
+  }
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
   function trLabel(en) { return NAV_TR[en] || en; }
   var TOP_LINKS = [
