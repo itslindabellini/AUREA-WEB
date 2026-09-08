@@ -567,10 +567,10 @@
       return '<div class="aurea-reserve-bar" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 30px;background:rgba(178,58,46,.08);border-bottom:1px solid rgba(178,58,46,.16);flex:0 0 auto;">' + reserveBarInner() + '</div>';
     }
 
-    // Bundle-progress roadmap (2 / 3 / 4 items -> 15 / 20 / 25% off).
+    // Bundle-progress roadmap (2 / 3 / 4 / 5 items -> 10 / 15 / 20 / 25% off).
     function roadmapHtml(count, msg) {
       var gold = '#C7A867', dark = '#111', line = '#EAE2D6', nBg = '#F5F0EB', nFg = '#9A948C';
-      var r1 = count >= 2, r2 = count >= 3, r3 = count >= 4;
+      var r1 = count >= 2, r2 = count >= 3, r3 = count >= 4, r4 = count >= 5;
       function dot(num, bg, fg) { return '<div style="width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:700;font-size:11px;background:' + bg + ';color:' + fg + ';">' + num + '</div>'; }
       return '<div style="margin-bottom:16px;">' +
         '<div style="font-family:Manrope;font-weight:700;font-size:13px;color:#111;text-align:center;margin-bottom:16px;">' + msg + '</div>' +
@@ -579,11 +579,14 @@
           '<div style="flex:1;height:2px;background:' + (r1 ? dark : line) + ';"></div>' +
           dot(3, r2 ? dark : nBg, r2 ? '#fff' : nFg) +
           '<div style="flex:1;height:2px;background:' + (r2 ? dark : line) + ';"></div>' +
-          dot(4, r3 ? gold : nBg, r3 ? '#1A160F' : nFg) +
+          dot(4, r3 ? dark : nBg, r3 ? '#fff' : nFg) +
+          '<div style="flex:1;height:2px;background:' + (r3 ? dark : line) + ';"></div>' +
+          dot(5, r4 ? gold : nBg, r4 ? '#1A160F' : nFg) +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;margin-top:8px;font-family:Manrope;font-weight:600;font-size:10.5px;letter-spacing:.04em;color:#9A948C;">' +
+          '<span style="width:30px;text-align:center;">10%</span>' +
           '<span style="width:30px;text-align:center;">15%</span>' +
-          '<span style="width:30px;text-align:center;margin-left:auto;margin-right:auto;">20%</span>' +
+          '<span style="width:30px;text-align:center;">20%</span>' +
           '<span style="width:30px;text-align:center;">25%</span>' +
         '</div>' +
       '</div>';
