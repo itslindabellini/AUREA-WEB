@@ -1046,6 +1046,17 @@
         else { c.style.display = 'none'; }
       });
     });
+    // Home "Robes" showcase: shuffle the pinned dresses on each load (show all).
+    document.querySelectorAll('.aurea-dress-grid').forEach(function (grid) {
+      if (grid.getAttribute('data-shuffled')) return;
+      grid.setAttribute('data-shuffled', '1');
+      var cards = Array.prototype.slice.call(grid.children).filter(function (c) { return c.tagName === 'A'; });
+      for (var i = cards.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+      }
+      cards.forEach(function (c) { grid.appendChild(c); });
+    });
   }
 
   /* ---------- 9g. Collection grid: full mix of EVERYTHING, STABLE across visits ----------
