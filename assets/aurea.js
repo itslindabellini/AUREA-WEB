@@ -853,6 +853,53 @@
     });
   }
 
+  /* ---------- 9a. Product gallery: swipe the main image (mobile) ----------
+     Lets shoppers flick the big image left/right to browse the other photos,
+     instead of only tapping the thumbnail squares. Listeners are passive so
+     vertical page scrolling is untouched; only a clear horizontal swipe acts. */
+  function productSwipe() {
+    document.querySelectorAll('.aurea-mobile').forEach(function (scope) {
+      var main = scope.querySelector('.pdp-main-img');
+      if (!main || main.getAttribute('data-aurea-swipe')) return;
+      var thumbs = Array.prototype.slice.call(scope.querySelectorAll('.pdp-thumb'));
+      if (thumbs.length < 2) return;
+      main.setAttribute('data-aurea-swipe', '1');
+      var imgs = thumbs.map(function (t) { return t.getAttribute('data-img'); });
+      function currentIndex() { var i = imgs.indexOf(main.getAttribute('src')); return i < 0 ? 0 : i; }
+      function show(idx) {
+        if (idx < 0) idx = imgs.length - 1;
+        if (idx >= imgs.length) idx = 0;
+        var src = imgs[idx];
+        if (!src) return;
+        main.src = src;
+        if (main.parentElement) main.parentElement.scrollTop = 0;
+        thumbs.forEach(function (t, k) { t.style.borderColor = k === idx ? 'rgb(17, 17, 17)' : 'rgb(234, 226, 214)'; });
+        var active = thumbs[idx];
+        if (active && active.scrollIntoView) { try { active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (e) {} }
+      }
+      var x0 = null, y0 = null, moved = false;
+      var target = main.parentElement || main;
+      target.addEventListener('touchstart', function (e) {
+        if (!e.touches || e.touches.length !== 1) { x0 = null; return; }
+        x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; moved = false;
+      }, { passive: true });
+      target.addEventListener('touchmove', function (e) {
+        if (x0 === null || !e.touches) return;
+        var dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+        if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) moved = true;
+      }, { passive: true });
+      target.addEventListener('touchend', function (e) {
+        if (x0 === null) { return; }
+        var t = (e.changedTouches && e.changedTouches[0]) || null;
+        if (t && moved) {
+          var dx = t.clientX - x0;
+          if (Math.abs(dx) > 40) { show(dx < 0 ? currentIndex() + 1 : currentIndex() - 1); }
+        }
+        x0 = null; moved = false;
+      }, { passive: true });
+    });
+  }
+
   /* ---------- 9b. Product gallery bottom-pin (desktop) ----------
      The left image is intentionally taller than the viewport. CSS sticky
      with a `bottom` inset never pins a taller-than-viewport element, so we
@@ -1413,6 +1460,7 @@
       try { quickAdd(); } catch (e) {}
       try { productAccordion(); } catch (e) {}
       try { pdpStickyPin(); } catch (e) {}
+      try { productSwipe(); } catch (e) {}
       try { reviewsCarousel(); } catch (e) {}
       try { collectionFilters(); } catch (e) {}
       try { sizeChart(); } catch (e) {}
