@@ -41,7 +41,7 @@
     { q: 'Combien de temps dure la livraison ?',
       a: 'Nous veillons à traiter et expédier toutes les commandes le plus rapidement possible. Une fois votre commande expédiée, la livraison prend généralement 6 à 12 jours ouvrés, selon votre région.\n\nDès l\'expédition, vous recevrez un e-mail de confirmation avec un numéro de suivi, afin de suivre votre colis à chaque étape.' },
     { q: 'Puis-je retourner ma commande ?',
-      a: 'Oui. Si votre commande ne vous convient pas entièrement, vous pouvez retourner les articles sous 14 jours après la livraison, à condition qu\'ils soient non portés, non lavés et dans leur état d\'origine avec toutes les étiquettes.\n\nPour toute question, notre équipe support reste à votre entière disposition.' }
+      a: 'Oui. Si votre commande ne vous convient pas entièrement, vous pouvez retourner les articles sous 30 jours après la livraison, à condition qu\'ils soient non portés, non lavés et dans leur état d\'origine avec toutes les étiquettes.\n\nPour toute question, notre équipe support reste à votre entière disposition.' }
   ];
 
   // For now every category/sub-item points at the full catalog; phase two maps
