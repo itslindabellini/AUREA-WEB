@@ -955,80 +955,36 @@
       var track = (container.matches && container.matches('[style*="overflow-x"]'))
         ? container : container.querySelector('[style*="overflow-x"]');
       if (!track) return;
-      var originals = Array.prototype.slice.call(track.children);
-      if (originals.length < 3) return;
       wrap.setAttribute('data-rev-init', '1');
 
-      var gapCss = getComputedStyle(track);
-      var gap = parseFloat(gapCss.columnGap || gapCss.gap) || 0;
-      var step = originals[0].getBoundingClientRect().width + gap;   // one-card advance
-      // clone enough on each side to cover ~2 viewports of overshoot
-      var K = Math.min(originals.length, Math.ceil((track.clientWidth * 2) / step) + 1);
-      var i, cl;
-      for (i = 0; i < K; i++) {                                       // append copies of the first K
-        cl = originals[i].cloneNode(true); cl.setAttribute('data-rev-clone', '1'); cl.setAttribute('aria-hidden', 'true');
-        track.appendChild(cl);
-      }
-      for (i = 0; i < K; i++) {                                       // prepend copies of the last K (in order)
-        cl = originals[originals.length - K + i].cloneNode(true); cl.setAttribute('data-rev-clone', '1'); cl.setAttribute('aria-hidden', 'true');
-        track.insertBefore(cl, track.children[i]);
-      }
-
-      var firstReal = originals[0];
-      var base = firstReal.offsetLeft;                                // scrollLeft that shows card #1 at the left
-      var setW = track.children[K + originals.length].offsetLeft - base; // exact width of one full real set
-      track.scrollLeft = base;
-
-      var animating = false;
-      function normalize() {
-        if (animating) return;
-        if (track.scrollLeft < base) track.scrollLeft += setW;
-        else if (track.scrollLeft >= base + setW) track.scrollLeft -= setW;
-      }
-      var ticking = false;
-      track.addEventListener('scroll', function () {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(function () { ticking = false; normalize(); });
-      }, { passive: true });
-
+      // Arrows advance by roughly one viewport; native scroll clamps at the ends.
       function page(dir) {
-        var amount = Math.max(step, Math.round((track.clientWidth * 0.8) / step) * step);
-        // pre-wrap so the smooth animation stays inside the cloned buffer, then re-enable wrapping
-        if (track.scrollLeft < base + step) track.scrollLeft += setW;
-        else if (track.scrollLeft > base + setW - step) track.scrollLeft -= setW;
-        animating = true;
+        var amount = Math.max(240, Math.round(track.clientWidth * 0.85));
         track.scrollBy({ left: dir * amount, behavior: 'smooth' });
-        setTimeout(function () { animating = false; normalize(); }, 550);
       }
       if (next) next.addEventListener('click', function () { page(1); });
       prev.addEventListener('click', function () { page(-1); });
 
-      /* unified drag-to-scroll: works for both finger and mouse */
+      // Mouse drag-to-scroll (desktop only). Touch is left to native momentum
+      // scrolling — no programmatic scrollLeft resets, so flicks stay smooth.
       var down = false, startX = 0, startLeft = 0, moved = false;
-      track.style.cursor = 'grab';
       track.addEventListener('pointerdown', function (e) {
+        if (e.pointerType !== 'mouse') return;
         down = true; moved = false; startX = e.clientX; startLeft = track.scrollLeft;
         track.style.cursor = 'grabbing';
-        if (e.pointerType === 'mouse') { try { track.setPointerCapture(e.pointerId); } catch (_) {} }
+        try { track.setPointerCapture(e.pointerId); } catch (_) {}
       });
       track.addEventListener('pointermove', function (e) {
         if (!down) return;
         var dx = e.clientX - startX;
         if (Math.abs(dx) > 4) moved = true;
-        if (e.pointerType === 'mouse') track.scrollLeft = startLeft - dx; // touch pans natively
+        track.scrollLeft = startLeft - dx;
       });
-      function end() { down = false; track.style.cursor = 'grab'; }
+      function end() { down = false; track.style.cursor = ''; }
       track.addEventListener('pointerup', end);
       track.addEventListener('pointercancel', end);
-      /* swallow the click that ends a drag so it doesn't trigger a card link */
+      // Swallow the click that ends a drag so it doesn't open a card link.
       track.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
-
-      window.addEventListener('resize', function () {
-        step = originals[0].getBoundingClientRect().width + gap;
-        base = firstReal.offsetLeft;
-        setW = track.children[K + originals.length].offsetLeft - base;
-      });
     });
   }
 
