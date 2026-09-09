@@ -341,7 +341,7 @@
       var orig = btn.textContent;
       if (!id) { btn.textContent = 'Indisponible'; setTimeout(function () { btn.textContent = orig; }, 1600); return; }
       btn.textContent = 'Ajout…';
-      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1, properties: { 'Livraison': 'GRATUITE (avec suivi)' } }) })
+      fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
         .then(function (res) {
           if (!res.ok) {
@@ -436,7 +436,7 @@
         if (!m.complete) { atc.textContent = 'Choisissez vos options'; setTimeout(paint, 1400); return; }
         if (!m.variant) return;
         atc.textContent = 'Ajout…';
-        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1, properties: { 'Livraison': 'GRATUITE (avec suivi)' } }) })
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: m.variant.id, quantity: 1 }) })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
           .then(function (res) {
             if (!res.ok) {
