@@ -45,10 +45,6 @@
 
 x-dc{display:none!important}
 
-@font-face{font-family:'Milanesa Solid';src:url({{ 'MilanesaSerif-Regular.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;}
-@font-face{font-family:'Milanesa Solid';src:url({{ 'MilanesaSerif-DemiBold.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;}
-@font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
-  @font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
   *{box-sizing:border-box;}
   html,body{margin:0;background:#ffffff;}
   a{color:#111111;text-decoration:none;}
@@ -60,8 +56,6 @@ x-dc{display:none!important}
   @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
   @keyframes faqReveal{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
 
-@font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
-  @font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
   *{box-sizing:border-box;}
   html,body{margin:0;background:#E8E3DB;}
   a{color:#111111;text-decoration:none;}
@@ -73,8 +67,6 @@ x-dc{display:none!important}
   @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
   @keyframes swipeNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
 
-@font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
-  @font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
   *{box-sizing:border-box;}
   html,body{margin:0;background:#ffffff;}
   a{color:#111111;text-decoration:none;}
@@ -85,8 +77,6 @@ x-dc{display:none!important}
   @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
 
-@font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
-  @font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
   *{box-sizing:border-box;}
   html,body{margin:0;background:#E8E3DB;}
   a{color:#111111;text-decoration:none;}
@@ -97,8 +87,6 @@ x-dc{display:none!important}
   @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
 
-@font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
-  @font-face{font-family:'Milanesa Serif';src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-weight:600;font-style:normal;font-display:swap;unicode-range:U+0-36F,U+400-1EFF,U+2000-10FFFF;}
   *{box-sizing:border-box;}
   html,body{margin:0;background:#ffffff;}
   a{color:#111111;text-decoration:none;}
@@ -123,12 +111,6 @@ x-dc{display:none!important}
 .aurea-page .scp5 button:hover{background:rgba(255,255,255,0.95) !important;color:#111111 !important;border-color:rgba(255,255,255,0.95) !important;}
 
 
-/* Greek headings: "Milanesa Serif" has no Greek glyphs, so route the Greek unicode
-   ranges to GFS Didot (an elegant Greek Didone). Latin stays on Milanesa Serif.
-   Defined last so it wins for Greek codepoints; font-weight range covers all heading weights. */
-@font-face{font-family:'Milanesa Serif';font-style:normal;font-weight:100 900;src:url({{ 'gfsdidot-greek-ext.woff2' | asset_url }}) format('woff2');unicode-range:U+1F00-1FFF;font-display:swap;}
-@font-face{font-family:'Milanesa Serif';font-style:normal;font-weight:100 900;src:url({{ 'gfsdidot-greek.woff2' | asset_url }}) format('woff2');unicode-range:U+0370-03FF;font-display:swap;}
-@font-face{font-family:'GFS Didot';font-style:normal;font-weight:400;src:url({{ 'gfsdidot-latin.woff2' | asset_url }}) format('woff2');font-display:swap;}
 
 /* Cart checkout CTA — subtle idle "pop" + tactile hover/press feedback (respects reduced motion) */
 .aurea-cart-checkout{animation:aurea-checkout-pop 4.5s ease-in-out infinite;}

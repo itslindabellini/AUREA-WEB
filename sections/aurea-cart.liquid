@@ -3,12 +3,12 @@
     <a href="/" style="display:inline-block;"><img src="{{ 'aurea-logo.png' | asset_url }}" alt="AUREA Mykonos" style="height:48px;width:auto;display:block;"></a>
   </div>
   <div style="max-width:1040px;margin:0 auto;padding:44px 24px 90px;">
-    <h1 style="font-family:'Milanesa Serif',Georgia,serif;font-weight:500;font-size:clamp(30px,4vw,42px);margin:0 0 28px;color:#111;">Το Καλάθι σας</h1>
+    <h1 style="font-family:Georgia,serif,Georgia,serif;font-weight:500;font-size:clamp(30px,4vw,42px);margin:0 0 28px;color:#111;">Το Καλάθι σας</h1>
 
     {%- if cart.item_count == 0 -%}
       <div style="text-align:center;padding:70px 20px;">
         <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#C9BFB1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:22px;"><path d="M2 3h2.3l1.4 12.1a1 1 0 0 0 1 .9h9.1a1 1 0 0 0 1-.8l1.5-7.4H5.2"></path><circle cx="9" cy="20.2" r="1.35"></circle><circle cx="16.6" cy="20.2" r="1.35"></circle></svg>
-        <div style="font-family:'Milanesa Serif',Georgia,serif;font-weight:500;font-size:22px;margin-bottom:10px;">Το καλάθι σας είναι άδειο</div>
+        <div style="font-family:Georgia,serif,Georgia,serif;font-weight:500;font-size:22px;margin-bottom:10px;">Το καλάθι σας είναι άδειο</div>
         <div style="font-size:14px;color:#9A948C;margin-bottom:28px;">Φαίνεται πως δεν έχετε προσθέσει κάτι ακόμη.</div>
         <a href="/collections/all" style="display:inline-block;background:#111;color:#fff;padding:15px 40px;font-weight:600;font-size:12px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;">Συνέχεια Αγορών</a>
       </div>
@@ -21,7 +21,7 @@
               {%- if item.image -%}<img src="{{ item.image | image_url: width: 240 }}" alt="{{ item.product.title | escape }}" style="width:100%;height:100%;object-fit:cover;">{%- endif -%}
             </a>
             <div style="flex:1 1 auto;min-width:0;">
-              <a href="{{ item.url }}" style="font-family:'Milanesa Serif',Georgia,serif;font-weight:500;font-size:18px;color:#111;text-decoration:none;">{{ item.product.title }}</a>
+              <a href="{{ item.url }}" style="font-family:Georgia,serif,Georgia,serif;font-weight:500;font-size:18px;color:#111;text-decoration:none;">{{ item.product.title }}</a>
               {%- unless item.variant.title contains 'Default' -%}<div style="font-size:12.5px;color:#9A948C;margin-top:5px;letter-spacing:.02em;">{{ item.variant.title }}</div>{%- endunless -%}
               <div style="margin-top:8px;font-size:14px;">
                 {%- if item.original_price > item.final_price -%}
@@ -49,7 +49,7 @@
           <div style="width:100%;max-width:380px;">
             <div style="display:flex;justify-content:space-between;font-size:15px;padding-bottom:16px;border-bottom:1px solid #EFEAE2;">
               <span style="color:#4A4A4A;">Υποσύνολο</span>
-              <span style="font-family:'Milanesa Serif',Georgia,serif;font-size:22px;">{{ cart.total_price | money }}</span>
+              <span style="font-family:Georgia,serif,Georgia,serif;font-size:22px;">{{ cart.total_price | money }}</span>
             </div>
             <div style="font-size:12px;color:#9A948C;margin:12px 0 20px;">Μεταφορικά &amp; φόροι υπολογίζονται στο ταμείο.</div>
             <button type="submit" name="checkout" style="width:100%;background:#111;color:#fff;border:1px solid #111;padding:18px;font-weight:700;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;">Ολοκλήρωση Αγοράς</button>
