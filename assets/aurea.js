@@ -1333,7 +1333,7 @@
     });
   }
 
-  /* ---------- Savings tag: white "you saved €X" badge on every product card ---------- */
+  /* ---------- Savings tag: dark "−XX%" discount badge on every product card ---------- */
   function parseMoney(t) {
     if (!t) return NaN;
     var s = ('' + t).replace(/[^\d.,]/g, '');
@@ -1357,6 +1357,8 @@
       if (!(orig > 0) || !(sale >= 0) || !(orig > sale)) return;
       var saved = orig - sale;
       if (!(saved > 0)) return;
+      var pct = Math.round(saved / orig * 100);
+      if (!(pct > 0)) return;
       card.setAttribute('data-aurea-saved', '1');
       // pin the tag inside the card's image wrapper (first positioned box); fall back to the card
       var wrap = card.querySelector('div[style*="position: relative"]') || card.querySelector('div[style*="position:relative"]');
@@ -1367,7 +1369,7 @@
       var isJb = pageJb || card.getAttribute('data-jb') === '1';
       var tagPos = (onMobile && !isJb) ? 'bottom:12px;right:12px' : 'top:12px;right:12px';
       var tag = el('div', 'position:absolute;' + tagPos + ';z-index:4;background:#111;color:#fff;font-family:Manrope;font-weight:700;font-size:12px;letter-spacing:.02em;line-height:1;padding:8px 12px;border-radius:2px;white-space:nowrap;pointer-events:none;');
-      tag.textContent = '−' + fmtMoney(saved);
+      tag.textContent = '−' + pct + '%';
       wrap.appendChild(tag);
     });
   }
