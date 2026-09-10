@@ -214,7 +214,7 @@
     drawer.className = 'aurea-mm';
     drawer.innerHTML =
       '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px;border-bottom:1px solid #EFEAE2;">' +
-        '<span style="font-family:Cormorant Garamond,Georgia,serif;font-weight:500;font-size:21px;color:#111;">Menu</span>' +
+        '<span style="font-family:Helvetica,Arial,sans-serif;font-weight:500;font-size:21px;color:#111;">Menu</span>' +
         '<button class="aurea-mm-close" aria-label="Close" style="width:38px;height:38px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>' +
       '</div>' +
       '<div style="flex:1 1 auto;overflow-y:auto;padding:14px 26px 6px;display:flex;flex-direction:column;">' +
@@ -532,14 +532,14 @@
 
     function headerHtml(count) {
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:26px 30px;border-bottom:1px solid #EFEAE2;flex:0 0 auto;">' +
-        '<div style="font-family:Cormorant Garamond,Georgia,serif;font-weight:500;font-size:22px;color:#111;">Votre panier <span style="font-family:Manrope;font-weight:500;font-size:14px;color:#9A948C;">(' + count + ')</span></div>' +
+        '<div style="font-family:Helvetica,Arial,sans-serif;font-weight:500;font-size:22px;color:#111;">Votre panier <span style="font-family:Manrope;font-weight:500;font-size:14px;color:#9A948C;">(' + count + ')</span></div>' +
         '<button class="aurea-cart-close" aria-label="Close" style="width:36px;height:36px;border:none;background:transparent;color:#4A4A4A;cursor:pointer;display:flex;align-items:center;justify-content:center;">' + CLOSE_SVG + '</button>' +
       '</div>';
     }
     function emptyHtml() {
       return '<div style="flex:1 1 0%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;">' +
         '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#C9BFB1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:22px;"><path d="M2 3h2.3l1.4 12.1a1 1 0 0 0 1 .9h9.1a1 1 0 0 0 1-.8l1.5-7.4H5.2"></path><circle cx="9" cy="20.2" r="1.35"></circle><circle cx="16.6" cy="20.2" r="1.35"></circle></svg>' +
-        '<div style="font-family:Cormorant Garamond,Georgia,serif;font-weight:500;font-size:20px;color:#111;margin-bottom:10px;">Votre panier est vide</div>' +
+        '<div style="font-family:Helvetica,Arial,sans-serif;font-weight:500;font-size:20px;color:#111;margin-bottom:10px;">Votre panier est vide</div>' +
         '<div style="font-family:Manrope;font-weight:500;font-size:13.5px;color:#9A948C;margin-bottom:28px;">Aucun article ajouté pour le moment.</div>' +
         '<button class="aurea-cart-continue" style="background:#111;color:#fff;border:1px solid #111;padding:14px 34px;font-family:Manrope;font-weight:600;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;">Continuer mes achats</button>' +
       '</div>';
@@ -593,7 +593,7 @@
     }
     function bannerHtml(pct) {
       return '<div style="margin-bottom:20px;background:#F5F0EB;padding:16px 18px;display:flex;align-items:center;gap:12px;">' +
-        '<span style="font-family:Cormorant Garamond,Georgia,serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
+        '<span style="font-family:Helvetica,Arial,sans-serif;font-weight:600;font-size:18px;color:#111;">' + pct + '%</span>' +
         '<span style="font-family:Manrope;font-weight:500;font-size:12.5px;color:#4A4A4A;line-height:1.4;">La remise groupée s\'applique automatiquement</span>' +
       '</div>';
     }
