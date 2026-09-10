@@ -1368,7 +1368,7 @@
       var onMobile = card.closest && card.closest('.aurea-mobile');
       var isJb = pageJb || card.getAttribute('data-jb') === '1';
       var tagPos = (onMobile && !isJb) ? 'bottom:12px;right:12px' : 'top:12px;right:12px';
-      var tag = el('div', 'position:absolute;' + tagPos + ';z-index:4;background:#111;color:#fff;font-family:Manrope;font-weight:700;font-size:12px;letter-spacing:.02em;line-height:1;padding:8px 12px;border-radius:2px;white-space:nowrap;pointer-events:none;');
+      var tag = el('div', 'position:absolute;' + tagPos + ';z-index:4;background:#111;color:#fff;font-family:Manrope;font-weight:400;font-size:12px;letter-spacing:.02em;line-height:1;padding:8px 12px;border-radius:2px;white-space:nowrap;pointer-events:none;');
       tag.textContent = '−' + pct + '%';
       wrap.appendChild(tag);
     });
