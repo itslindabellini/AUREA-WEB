@@ -133,3 +133,8 @@ body.template-product .rte video{display:none !important;}
 body.template-product .rte p:has(> img:only-child),
 body.template-product .rte p:has(> picture:only-child),
 body.template-product .rte figure:has(> img:only-child){display:none !important;margin:0 !important;}
+
+/* Shipping-bar "live" green dot — pulsing ring */
+.aurea-ship-dot{animation:aureaPulseGreen 1.8s ease-out infinite;}
+@keyframes aureaPulseGreen{0%{box-shadow:0 0 0 0 rgba(46,160,67,.55);}70%{box-shadow:0 0 0 7px rgba(46,160,67,0);}100%{box-shadow:0 0 0 0 rgba(46,160,67,0);}}
+@media (prefers-reduced-motion:reduce){.aurea-ship-dot{animation:none;}}
