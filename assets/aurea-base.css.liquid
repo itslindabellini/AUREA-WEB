@@ -1,0 +1,144 @@
+.sc-placeholder{background:color-mix(in srgb,currentColor 8%,transparent);
+      border:1px solid color-mix(in srgb,currentColor 50%,transparent);
+      border-radius:2px;box-sizing:border-box;overflow:hidden}
+    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+    html.sc-dc-streaming .sc-placeholder,
+    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
+      background:color-mix(in srgb,currentColor 5%,transparent);
+      border-color:transparent}
+    html.sc-dc-streaming .sc-placeholder::before,
+    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
+      position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
+      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
+    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
+    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
+      background:color-mix(in srgb,currentColor 8%,transparent)}
+    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
+      color:color-mix(in srgb,currentColor 70%,transparent);word-break:break-word}
+    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
+      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
+      border-radius:2px;box-sizing:border-box;color:transparent;
+      user-select:none}
+    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
+      color:color-mix(in srgb,currentColor 50%,transparent);
+      background:color-mix(in srgb,currentColor 10%,transparent);border-radius:3px;
+      padding:0 3px}
+    .sc-host.sc-has-error{position:relative}
+    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
+      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
+      border-radius:4px;white-space:pre-wrap;pointer-events:none}
+    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
+       in sync until dc-runtime regains a build step. */
+    @media print {
+      @page { margin: 0.5cm; }
+      figure, table { break-inside: avoid; }
+      #dc-root, #dc-root > .sc-host { height: auto; }
+      *, *::before, *::after {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        animation-delay: -99s !important; animation-duration: .001s !important;
+        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+        animation-play-state: running !important; transition-duration: 0s !important;
+      }
+    }
+
+x-dc{display:none!important}
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#ffffff;}
+  a{color:#111111;text-decoration:none;}
+  a:hover{color:#4A4A4A;}
+  input::placeholder{color:#A79E92;}
+  ::selection{background:#F5F0EB;color:#111;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(178,58,46,.6);}70%{box-shadow:0 0 0 8px rgba(178,58,46,0);}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);}}
+  @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+  @keyframes faqReveal{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#E8E3DB;}
+  a{color:#111111;text-decoration:none;}
+  input::placeholder{color:#A79E92;}
+  ::selection{background:#F5F0EB;color:#111;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(178,58,46,.6);}70%{box-shadow:0 0 0 8px rgba(178,58,46,0);}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);}}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(178,58,46,.55);opacity:1;}70%{box-shadow:0 0 0 6px rgba(178,58,46,0);opacity:.85;}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);opacity:1;}}
+  @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+  @keyframes swipeNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#ffffff;}
+  a{color:#111111;text-decoration:none;}
+  a:hover{color:#4A4A4A;}
+  input::placeholder{color:#A79E92;}
+  ::selection{background:#F5F0EB;color:#111;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(178,58,46,.6);}70%{box-shadow:0 0 0 8px rgba(178,58,46,0);}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);}}
+  @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#E8E3DB;}
+  a{color:#111111;text-decoration:none;}
+  input::placeholder{color:#A79E92;}
+  ::selection{background:#F5F0EB;color:#111;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(178,58,46,.6);}70%{box-shadow:0 0 0 8px rgba(178,58,46,0);}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);}}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(178,58,46,.55);opacity:1;}70%{box-shadow:0 0 0 6px rgba(178,58,46,0);opacity:.85;}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);opacity:1;}}
+  @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#ffffff;}
+  a{color:#111111;text-decoration:none;}
+  a:hover{color:#4A4A4A;}
+  input::placeholder{color:#A79E92;}
+  ::selection{background:#F5F0EB;color:#111;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(178,58,46,.6);}70%{box-shadow:0 0 0 8px rgba(178,58,46,0);}100%{box-shadow:0 0 0 0 rgba(178,58,46,0);}}
+  @keyframes marqueeLeft{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes marqueeRight{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+  .pdp-thumbrail{scrollbar-width:thin;scrollbar-color:#C9BFB0 transparent;}
+  .pdp-thumbrail::-webkit-scrollbar{width:1px;}
+  .pdp-thumbrail::-webkit-scrollbar-thumb{background:#C9BFB0;border-radius:1px;}
+  .pdp-thumbrail::-webkit-scrollbar-track{background:transparent;margin:120px 0;}
+/* AUREA responsive desktop/mobile toggle (look-first port) */
+.aurea-mobile{display:none;}
+@media (max-width:768px){ .aurea-desktop{display:none!important;} .aurea-mobile{display:block!important;} }
+
+/* Phase 2 — product card hover: reveal 2nd image + Quick Add button */
+.aurea-page a .aurea-alt-img{transition:opacity .5s ease;}
+.aurea-page a:hover .aurea-alt-img{opacity:1 !important;}
+.aurea-page a:hover .scp5{opacity:1 !important;transform:translateY(0) !important;}
+.aurea-page .scp5 button:hover{background:rgba(255,255,255,0.95) !important;color:#111111 !important;border-color:rgba(255,255,255,0.95) !important;}
+
+
+
+/* Cart checkout CTA — subtle idle "pop" + tactile hover/press feedback (respects reduced motion) */
+.aurea-cart-checkout{animation:aurea-checkout-pop 4.5s ease-in-out infinite;}
+@keyframes aurea-checkout-pop{0%{transform:scale(1);}8%{transform:scale(1.035);}17%{transform:scale(1);}100%{transform:scale(1);}}
+.aurea-cart-checkout:hover{box-shadow:0 8px 22px rgba(17,17,17,.24);}
+.aurea-cart-checkout:active{box-shadow:0 3px 10px rgba(17,17,17,.2);}
+@media (prefers-reduced-motion:reduce){.aurea-cart-checkout{animation:none;}}
+
+/* Product "Add to cart" CTA — subtle lift + shadow on hover, press-down on click.
+   Buttons already carry `transition: transform, box-shadow` inline so this animates. */
+.pdp-atc:hover,.pdp-sticky:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,17,17,.24);}
+.pdp-atc:active,.pdp-sticky:active{transform:translateY(0);box-shadow:0 3px 10px rgba(17,17,17,.2);}
+@media (prefers-reduced-motion:reduce){.pdp-atc:hover,.pdp-sticky:hover{transform:none;}}
+
+/* Hide images embedded in product descriptions (imported promo photos break the layout).
+   Applies to every product automatically, including newly imported ones. Text stays. */
+body.template-product .rte img,
+body.template-product .rte picture,
+body.template-product .rte video{display:none !important;}
+body.template-product .rte p:has(> img:only-child),
+body.template-product .rte p:has(> picture:only-child),
+body.template-product .rte figure:has(> img:only-child){display:none !important;margin:0 !important;}
+
+/* Shipping-bar "live" green dot — pulsing ring */
+.aurea-ship-dot{animation:aureaPulseGreen 1.8s ease-out infinite;}
+@keyframes aureaPulseGreen{0%{box-shadow:0 0 0 0 rgba(46,160,67,.55);}70%{box-shadow:0 0 0 7px rgba(46,160,67,0);}100%{box-shadow:0 0 0 0 rgba(46,160,67,0);}}
+@media (prefers-reduced-motion:reduce){.aurea-ship-dot{animation:none;}}
+
+/* Pack & Économies tier cards — hover lift for depth */
+.scp5:hover{transform:translateY(-4px)!important;box-shadow:rgba(20,18,16,0.15) 0px 18px 38px!important;}
+.scp6:hover{transform:translateY(-4px)!important;box-shadow:rgba(150,108,30,0.5) 0px 20px 46px!important;}
