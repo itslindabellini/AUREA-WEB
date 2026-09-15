@@ -12,6 +12,9 @@
     "checkout": {
       "alternative_payment_method_banner": {
         "or": "Plus de 12 000 clients satisfaits"
+      },
+      "order_summary": {
+        "enter_shipping_address": "Livraison gratuite (avec suivi)"
       }
     }
   }
