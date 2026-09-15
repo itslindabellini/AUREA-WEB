@@ -142,3 +142,14 @@ body.template-product .rte figure:has(> img:only-child){display:none !important;
 /* Pack & Économies tier cards — hover lift for depth */
 .scp5:hover{transform:translateY(-4px)!important;box-shadow:rgba(20,18,16,0.15) 0px 18px 38px!important;}
 .scp6:hover{transform:translateY(-4px)!important;box-shadow:rgba(150,108,30,0.5) 0px 20px 46px!important;}
+
+/* Product description — normalize imported inline fonts/colors.
+   Shopify product descriptions ship with their own inline font-family/color on
+   headings, spans and bold text, so parts render in a stray font/shade. Force
+   every element inside .rte to the one theme font + color. Bold stays bold and
+   headings keep their size (we only override font-family and color). */
+body.template-product .rte,
+body.template-product .rte *{
+  font-family:Manrope,-apple-system,"Segoe UI",sans-serif !important;
+  color:rgb(110,103,94) !important;
+}
