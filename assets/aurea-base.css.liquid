@@ -139,9 +139,14 @@ body.template-product .rte figure:has(> img:only-child){display:none !important;
 @keyframes aureaPulseGreen{0%{box-shadow:0 0 0 0 rgba(46,160,67,.55);}70%{box-shadow:0 0 0 7px rgba(46,160,67,0);}100%{box-shadow:0 0 0 0 rgba(46,160,67,0);}}
 @media (prefers-reduced-motion:reduce){.aurea-ship-dot{animation:none;}}
 
-/* Pack & Économies tier cards — hover lift for depth */
-.scp5:hover{transform:translateY(-4px)!important;box-shadow:rgba(20,18,16,0.15) 0px 18px 38px!important;}
-.scp6:hover{transform:translateY(-4px)!important;box-shadow:rgba(150,108,30,0.5) 0px 20px 46px!important;}
+/* Pack & Économies tier cards — hover lift for depth (cards are <div>) */
+div.scp5:hover{transform:translateY(-4px)!important;box-shadow:rgba(20,18,16,0.15) 0px 18px 38px!important;}
+div.scp6:hover{transform:translateY(-4px)!important;box-shadow:rgba(150,108,30,0.5) 0px 20px 46px!important;}
+
+/* Collection "Charger plus" button shares the scp6 class with the pack card —
+   keep its hover minimal: a clean fill, no gold glow or lift. */
+button.scp6{transition:background .2s ease,color .2s ease,border-color .2s ease!important;}
+button.scp6:hover{transform:none!important;box-shadow:none!important;background:rgb(17,17,17)!important;color:rgb(255,255,255)!important;border-color:rgb(17,17,17)!important;}
 
 /* Product description — normalize imported inline fonts/colors.
    Shopify product descriptions ship with their own inline font-family/color on
