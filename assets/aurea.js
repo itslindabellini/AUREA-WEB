@@ -1115,6 +1115,14 @@
       // hero products into the first PIN slots.
       var PIN = (grid.getAttribute('data-manual') === '1') ? (parseInt(grid.getAttribute('data-pin') || '', 10) || 8) : 0;
       function shuffle(nodes) {
+        // Fixed-order collections (data-shuffle="0"): no mixing at all — render in the
+        // exact Shopify manual order (by data-ord). Used where the merchant wants a
+        // fully hand-set order on the collection page.
+        if (grid.getAttribute('data-shuffle') === '0') {
+          return nodes.slice().sort(function (a, b) {
+            return (parseInt(a.getAttribute('data-ord') || '0', 10)) - (parseInt(b.getAttribute('data-ord') || '0', 10));
+          });
+        }
         var pinned = [], rest = [];
         nodes.forEach(function (c) {
           var o = parseInt(c.getAttribute('data-ord'), 10);
