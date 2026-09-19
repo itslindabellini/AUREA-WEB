@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <script async src="https://pixel.wetracked.io/{{shop.permanent_domain}}/events.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  {%- if template.name == 'index' -%}
+  <link rel="preload" as="image" href="{{ 'hero-mobile.webp' | asset_url }}" media="(max-width: 749px)" fetchpriority="high">
+  <link rel="preload" as="image" href="{{ 'hero.webp' | asset_url }}" media="(min-width: 750px)" fetchpriority="high">
+  {%- endif -%}
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {{ 'aurea-base.css' | asset_url | stylesheet_tag }}
+  {{ content_for_header }}
+</head>
+<body class="template-{{ template.name | handle }}">
+  <main id="MainContent" role="main">
+    {{ content_for_layout }}
+  </main>
+  <script>window.AUREA = { moneyFormat: {{ shop.money_format | json }} };</script>
+  <script src="{{ 'aurea.js' | asset_url }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "aurea-tracking",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
