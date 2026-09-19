@@ -54,24 +54,24 @@
     // Clothes; the winter one points at its own collection instead.
     if (category === 'Winter Clothes' && item === 'Pants') return '/collections/winter-pants';
     if (category === 'Winter Clothes' && item === 'Sets') return '/collections/winter-sets';
-    // No dedicated "sweaters" collection yet — fall back to the Winter Clothes
+    // No dedicated "pulls" collection yet — fall back to the Winter Clothes
     // shop-all so the link is never blank. Point this at the real handle once it exists.
-    if (category === 'Winter Clothes' && item === 'Sweaters') return '/collections/sweaters';
-    if (category === 'Bags' && item === 'Luxury Bags') return '/collections/bags?view=luxury';
-    if (category === 'Jewelry' && item === 'Necklaces') return '/collections/necklace';
-    if (category === 'Jewelry' && item === 'Earrings') return '/collections/ear-rings';
+    if (category === 'Winter Clothes' && item === 'Sweaters') return '/collections/pulls';
+    if (category === 'Bags' && item === 'Luxury Bags') return '/collections/sacs?view=luxury';
+    if (category === 'Jewelry' && item === 'Necklaces') return '/collections/colliers';
+    if (category === 'Jewelry' && item === 'Earrings') return '/collections/boucles-oreilles';
     if (category === 'Jewelry' && item === 'Ankle Jewelry') return '/collections/ankle-jewlery';
     if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewlery-sets';
-    if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/gold-jewlery';
-    if (category === 'Jewelry' && item === 'Silver Jewelry') return '/collections/silver-jewlery';
+    if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/bijoux-or';
+    if (category === 'Jewelry' && item === 'Silver Jewelry') return '/collections/bijoux-argent';
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
   function catUrl(category) {
-    // The Shoes collection lives at the handle "shoes", not "footwear".
-    if (category === 'Footwear') return '/collections/shoes';
-    // The jewelry umbrella collection lives at the (misspelled) handle "jewlery".
-    if (category === 'Jewelry') return '/collections/jewlery';
+    // The Shoes collection lives at the handle "chaussures", not "footwear".
+    if (category === 'Footwear') return '/collections/chaussures';
+    // The jewelry umbrella collection lives at the (misspelled) handle "bijoux".
+    if (category === 'Jewelry') return '/collections/bijoux';
     return '/collections/' + handleize(category);
   }
 
