@@ -1,0 +1,12 @@
+{%- comment -%} AUREA collection — generated from Claude design, look-first port {%- endcomment -%}
+{%- paginate collection.products by 250 -%}
+<div class="aurea-page aurea-desktop">{% render 'aurea-collection-desktop', products: collection.products, paginate: paginate %}</div>
+<div class="aurea-page aurea-mobile">{% render 'aurea-collection-mobile', products: collection.products, paginate: paginate %}</div>
+{%- endpaginate -%}
+{% schema %}
+{
+  "name": "AUREA collection",
+  "settings": [],
+  "presets": [{ "name": "AUREA collection" }]
+}
+{% endschema %}

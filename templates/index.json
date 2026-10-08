@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "aurea-home",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

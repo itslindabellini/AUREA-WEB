@@ -1,0 +1,16 @@
+{%- comment -%} AUREA luxury bags — renders the bags collection with everything that is in the leather-bags collection removed. Reuses the standard collection snippets in "lux" mode. {%- endcomment -%}
+{%- assign leather_ids = '' -%}
+{%- for lp in collections['leather-bags'].products -%}{%- assign leather_ids = leather_ids | append: ',' | append: lp.id | append: ',' -%}{%- endfor -%}
+{%- paginate collection.products by 250 -%}
+{%- assign lux_count = 0 -%}
+{%- for bp in collection.products -%}{%- assign lk = ',' | append: bp.id | append: ',' -%}{%- unless leather_ids contains lk -%}{%- assign lux_count = lux_count | plus: 1 -%}{%- endunless -%}{%- endfor -%}
+<div class="aurea-page aurea-desktop">{% render 'aurea-collection-desktop', products: collection.products, paginate: paginate, lux_exclude: leather_ids, lux_title: 'Πολυτελείς Τσάντες', lux_count: lux_count %}</div>
+<div class="aurea-page aurea-mobile">{% render 'aurea-collection-mobile', products: collection.products, paginate: paginate, lux_exclude: leather_ids, lux_title: 'Πολυτελείς Τσάντες', lux_count: lux_count %}</div>
+{%- endpaginate -%}
+{% schema %}
+{
+  "name": "AUREA luxury bags",
+  "settings": [],
+  "presets": [{ "name": "AUREA luxury bags" }]
+}
+{% endschema %}
