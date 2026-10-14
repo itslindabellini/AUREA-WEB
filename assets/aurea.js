@@ -1444,7 +1444,7 @@
 
 /* build: nav dresses flyout 100831 */
 
-/* AUREA — header product search (magnifier → slide-down search bar) */
+/* AUREA — header product search (magnifier → slide-down bar with live results) */
 (function () {
   function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
   ready(function () {
@@ -1461,19 +1461,65 @@
           '<input type="search" name="q" class="aurea-search-input" placeholder="Rechercher un produit…" autocomplete="off" autocapitalize="off" autocorrect="off">' +
           '<button type="button" class="aurea-search-close" aria-label="Fermer">&#10005;</button>' +
         '</form>' +
+        '<div class="aurea-search-results"></div>' +
       '</div>';
     document.body.appendChild(panel);
     var form = panel.querySelector('.aurea-search-form');
     var input = panel.querySelector('.aurea-search-input');
+    var results = panel.querySelector('.aurea-search-results');
+    var tmr = null, lastQ = '';
+
     function openP(){ panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); setTimeout(function(){ try{ input.focus(); }catch(e){} }, 80); }
     function closeP(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
-    Array.prototype.forEach.call(toggles, function (t) {
-      t.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); if (panel.classList.contains('open')) closeP(); else openP(); });
-      t.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) { e.preventDefault(); openP(); } });
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function searchUrl(q){ return '/search?type=product&q=' + encodeURIComponent(q); }
+
+    function render(products, q){
+      if (!products || !products.length){
+        results.innerHTML = '<div class="aurea-search-empty">Aucun produit trouvé pour « ' + esc(q) + ' »</div>';
+        results.classList.add('show'); return;
+      }
+      var html = '';
+      products.forEach(function(p){
+        var im = p.image || (p.featured_image && (p.featured_image.url || p.featured_image)) || '';
+        if (im) { im = String(im).replace(/(\.(?:jpg|jpeg|png|webp|gif))(\?|$)/i, '_120x$1$2'); }
+        html += '<a class="aurea-search-result" href="' + esc(p.url) + '">' +
+            '<span class="aurea-search-rthumb">' + (im ? '<img loading="lazy" src="' + esc(im) + '" alt="">' : '') + '</span>' +
+            '<span class="aurea-search-rtitle">' + esc(p.title) + '</span>' +
+          '</a>';
+      });
+      html += '<a class="aurea-search-all" href="' + searchUrl(q) + '">Voir tous les résultats →</a>';
+      results.innerHTML = html;
+      results.classList.add('show');
+    }
+
+    function doSearch(q){
+      var url = '/search/suggest.json?q=' + encodeURIComponent(q) + '&resources[type]=product&resources[limit]=6&resources[options][unavailable_products]=last';
+      fetch(url, { headers: { 'Accept':'application/json' } })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (input.value.trim() !== q) return;
+          var ps = (d && d.resources && d.resources.results && d.resources.results.products) || [];
+          render(ps, q);
+        })
+        .catch(function(){});
+    }
+
+    input.addEventListener('input', function(){
+      var q = input.value.trim();
+      if (q === lastQ) return; lastQ = q;
+      if (tmr) clearTimeout(tmr);
+      if (q.length < 2){ results.classList.remove('show'); results.innerHTML = ''; return; }
+      tmr = setTimeout(function(){ doSearch(q); }, 180);
+    });
+
+    Array.prototype.forEach.call(toggles, function(t){
+      t.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if (panel.classList.contains('open')) closeP(); else openP(); });
+      t.addEventListener('keydown', function(e){ if (e.key==='Enter'||e.key===' '||e.keyCode===13||e.keyCode===32){ e.preventDefault(); openP(); } });
     });
     panel.querySelector('.aurea-search-close').addEventListener('click', closeP);
-    panel.addEventListener('click', function (e) { if (e.target === panel) closeP(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) closeP(); });
-    form.addEventListener('submit', function (e) { if (!input.value.replace(/\s+/g, '')) { e.preventDefault(); try{ input.focus(); }catch(x){} } });
+    panel.addEventListener('click', function(e){ if (e.target === panel) closeP(); });
+    document.addEventListener('keydown', function(e){ if (e.key==='Escape'||e.keyCode===27) closeP(); });
+    form.addEventListener('submit', function(e){ if (!input.value.trim()){ e.preventDefault(); try{ input.focus(); }catch(x){} } });
   });
 })();
