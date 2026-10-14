@@ -1,0 +1,8 @@
+{
+  "sections": {
+    "main": {
+      "type": "aurea-search"
+    }
+  },
+  "order": ["main"]
+}
