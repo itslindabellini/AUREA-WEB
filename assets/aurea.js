@@ -1443,3 +1443,37 @@
 })();
 
 /* build: nav dresses flyout 100831 */
+
+/* AUREA — header product search (magnifier → slide-down search bar) */
+(function () {
+  function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  ready(function () {
+    var toggles = document.querySelectorAll('.aurea-search-toggle');
+    if (!toggles.length || document.querySelector('.aurea-search-panel')) return;
+    var panel = document.createElement('div');
+    panel.className = 'aurea-search-panel';
+    panel.setAttribute('aria-hidden', 'true');
+    panel.innerHTML =
+      '<div class="aurea-search-bar">' +
+        '<form action="/search" method="get" role="search" class="aurea-search-form">' +
+          '<input type="hidden" name="type" value="product">' +
+          '<svg class="aurea-search-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7.5"></circle><line x1="21" y1="21" x2="16.9" y2="16.9"></line></svg>' +
+          '<input type="search" name="q" class="aurea-search-input" placeholder="Rechercher un produit…" autocomplete="off" autocapitalize="off" autocorrect="off">' +
+          '<button type="button" class="aurea-search-close" aria-label="Fermer">&#10005;</button>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(panel);
+    var form = panel.querySelector('.aurea-search-form');
+    var input = panel.querySelector('.aurea-search-input');
+    function openP(){ panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); setTimeout(function(){ try{ input.focus(); }catch(e){} }, 80); }
+    function closeP(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
+    Array.prototype.forEach.call(toggles, function (t) {
+      t.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); if (panel.classList.contains('open')) closeP(); else openP(); });
+      t.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32) { e.preventDefault(); openP(); } });
+    });
+    panel.querySelector('.aurea-search-close').addEventListener('click', closeP);
+    panel.addEventListener('click', function (e) { if (e.target === panel) closeP(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) closeP(); });
+    form.addEventListener('submit', function (e) { if (!input.value.replace(/\s+/g, '')) { e.preventDefault(); try{ input.focus(); }catch(x){} } });
+  });
+})();

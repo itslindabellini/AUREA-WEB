@@ -158,3 +158,19 @@ body.template-product .rte *{
   font-family:Manrope,-apple-system,"Segoe UI",sans-serif !important;
   color:rgb(110,103,94) !important;
 }
+
+/* Header product search — slide-down bar */
+.aurea-search-panel{position:fixed;inset:0;z-index:1200;background:rgba(20,18,16,0);visibility:hidden;transition:background .34s ease, visibility 0s linear .34s;}
+.aurea-search-panel.open{background:rgba(20,18,16,.38);visibility:visible;transition:background .34s ease;}
+.aurea-search-bar{position:absolute;top:0;left:0;right:0;background:#fff;box-shadow:0 14px 36px rgba(20,18,16,.16);transform:translateY(-100%);transition:transform .34s cubic-bezier(.4,0,.2,1);}
+.aurea-search-panel.open .aurea-search-bar{transform:translateY(0);}
+.aurea-search-form{max-width:1320px;margin:0 auto;padding:22px 40px;display:flex;align-items:center;gap:16px;}
+.aurea-search-ico{flex:0 0 auto;color:#111;}
+.aurea-search-input{flex:1 1 auto;min-width:0;border:none;outline:none;background:transparent;font-family:Manrope,-apple-system,sans-serif;font-weight:500;font-size:19px;letter-spacing:.01em;color:#111;}
+.aurea-search-input::placeholder{color:#A79E92;}
+.aurea-search-input::-webkit-search-cancel-button{-webkit-appearance:none;}
+.aurea-search-close{flex:0 0 auto;border:none;background:transparent;color:#4A4A4A;font-size:19px;line-height:1;cursor:pointer;padding:6px 4px;transition:color .2s;}
+.aurea-search-close:hover{color:#111;}
+.aurea-search-toggle:hover{opacity:.62;}
+@media (max-width:768px){.aurea-search-form{padding:15px 20px;gap:12px;}.aurea-search-input{font-size:16px;}}
+@media (prefers-reduced-motion:reduce){.aurea-search-bar{transition:none;}}
