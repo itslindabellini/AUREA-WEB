@@ -1560,23 +1560,25 @@
         '<div class="aurea-ep-eyebrow">Offre de bienvenue</div>' +
         '<h2 class="aurea-ep-title"><span style="font-weight:700;">−5%</span> sur votre première commande</h2>' +
         '<p class="aurea-ep-sub">Inscrivez-vous à notre newsletter et recevez votre code de réduction instantanément.</p>' +
-        '<form class="aurea-ep-form" novalidate><input type="email" class="aurea-ep-input" name="email" placeholder="Votre adresse e-mail" autocomplete="email" required><button type="submit" class="aurea-ep-btn">Obtenir mon code −5%</button></form>' +
+        '<form class="aurea-ep-form" action="/contact" method="post" accept-charset="UTF-8" target="aurea-ep-frame" novalidate>' +
+          '<input type="hidden" name="form_type" value="customer">' +
+          '<input type="hidden" name="utf8" value="✓">' +
+          '<input type="hidden" name="contact[tags]" value="newsletter,popup-5">' +
+          '<input type="email" class="aurea-ep-input" name="contact[email]" placeholder="Votre adresse e-mail" autocomplete="email" required>' +
+          '<button type="submit" class="aurea-ep-btn">Obtenir mon code −5%</button>' +
+        '</form>' +
+        '<iframe name="aurea-ep-frame" title="inscription" style="display:none;width:0;height:0;border:0;" aria-hidden="true"></iframe>' +
         '<p class="aurea-ep-fine">En vous inscrivant, vous acceptez de recevoir nos e-mails. Désinscription possible à tout moment.</p>' +
         '<button type="button" class="aurea-ep-dismiss">Non merci</button>';
       var form = content.querySelector('.aurea-ep-form');
       var input = content.querySelector('.aurea-ep-input');
       content.querySelector('.aurea-ep-dismiss').addEventListener('click', close);
       form.addEventListener('submit', function(e){
-        e.preventDefault();
         var email = (input.value || '').trim();
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { input.style.borderColor = '#C1121F'; input.focus(); return; }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { e.preventDefault(); input.style.borderColor = '#C1121F'; input.focus(); return; }
+        // let the browser POST the real customer form into the hidden iframe (do NOT preventDefault)
         var btn = form.querySelector('.aurea-ep-btn'); btn.disabled = true; btn.textContent = '…';
-        var body = 'form_type=customer&utf8=%E2%9C%93' +
-          '&contact%5Bemail%5D=' + encodeURIComponent(email) +
-          '&contact%5Btags%5D=' + encodeURIComponent('newsletter,popup-5');
-        fetch('/contact', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
-          .then(function(){ showSuccess(); })
-          .catch(function(){ showSuccess(); });
+        setTimeout(showSuccess, 700);
       });
     }
     ov.querySelector('.aurea-ep-close').addEventListener('click', close);
