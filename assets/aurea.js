@@ -1558,7 +1558,7 @@
     function showForm(){
       content.innerHTML =
         '<div class="aurea-ep-eyebrow">Offre de bienvenue</div>' +
-        '<h2 class="aurea-ep-title">−5% sur votre première commande</h2>' +
+        '<h2 class="aurea-ep-title"><span style="font-weight:700;">−5%</span> sur votre première commande</h2>' +
         '<p class="aurea-ep-sub">Inscrivez-vous à notre newsletter et recevez votre code de réduction instantanément.</p>' +
         '<form class="aurea-ep-form" novalidate><input type="email" class="aurea-ep-input" name="email" placeholder="Votre adresse e-mail" autocomplete="email" required><button type="submit" class="aurea-ep-btn">Obtenir mon code −5%</button></form>' +
         '<p class="aurea-ep-fine">En vous inscrivant, vous acceptez de recevoir nos e-mails. Désinscription possible à tout moment.</p>' +
