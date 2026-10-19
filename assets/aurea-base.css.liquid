@@ -188,28 +188,3 @@ body.template-product .rte *{
 .aurea-search-all:hover{color:#4A4A4A;}
 .aurea-search-empty{padding:18px 0;font-family:Manrope,sans-serif;font-weight:500;font-size:14px;color:#8A7F70;border-top:1px solid #EFEAE2;}
 @media (max-width:768px){.aurea-search-results{padding:0 20px;}.aurea-search-results.show{padding-bottom:12px;}}
-
-/* AUREA — welcome email popup (-5%) */
-.aurea-ep-overlay{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,18,16,0);visibility:hidden;transition:background .35s ease, visibility 0s linear .35s;}
-.aurea-ep-overlay.open{background:rgba(20,18,16,.55);visibility:visible;transition:background .35s ease;}
-.aurea-ep-card{position:relative;width:100%;max-width:420px;background:#fff;box-shadow:0 30px 80px rgba(20,18,16,.3);transform:translateY(16px) scale(.98);opacity:0;transition:transform .4s cubic-bezier(.4,0,.2,1), opacity .4s ease;}
-.aurea-ep-overlay.open .aurea-ep-card{transform:none;opacity:1;}
-.aurea-ep-body{padding:46px 38px 36px;text-align:center;}
-.aurea-ep-close{position:absolute;top:12px;right:12px;width:36px;height:36px;border:none;background:transparent;color:#8A7F70;font-size:19px;line-height:1;cursor:pointer;transition:color .2s;}
-.aurea-ep-close:hover{color:#111;}
-.aurea-ep-eyebrow{font-family:Manrope,-apple-system,sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:#C1121F;margin-bottom:14px;}
-.aurea-ep-title{font-family:Helvetica,Arial,sans-serif;font-weight:500;font-size:30px;line-height:1.14;color:#111;margin:0 0 12px;}
-.aurea-ep-sub{font-family:Manrope,-apple-system,sans-serif;font-weight:500;font-size:14.5px;line-height:1.6;color:#6E675E;margin:0 0 24px;}
-.aurea-ep-form{display:flex;flex-direction:column;gap:12px;}
-.aurea-ep-input{width:100%;box-sizing:border-box;border:1px solid #DCD3C6;background:#fff;padding:15px 16px;font-family:Manrope,-apple-system,sans-serif;font-size:15px;color:#111;outline:none;text-align:center;transition:border-color .2s;}
-.aurea-ep-input::placeholder{color:#A79E92;}
-.aurea-ep-input:focus{border-color:#111;}
-.aurea-ep-btn{width:100%;background:#111;color:#fff;border:1px solid #111;padding:16px;font-family:Manrope,-apple-system,sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:background .2s;}
-.aurea-ep-btn:hover{background:#2A2724;}
-.aurea-ep-btn:disabled{opacity:.7;cursor:default;}
-.aurea-ep-fine{font-family:Manrope,-apple-system,sans-serif;font-weight:500;font-size:11px;line-height:1.5;color:#A79E92;margin:16px 0 0;}
-.aurea-ep-code{display:inline-block;font-family:Manrope,-apple-system,sans-serif;font-weight:700;font-size:21px;letter-spacing:.14em;color:#111;background:#F5F0EB;border:1px dashed #C1121F;padding:14px 26px;margin:6px 0 4px;cursor:pointer;}
-.aurea-ep-dismiss{background:none;border:none;color:#9A948C;font-family:Manrope,-apple-system,sans-serif;font-size:12px;letter-spacing:.02em;text-decoration:underline;cursor:pointer;margin-top:14px;}
-.aurea-ep-dismiss:hover{color:#4A4A4A;}
-@media (max-width:480px){.aurea-ep-body{padding:40px 24px 30px;}.aurea-ep-title{font-size:26px;}}
-@media (prefers-reduced-motion:reduce){.aurea-ep-card{transition:opacity .2s ease;}}
