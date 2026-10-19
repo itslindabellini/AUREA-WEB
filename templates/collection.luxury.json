@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "aurea-collection-luxury",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

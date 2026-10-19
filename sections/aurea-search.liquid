@@ -1,0 +1,9 @@
+{%- comment -%} AUREA search results — reuses the collection grid via lux_title {%- endcomment -%}
+{%- if search.performed and search.results_count > 0 -%}{%- assign _stitle = search.terms -%}{%- else -%}{%- assign _stitle = 'Recherche' -%}{%- endif -%}
+{%- paginate search.results by 48 -%}
+<div class="aurea-page aurea-desktop">{% render 'aurea-collection-desktop', products: search.results, paginate: paginate, lux_title: _stitle %}</div>
+<div class="aurea-page aurea-mobile">{% render 'aurea-collection-mobile', products: search.results, paginate: paginate, lux_title: _stitle %}</div>
+{%- endpaginate -%}
+{% schema %}
+{ "name": "AUREA search", "settings": [] }
+{% endschema %}
