@@ -1523,3 +1523,66 @@
     form.addEventListener('submit', function(e){ if (!input.value.trim()){ e.preventDefault(); try{ input.focus(); }catch(x){} } });
   });
 })();
+
+/* AUREA — welcome email popup (-5% code BIENVENUE5) */
+(function () {
+  function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  ready(function () {
+    if (window.Shopify && window.Shopify.designMode) return; // not in theme editor
+    var KEY = 'aurea-emailpop-v1';
+    try { if (localStorage.getItem(KEY)) return; } catch (e) {}
+    var CODE = 'BIENVENUE5';
+    var ov = document.createElement('div');
+    ov.className = 'aurea-ep-overlay';
+    ov.setAttribute('aria-hidden','true');
+    ov.innerHTML = '<div class="aurea-ep-card" role="dialog" aria-modal="true"><button class="aurea-ep-close" aria-label="Fermer">&#10005;</button><div class="aurea-ep-body"><div class="aurea-ep-content"></div></div></div>';
+    document.body.appendChild(ov);
+    var content = ov.querySelector('.aurea-ep-content');
+    function mark(){ try { localStorage.setItem(KEY, '1'); } catch (e) {} }
+    function open(){ ov.classList.add('open'); ov.setAttribute('aria-hidden','false'); }
+    function close(){ ov.classList.remove('open'); ov.setAttribute('aria-hidden','true'); mark(); }
+
+    function showSuccess(){
+      content.innerHTML =
+        '<div class="aurea-ep-eyebrow">Bienvenue chez LÈANE</div>' +
+        '<h2 class="aurea-ep-title">Merci !</h2>' +
+        '<p class="aurea-ep-sub">Voici votre code de réduction. Utilisez-le au paiement :</p>' +
+        '<div class="aurea-ep-code" title="Copier le code">' + CODE + '</div>' +
+        '<p class="aurea-ep-fine">−5% à valoir sur votre commande.</p>' +
+        '<button type="button" class="aurea-ep-btn" style="margin-top:14px;">Continuer mes achats</button>';
+      var codeEl = content.querySelector('.aurea-ep-code');
+      codeEl.addEventListener('click', function(){ try { navigator.clipboard.writeText(CODE); codeEl.textContent = CODE + '  ✓'; } catch(e){} });
+      content.querySelector('.aurea-ep-btn').addEventListener('click', close);
+      mark();
+    }
+    function showForm(){
+      content.innerHTML =
+        '<div class="aurea-ep-eyebrow">Offre de bienvenue</div>' +
+        '<h2 class="aurea-ep-title">−5% sur votre première commande</h2>' +
+        '<p class="aurea-ep-sub">Inscrivez-vous à notre newsletter et recevez votre code de réduction instantanément.</p>' +
+        '<form class="aurea-ep-form" novalidate><input type="email" class="aurea-ep-input" name="email" placeholder="Votre adresse e-mail" autocomplete="email" required><button type="submit" class="aurea-ep-btn">Obtenir mon code −5%</button></form>' +
+        '<p class="aurea-ep-fine">En vous inscrivant, vous acceptez de recevoir nos e-mails. Désinscription possible à tout moment.</p>' +
+        '<button type="button" class="aurea-ep-dismiss">Non merci</button>';
+      var form = content.querySelector('.aurea-ep-form');
+      var input = content.querySelector('.aurea-ep-input');
+      content.querySelector('.aurea-ep-dismiss').addEventListener('click', close);
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var email = (input.value || '').trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { input.style.borderColor = '#C1121F'; input.focus(); return; }
+        var btn = form.querySelector('.aurea-ep-btn'); btn.disabled = true; btn.textContent = '…';
+        var body = 'form_type=customer&utf8=%E2%9C%93' +
+          '&contact%5Bemail%5D=' + encodeURIComponent(email) +
+          '&contact%5Btags%5D=' + encodeURIComponent('newsletter,popup-5');
+        fetch('/contact', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
+          .then(function(){ showSuccess(); })
+          .catch(function(){ showSuccess(); });
+      });
+    }
+    ov.querySelector('.aurea-ep-close').addEventListener('click', close);
+    ov.addEventListener('click', function(e){ if (e.target === ov) close(); });
+    document.addEventListener('keydown', function(e){ if ((e.key === 'Escape' || e.keyCode === 27) && ov.classList.contains('open')) close(); });
+    showForm();
+    setTimeout(open, 4500);
+  });
+})();
