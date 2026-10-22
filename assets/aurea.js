@@ -25,7 +25,7 @@
     'Loafers': 'Mocassins', 'Sandals': 'Sandales', 'Boots': 'Bottes',
     'Necklaces': 'Colliers', 'Earrings': "Boucles d'oreilles", 'Bracelets': 'Bracelets', 'Rings': 'Bagues',
     'Gold Jewelry': 'Bijoux en or', 'Silver Jewelry': 'Bijoux en argent',
-    'Sweaters': 'Pulls', 'Coats': 'Manteaux', 'Vests': 'Vestes'
+    'Sweaters': 'Pulls', 'Coats': 'Vestes & Manteaux', 'Vests': 'Vestes'
   };
   var NAV_EN = {}; Object.keys(NAV_TR).forEach(function (k) { NAV_EN[NAV_TR[k]] = k; });
   function trLabel(en) { return NAV_TR[en] || en; }
