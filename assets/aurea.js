@@ -64,7 +64,7 @@
     if (category === 'Jewelry' && item === 'Full Sets') return '/collections/jewlery-sets';
     if (category === 'Jewelry' && item === 'Gold Jewelry') return '/collections/bijoux-or';
     if (category === 'Jewelry' && item === 'Silver Jewelry') return '/collections/bijoux-argent';
-    if (item === 'Coats') return '/collections/jackets-coats';
+    if (item === 'Coats') return '/collections/vestes-et-manteaux';
     if (item === 'Shop All') return catUrl(category);
     return '/collections/' + handleize(item);
   }
